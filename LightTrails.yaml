@@ -1,12 +1,12 @@
 openapi: 3.0.0
 info:
-  title: Aurora API
-  description: API for managing aurora photos based on simplified domain model
+  title: LightsTrail User Authentication API
   version: 1.0.0
+  description: Simple API for user signup and login in the LightsTrail application.
 
 servers:
-  - url: https://localhost:3000
-    description: Local development server
+  - url: http://localhost:9000
+    description: Local Development Server
 
 paths:
   /gallery/photos:
