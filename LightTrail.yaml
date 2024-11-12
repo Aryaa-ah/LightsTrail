@@ -259,7 +259,52 @@ paths:
         "404":
           description: Photo not found
           $ref: "#/components/responses/NotFound"
-
+  /auroraforecast:
+    get:
+      operationId: fetch-forecast-parameters
+      description: Retrieve a Location's forecasting parameters
+      parameters:
+        - name: longitutde
+          in: query
+          required: true
+          schema: 
+            type: string
+        - name: latitude
+          in: query
+          required: true
+          schema: 
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved the forecasting parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuroraForecast"
+        400:
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found - forecasting values not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        503:
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 components:
   schemas:
     SignupRequest:
@@ -316,7 +361,19 @@ components:
       required:
         - email
         - password
-
+    AuroraForecast:
+      type: object
+      properties:
+        kpIndex:
+          type: string
+        bz:
+          type: string
+        speed:
+          type: string
+        longitude:
+          type: number
+        latitude:
+          type: number
     SuccessResponse:
       type: object
       properties:
