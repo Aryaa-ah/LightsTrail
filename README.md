@@ -15,9 +15,7 @@ LightsTrail is a web-based application designed to provide real-time aurora pred
 
 3. Aurora Predictions and observations: Provides immediate aurora predictions based on the user’s input location.
 
-4. Location-Based Alerts: Users can subscribe to alerts for aurora events, including real-time notifications or alerts triggered by certain  thresholds.
-
-5. Community Post Interaction: Share photos, location, experiences, and advice on aurora sightings.
+4. Community Post Interaction: Share photos, location, experiences, and advice on aurora sightings.
 
 ### Domain Model
 
