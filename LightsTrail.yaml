@@ -70,6 +70,47 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /location/{cityName}:
+    get:
+      operationId: fetchLongitudeLatitude
+      description: Retrieve a Location's longitude and latitude
+      parameters:
+        - name: cityName
+          in: path
+          required: true
+          schema: 
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved the longitude and latitude
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+        400:
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found - Location not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        503:
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
 components:
   schemas:
@@ -96,7 +137,24 @@ components:
         - password
         - firstName
         - lastName
+    Location:
+      type: object
+      properties:
+        cityName:
+          type: string
+        longitude:
+          type: number
+        latitude:
+          type: number
 
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+          
     LoginRequest:
       type: object
       properties:
