@@ -1,0 +1,249 @@
+openapi: 3.0.0
+info:
+  title: Aurora API
+  description: API for managing aurora photos based on simplified domain model
+  version: 1.0.0
+
+servers:
+  - url: https://localhost:3000
+    description: Local development server
+
+paths:
+  /gallery/photos:
+    get:
+      summary: Get aurora photos
+      description: Retrieve aurora photos
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+          description: Number of items per page
+      responses:
+        "200":
+          description: Successfully retrieved photos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GalleryPhoto"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+    post:
+      summary: Upload new aurora photo
+      description: Upload a new aurora photo
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The aurora photo file
+                location:
+                  type: string
+                  description: Location where photo was taken
+              required:
+                - image
+                - location
+      responses:
+        "201":
+          description: Photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryPhoto"
+        "400":
+          description: Invalid request parameters
+          $ref: "#/components/responses/BadRequest"
+        "413":
+          description: File too large to upload (max 5MB)
+          $ref: "#/components/responses/BadRequest"
+
+  /gallery/photos/{photoId}:
+    get:
+      summary: Get photo by ID
+      description: Retrieve a specific photo's details
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the photo
+      responses:
+        "200":
+          description: Successfully retrieved photo details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryPhoto"
+        "404":
+          description: Photo not found
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      summary: Update photo details
+      description: Update location or other details of an existing photo
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                  description: Updated location name
+      responses:
+        "200":
+          description: Photo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryPhoto"
+        "404":
+          description: Photo not found
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      summary: Delete photo
+      description: Delete a photo from the gallery
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Photo deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        "404":
+          description: Photo not found
+          $ref: "#/components/responses/NotFound"
+
+components:
+  schemas:
+    GalleryPhoto:
+      type: object
+      required:
+        - id
+        - url
+        - location
+        - createdAt
+      properties:
+        id:
+          type: string
+          example: "photo_12"
+        url:
+          type: string
+          example: "https://example.com/photo_12.jpg"
+        userName:
+          type: string
+          example: "aurora_hunter"
+        location:
+          type: string
+          example: "Boston, MA"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-03-15T22:30:00Z"
+
+    Pagination:
+      type: object
+      required:
+        - totalPhotos
+        - totalPages
+        - currentPage
+        - limit
+        - hasNextPage
+        - hasPrevPage
+      properties:
+        totalPhotos:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 5
+        currentPage:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        hasNextPage:
+          type: boolean
+          example: true
+        hasPrevPage:
+          type: boolean
+          example: false
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - error
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Invalid file format"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - error
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Photo not found"
