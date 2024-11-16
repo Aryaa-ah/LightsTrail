@@ -1,0 +1,19 @@
+meta {
+  name: forecast
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://api.auroras.live/v1/?type=all&lat=40.7813913&long=-73.976902&forecast=false&threeday=false
+  body: none
+  auth: none
+}
+
+params:query {
+  type: all
+  lat: 40.7813913
+  long: -73.976902
+  forecast: false
+  threeday: false
+}

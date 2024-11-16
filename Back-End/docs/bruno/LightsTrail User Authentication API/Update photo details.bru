@@ -1,0 +1,21 @@
+meta {
+  name: Update photo details
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/gallery/photos/:photoId
+  body: json
+  auth: none
+}
+
+params:path {
+  photoId: 
+}
+
+body:json {
+  {
+    "location": ""
+  }
+}

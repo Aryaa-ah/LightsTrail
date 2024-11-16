@@ -264,7 +264,7 @@ paths:
       operationId: fetch-forecast-parameters
       description: Retrieve a Location's forecasting parameters
       parameters:
-        - name: longitutde
+        - name: longitude
           in: query
           required: true
           schema: 
