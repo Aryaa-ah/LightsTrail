@@ -1,0 +1,479 @@
+openapi: 3.0.0
+info:
+  title: LightsTrail User Authentication API
+  version: 1.0.0
+  description: Simple API for user signup and login in the LightsTrail application.
+
+servers:
+  - url: http://localhost:9000
+    description: Local Development Server
+
+paths:
+  /signup:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupRequest"
+      responses:
+        "201":
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Conflict - User already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /login:
+    post:
+      summary: Authenticate an existing user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /location/{cityName}:
+    get:
+      operationId: fetchLongitudeLatitude
+      description: Retrieve a Location's longitude and latitude
+      parameters:
+        - name: cityName
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved the longitude and latitude
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Location"
+        400:
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found - Location not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        503:
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /gallery/photos:
+    get:
+      summary: Get aurora photos
+      description: Retrieve aurora photos
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          description: Page number for pagination
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+          description: Number of items per page
+      responses:
+        "200":
+          description: Successfully retrieved photos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/GalleryPhoto"
+                  pagination:
+                    $ref: "#/components/schemas/Pagination"
+
+    post:
+      summary: Upload new aurora photo
+      description: Upload a new aurora photo
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+                  description: The aurora photo file
+                location:
+                  type: string
+                  description: Location where photo was taken
+              required:
+                - image
+                - location
+      responses:
+        "201":
+          description: Photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryPhoto"
+        "400":
+          description: Invalid request parameters
+          $ref: "#/components/responses/BadRequest"
+        "413":
+          description: File too large to upload (max 5MB)
+          $ref: "#/components/responses/BadRequest"
+
+  /gallery/photos/{photoId}:
+    get:
+      summary: Get photo by ID
+      description: Retrieve a specific photo's details
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique identifier of the photo
+      responses:
+        "200":
+          description: Successfully retrieved photo details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryPhoto"
+        "404":
+          description: Photo not found
+          $ref: "#/components/responses/NotFound"
+
+    put:
+      summary: Update photo details
+      description: Update location or other details of an existing photo
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                location:
+                  type: string
+                  description: Updated location name
+      responses:
+        "200":
+          description: Photo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryPhoto"
+        "404":
+          description: Photo not found
+          $ref: "#/components/responses/NotFound"
+
+    delete:
+      summary: Delete photo
+      description: Delete a photo from the gallery
+      parameters:
+        - name: photoId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Photo deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        "404":
+          description: Photo not found
+          $ref: "#/components/responses/NotFound"
+  /auroraforecast:
+    get:
+      operationId: fetch-forecast-parameters
+      description: Retrieve a Location's forecasting parameters
+      parameters:
+        - name: longitude
+          in: query
+          required: true
+          schema: 
+            type: string
+        - name: latitude
+          in: query
+          required: true
+          schema: 
+            type: string
+      responses:
+        200:
+          description: Successfully retrieved the forecasting parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuroraForecast"
+        400:
+          description: Bad Request - Missing or invalid parameters
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        404:
+          description: Not Found - forecasting values not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        500:
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        503:
+          description: Service Unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    SignupRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+        password:
+          type: string
+          minLength: 8
+          description: The password for the user account
+          pattern: '^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+    Location:
+      type: object
+      properties:
+        cityName:
+          type: string
+        longitude:
+          type: number
+        latitude:
+          type: number
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+        password:
+          type: string
+          description: The password for the user account
+      required:
+        - email
+        - password
+    AuroraForecast:
+      type: object
+      properties:
+        kpIndex:
+          type: string
+        bz:
+          type: string
+        speed:
+          type: string
+        longitude:
+          type: number
+        latitude:
+          type: number
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Operation successful"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+          example: "Invalid email or password"
+    GalleryPhoto:
+      type: object
+      required:
+        - id
+        - url
+        - location
+        - createdAt
+      properties:
+        id:
+          type: string
+          example: "photo_12"
+        url:
+          type: string
+          example: "https://example.com/photo_12.jpg"
+        userName:
+          type: string
+          example: "aurora_hunter"
+        location:
+          type: string
+          example: "Boston, MA"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-03-15T22:30:00Z"
+
+    Pagination:
+      type: object
+      required:
+        - totalPhotos
+        - totalPages
+        - currentPage
+        - limit
+        - hasNextPage
+        - hasPrevPage
+      properties:
+        totalPhotos:
+          type: integer
+          example: 100
+        totalPages:
+          type: integer
+          example: 5
+        currentPage:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        hasNextPage:
+          type: boolean
+          example: true
+        hasPrevPage:
+          type: boolean
+          example: false
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - error
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Invalid file format"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+              - error
+            properties:
+              success:
+                type: boolean
+                example: false
+              error:
+                type: string
+                example: "Photo not found"
