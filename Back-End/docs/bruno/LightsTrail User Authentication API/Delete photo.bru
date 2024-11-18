@@ -1,0 +1,15 @@
+meta {
+  name: Delete photo
+  type: http
+  seq: 6
+}
+
+delete {
+  url: {{baseUrl}}/gallery/photos/:photoId
+  body: none
+  auth: none
+}
+
+params:path {
+  photoId: 
+}

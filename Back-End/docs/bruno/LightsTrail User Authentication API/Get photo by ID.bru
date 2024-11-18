@@ -1,0 +1,15 @@
+meta {
+  name: Get photo by ID
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/gallery/photos/:photoId
+  body: none
+  auth: none
+}
+
+params:path {
+  photoId: 
+}
