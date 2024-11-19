@@ -1,0 +1,17 @@
+meta {
+  name: Upload new aurora photo
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:3002/api/gallery/photos
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  image: @file(test-files/Aurora.jpg)
+  location: NYC
+  userName: Samarth
+}

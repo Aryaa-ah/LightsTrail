@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Gallery API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

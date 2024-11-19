@@ -1,0 +1,21 @@
+meta {
+  name: Update photo details
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://localhost:3002/api/gallery/photos/:photoId
+  body: json
+  auth: none
+}
+
+params:path {
+  photoId: 673cf5c3b33e23fd538c43c2
+}
+
+body:json {
+  {
+    "location": "BostoN"
+  }
+}
