@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: LightsTrail User Authentication API
+  title: LightsTrail API
   version: 1.0.0
   description: Simple API for user signup and login in the LightsTrail application.
 
