@@ -1,8 +1,8 @@
 export const setSuccess = (data, response, status = 200) => {
-    response.status(status).json({
-        success: true,
+    response.status(status).json(
+        
         data
-    });
+    );
 };
 
 export const setError = (error, response, status = 400) => {
@@ -20,10 +20,9 @@ export const setError = (error, response, status = 400) => {
     }
 
     response.status(status).json({
-        success: false,
-        error: {
+       
             message,
             code: status,
-        }
+        
     });
 };
