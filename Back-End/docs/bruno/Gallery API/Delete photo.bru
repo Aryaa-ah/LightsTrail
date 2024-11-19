@@ -1,0 +1,15 @@
+meta {
+  name: Delete photo
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://localhost:3002/api/gallery/photos/:photoId
+  body: none
+  auth: none
+}
+
+params:path {
+  photoId: 673cf5c3b33e23fd538c43c2
+}

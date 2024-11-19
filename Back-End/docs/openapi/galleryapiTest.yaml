@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: LightsTrail API
+  title: Gallery API
   version: 1.0.0
   description: Simple API for user signup and login in the LightsTrail application.
 
@@ -9,109 +9,6 @@ servers:
     description: Local Development Server
 
 paths:
-  /signup:
-    post:
-      summary: Register a new user
-      tags:
-        - Authentication
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SignupRequest"
-      responses:
-        "201":
-          description: User successfully created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          description: Bad Request - Invalid input data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "409":
-          description: Conflict - User already exists
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-
-  /login:
-    post:
-      summary: Authenticate an existing user
-      tags:
-        - Authentication
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
-      responses:
-        "200":
-          description: Login successful
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SuccessResponse"
-        "400":
-          description: Bad Request - Invalid input data
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "401":
-          description: Unauthorized - Invalid email or password
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-  /location/{cityName}:
-    get:
-      operationId: fetchLongitudeLatitude
-      description: Retrieve a Location's longitude and latitude
-      parameters:
-        - name: cityName
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Successfully retrieved the longitude and latitude
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Location"
-        400:
-          description: Bad Request - Missing or invalid parameters
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        404:
-          description: Not Found - Location not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        503:
-          description: Service Unavailable
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-
   /gallery/photos:
     get:
       summary: Get aurora photos
@@ -167,9 +64,14 @@ paths:
                 location:
                   type: string
                   description: Location where photo was taken
+                userName:
+                  type: string
+                  description: User name of the photo uploader
+                  example: "testUser"
               required:
                 - image
                 - location
+                - userName
       responses:
         "201":
           description: Photo uploaded successfully
@@ -259,136 +161,9 @@ paths:
         "404":
           description: Photo not found
           $ref: "#/components/responses/NotFound"
-  /auroraforecast:
-    get:
-      operationId: fetch-forecast-parameters
-      description: Retrieve a Location's forecasting parameters
-      parameters:
-        - name: longitude
-          in: query
-          required: true
-          schema: 
-            type: string
-        - name: latitude
-          in: query
-          required: true
-          schema: 
-            type: string
-      responses:
-        200:
-          description: Successfully retrieved the forecasting parameters
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/AuroraForecast"
-        400:
-          description: Bad Request - Missing or invalid parameters
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        404:
-          description: Not Found - forecasting values not found
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        500:
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        503:
-          description: Service Unavailable
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+
 components:
   schemas:
-    SignupRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          description: The email address of the user
-        password:
-          type: string
-          minLength: 8
-          description: The password for the user account
-          pattern: '^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
-        firstName:
-          type: string
-          description: User's first name
-        lastName:
-          type: string
-          description: User's last name
-      required:
-        - email
-        - password
-        - firstName
-        - lastName
-    Location:
-      type: object
-      properties:
-        cityName:
-          type: string
-        longitude:
-          type: number
-        latitude:
-          type: number
-
-    Error:
-      type: object
-      properties:
-        code:
-          type: string
-        message:
-          type: string
-
-    LoginRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          description: The email address of the user
-        password:
-          type: string
-          description: The password for the user account
-      required:
-        - email
-        - password
-    AuroraForecast:
-      type: object
-      properties:
-        kpIndex:
-          type: string
-        bz:
-          type: string
-        speed:
-          type: string
-        longitude:
-          type: number
-        latitude:
-          type: number
-    SuccessResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Success message
-          example: "Operation successful"
-
-    ErrorResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Error message
-          example: "Invalid email or password"
     GalleryPhoto:
       type: object
       required:
