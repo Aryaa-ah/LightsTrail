@@ -1,8 +1,17 @@
 import express from "express";
-import * as longitudeLatitudeContoller from "./../controllers/longitudeLatitude-contoller.js";
+import * as longitudeLatitudeController from "./../controllers/longitudeLatitude-contoller.js";
 
 const longitudeLatitudeRouter = express.Router();
 
-longitudeLatitudeRouter.route('/:city').get(longitudeLatitudeContoller.get);
+// Route to handle requests without a city parameter
+longitudeLatitudeRouter.get("/", (req, res) => {
+    res.status(400).json({
+        success: false,
+        error: "City Name is required. Please provide a city",
+    });
+});
+
+// Route to fetch longitude and latitude for a given city
+longitudeLatitudeRouter.get("/:city", longitudeLatitudeController.get);
 
 export default longitudeLatitudeRouter;
