@@ -167,9 +167,15 @@ paths:
                 location:
                   type: string
                   description: Location where photo was taken
+                userName:
+                  type: string
+                  description: User name of the photo uploader
+                  example: "testUser"
               required:
                 - image
                 - location
+                - userName
+
       responses:
         "201":
           description: Photo uploaded successfully
