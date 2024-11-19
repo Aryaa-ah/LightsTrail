@@ -1,36 +1,24 @@
-import longitudeLatitudeModel from "./../models/longitudeLatitude.js";
-import axios from "axios";
+import LongitudeLatitudeModel from "./../models/LongitudeLatitude.js";
 
-export const fetch = async (cityName) => {
-    const { city } = cityName;
-
-    if (!city) {
-        throw new Error("Enter City Name");
-    }
-
+export const fetchSuggestions = async (partialCity) => {
     try {
-        // API call
-        const apiUrl = `https://geocode.xyz/${city}?json=1`;
-        const response = await axios.get(apiUrl);
-
-        // Check if the API response indicates a missing or invalid city
-        if (response.data.error || !response.data.longt || !response.data.latt) {
-            return {}; // Return an empty object if city not found
-        }
-
-        // Create longitudeLatitudeModel object
-        const longiLatitude = new longitudeLatitudeModel({
-            longitude: parseFloat(response.data.longt),
-            latitude: parseFloat(response.data.latt),
-        });
-
-        const longitudeLatitudeObject = longiLatitude.toObject();
-        delete longitudeLatitudeObject._id;
-        return longitudeLatitudeObject;
+        // Use case-insensitive regex for matching
+        console.log(partialCity);
+        const regex = new RegExp(`^${partialCity.trim()}`, 'i');
+        const suggestions = await LongitudeLatitudeModel.find(
+            { city_country: { $regex: regex } },
+            { city_country: 1, latitude: 1, longitude: 1 , _id: 0} // Include only required fields
+        ).limit(10); // Limit to 10 suggestions
+        return suggestions;
     } catch (error) {
-        if (error.response && error.response.status === 503) {
-            throw new Error("Service Unavailable");
+        console.error('Error during fetchSuggestions:', error.message);
+
+        // Throw appropriate error for higher-level handlers
+        if (error.name === 'MongoNetworkError') {
+            throw new Error('Service Unavailable');
         }
-        throw error; // Re-throw for other unexpected errors
+
+        throw new Error('Internal Server Error');
     }
 };
+
