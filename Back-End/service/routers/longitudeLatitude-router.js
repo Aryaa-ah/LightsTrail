@@ -1,8 +1,8 @@
 import express from "express";
-import * as longitudeLatitudeContoller from "./../controllers/longitudeLatitude-contoller.js";
+import * as longitudeLatitudeController from "./../controllers/longitudeLatitude-contoller.js";
 
 const longitudeLatitudeRouter = express.Router();
 
-longitudeLatitudeRouter.route('/:city').get(longitudeLatitudeContoller.get);
+longitudeLatitudeRouter.route('/:city').get(longitudeLatitudeController.get);
 
 export default longitudeLatitudeRouter;
