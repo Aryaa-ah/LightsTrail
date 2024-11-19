@@ -5,6 +5,7 @@ import authRouter from './auth-router.js';
 import galleryRouter from "./galleryRouter.js";
 
 const initializeRouter = (app) => {
+
   app.use("/auroraforecast", auroraForecastRouter);
   //app.use('/courseEnrollment',courseEnrollmentRouter);
   app.use("/longitudeLatitude", longitudeLatitudeRouter);
@@ -12,6 +13,4 @@ const initializeRouter = (app) => {
   app.use('/auth', authRouter);
 
 };
-
-
 export default initializeRouter;

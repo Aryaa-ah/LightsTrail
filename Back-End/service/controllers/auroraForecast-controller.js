@@ -17,7 +17,7 @@ export const get = async (request, response) => {
     setSuccess(forecastReturned,response)
    }
    catch(error){
-    setError(error, response);
+    setError(error, response, 500);
    }
    
 }
