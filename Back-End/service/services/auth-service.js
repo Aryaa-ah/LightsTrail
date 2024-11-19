@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User from '../models/user.js';
 
+// user registration
 export const register = async (userData) => {
     const existingUser = await User.findOne({ email: userData.email });
     if (existingUser) {
@@ -16,9 +17,11 @@ export const register = async (userData) => {
     return user.save();
 };
 
+// user authentication  
+
 export const authenticate = async (credentials) => {
     const user = await User.findOne({ email: credentials.email });
-    if (!user || !(await bcrypt.compare(credentials.password, user.password))) {
+    if (!user || !(await bcrypt.compare(credentials.password, user.password))) {   // compare the hashed password
         throw new Error('Invalid email or password');
     }
 
