@@ -1,15 +1,23 @@
 import mongoose from "mongoose";
 
 const LongitudeLatitudeSchema = new mongoose.Schema({
-    longitude: {
-        type: Number,
+   // _id: mongoose.Schema.Types.ObjectId, // MongoDB default _id field
+    city_country: {
+        type: String,
         required: true
     },
     latitude: {
-        type: Number,
-        required: true
+        type: Number, // Double in MongoDB
+        // required: true
+    },
+    longitude: {
+        type: Number, // Double in MongoDB
+        // required: true
     }
 });
 
-const longitudeLatitudeModel = mongoose.model('LongitudeLatitude', LongitudeLatitudeSchema);
-export default longitudeLatitudeModel;
+// Add an index on `city_country` for faster searching
+LongitudeLatitudeSchema.index({ city_country: 1 });
+
+const LongitudeLatitudeModel = mongoose.model('cities', LongitudeLatitudeSchema);// name in DB - cities
+export default LongitudeLatitudeModel;
