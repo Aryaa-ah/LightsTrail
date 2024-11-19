@@ -11,7 +11,7 @@ const initializeRouter = (app) => {
     app.use("/auroraforecast",auroraForecastRouter);
     //app.use('/courseEnrollment',courseEnrollmentRouter);
     app.use("/longitudeLatitude",longitudeLatitudeRouter);
-    app.use('/auth', authRouter);
+    app.use('/auth', authRouter);                               // User signup and login
 }
 
 
