@@ -1,28 +1,6 @@
 // import * as authService from './../services/auth-service.js';
 // import { setSuccess, setError } from './response-handler.js';
 
-// export const signup = async (request, response) => {
-//     try {
-//         const newUser = { ...request.body };
-//         const user = await authService.register(newUser);
-//         setSuccess(user, response);
-//     } catch (error) {
-//         setError(error, response);
-//     }
-// };
-
-// export const login = async (request, response) => {
-//     try {
-//         const credentials = { ...request.body };
-//         const user = await authService.authenticate(credentials);
-//         setSuccess(user, response);
-//     } catch (error) {
-//         setError(error, response);
-//     }
-// };
-
-
-
 import * as authService from '../services/auth-service.js';
 import { setSuccess, setError } from './response-handler.js';
 
@@ -31,7 +9,6 @@ import { setSuccess, setError } from './response-handler.js';
 export const signup = async (req, res) => {
     const { firstName, lastName, email, password } = req.body;
 
-    // Input validation
     if (!firstName || !lastName || !email || !password) {
         return res.status(400).json({ message: 'All fields are required' });
     }
