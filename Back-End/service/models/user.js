@@ -1,18 +1,20 @@
 import mongoose from 'mongoose';
 
+// user schema
+
 const userSchema = new mongoose.Schema({
     firstName: {
-        type: String,
+        type: String,   //user first name
         required: true,
         trim: true,
     },
     lastName: {
-        type: String,
+        type: String,  //user last name
         required: true,
         trim: true,
     },
     email: {
-        type: String,
+        type: String,   // user email
         required: true,
         unique: true,
         lowercase: true,
@@ -20,13 +22,14 @@ const userSchema = new mongoose.Schema({
         match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
     password: {
-        type: String,
+        type: String,   // password
         required: true,
         minlength: 8,
     },
 }, { timestamps: true });
 
 
+// validate the password length 
 
 userSchema.pre('save', async function (next) {
     if (this.isModified('password')) {

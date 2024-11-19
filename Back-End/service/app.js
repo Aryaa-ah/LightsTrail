@@ -3,6 +3,7 @@ import initializeRouter from "./routers/index.js";
 import cors from "cors";
 import express from "express";
 
+
 const initialize = (app) => {
    
     app.use(cors());
