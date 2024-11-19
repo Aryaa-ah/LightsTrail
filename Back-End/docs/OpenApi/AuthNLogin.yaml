@@ -1,0 +1,128 @@
+openapi: 3.0.0
+info:
+  title: User Authentication API 
+  version: 1.0.0
+  description: Simple API for user signup and login in the LightsTrail application.
+
+servers:
+  - url: http://localhost:9000
+    description: Local Development Server 
+
+paths:
+  /signup:
+    post:
+      summary: Register a new user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '201':
+          description: User successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - User already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /login:
+    post:
+      summary: Authenticate an existing user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid email or password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    SignupRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+        password:
+          type: string
+          minLength: 8
+          description: The password for the user account
+          pattern: '^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$'
+        firstName:
+          type: string
+          description: User's first name
+        lastName:
+          type: string
+          description: User's last name
+      required:
+        - email
+        - password
+        - firstName
+        - lastName
+
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: The email address of the user
+        password:
+          type: string
+          description: The password for the user account
+      required:
+        - email
+        - password
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Success message
+          example: "Operation successful"
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
+          example: "Invalid email or password"
