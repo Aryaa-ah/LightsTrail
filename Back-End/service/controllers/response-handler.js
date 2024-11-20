@@ -10,7 +10,7 @@ export const setError = (error, response, status = 400) => {
 
     // Map status to specific error messages if needed
     if (status === 404) {
-        message = 'Not Found - Location not found';
+        message = 'Not Found - Resourse not found';
     } else if (status === 500) {
         message = 'Internal Server Error';
     } else if (status === 503) {
