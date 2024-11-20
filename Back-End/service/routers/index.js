@@ -3,6 +3,8 @@ import longitudeLatitudeRouter from "./longitudeLatitude-router.js";
 //import registrationRouter from './registration-router.js';
 import authRouter from './auth-router.js';
 import galleryRouter from "./galleryRouter.js";
+import { setError } from "../controllers/response-handler.js";
+
 
 const initializeRouter = (app) => {
 
@@ -12,5 +14,8 @@ const initializeRouter = (app) => {
   app.use(`/api/gallery`, galleryRouter);
   app.use('/auth', authRouter);
 
+  app.use((req, res) => {
+    setError(Error, res, 404);
+});
 };
 export default initializeRouter;
