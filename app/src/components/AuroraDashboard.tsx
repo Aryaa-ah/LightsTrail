@@ -44,9 +44,18 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
   }, [latitude, longitude]);
 
   return (
-    <Card sx={{ maxWidth: '80%', margin: 'auto', padding: 2, backgroundColor: "#524F56", color: "white"  }}>
+    <Card sx={{
+      width: '72%',
+      margin: 'auto',
+      padding: 2,
+      bgcolor: 'grey.800',
+      color: "white",
+      opacity: "0.7",
+      
+      
+    }}>
       <CardContent>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{opacity:'1'}}>
           {/* Kp Index */}
           <Grid item xs={12} sm={6} md={4}>
             <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
