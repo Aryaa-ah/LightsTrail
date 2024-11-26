@@ -1,15 +1,17 @@
+// Back-End/service/models/gallery.js
 import mongoose from "mongoose";
 
-// Define the schema for gallery items in the application
 const gallerySchema = new mongoose.Schema(
   {
-    // URL of the stored image
     url: {
       type: String,
       required: [true, "Image URL is required"],
       trim: true,
     },
-    // Name of the user who uploaded the image
+    fileName: {
+      type: String,
+      required: true,
+    },
     userName: {
       type: String,
       required: [true, "Username is required"],
@@ -17,39 +19,62 @@ const gallerySchema = new mongoose.Schema(
       minlength: [2, "Username must be at least 2 characters"],
       maxlength: [50, "Username cannot exceed 50 characters"],
     },
-    // Geographic location where the image was taken
+    userId: {
+      type: String,
+      ref: "User",
+      required: false, // change later.
+    },
     location: {
       type: String,
       required: [true, "Location is required"],
       trim: true,
     },
-    // Original filename of the uploaded image
-    fileName: {
+    description: {
       type: String,
-      required: true,
-      // Example: "photo-1679012345678.jpg"
+      trim: true,
+    },
+    visibility: {
+      type: String,
+      enum: ["public", "private"],
+      default: "public",
+    },
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    metadata: {
+      camera: String,
+      settings: {
+        iso: Number,
+        exposure: String,
+        aperture: String,
+      },
     },
   },
-  // Schema options
   {
     timestamps: true,
     collection: "gallery",
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 );
+
+gallerySchema.virtual("fullUrl").get(function () {
+  return `/uploads/${this.fileName}`;
+});
 
 gallerySchema.index({ userName: 1 });
 gallerySchema.index({ location: 1 });
 gallerySchema.index({ createdAt: -1 });
 
-gallerySchema.pre("save", async function (next) {
-  console.log("Pre-save document:", this);
+gallerySchema.pre("save", function (next) {
+  console.log("Saving gallery item:", this);
   next();
 });
 
-// Add post-save middleware for debugging
 gallerySchema.post("save", function (doc) {
-  console.log("Document saved successfully:", doc.toObject());
+  console.log("Saved gallery item:", doc);
 });
 
-const Gallery = mongoose.model("Gallery", gallerySchema, 'gallery');
+const Gallery = mongoose.model("Gallery", gallerySchema, "gallery");
 export default Gallery;

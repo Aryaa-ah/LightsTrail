@@ -5,17 +5,24 @@ class GalleryService {
   async createPhoto(photoData, file) {
     try {
       // Create new photo document
-      const photo = new gallery({
-        url: file.path, // Save the file path
+      const photo = new Gallery({
+        // Changed from 'gallery' to 'Gallery'
+        url: `/uploads/${file.filename}`,
         userName: photoData.userName,
         location: photoData.location,
-
-        fileName: file.filename, // Save the filename
+        fileName: file.filename,
+        createdAt: new Date(),
+        visibility: "public",
+        likes: 0,
       });
 
       // Save to database
       await photo.save();
-      return photo;
+      return {
+        ...photo.toObject(), // Convert to plain object
+        id: photo._id,
+        url: `/uploads/${file.filename}`,
+      };
     } catch (error) {
       throw new Error(`Error creating photo: ${error.message}`);
     }
@@ -23,21 +30,27 @@ class GalleryService {
 
   async getPhotos(page = 1, limit = 10) {
     try {
+      console.log("Starting getPhotos...", { page, limit });
+      console.log("Gallery model:", Gallery);
+
+      if (!Gallery || typeof Gallery.find !== "function") {
+        throw new Error("Gallery model is not properly initialized");
+      }
+
       // Ensure positive integers
       page = Math.max(1, parseInt(page));
       limit = Math.max(1, Math.min(20, parseInt(limit)));
 
       const skip = (page - 1) * limit;
 
-      // Execute query with pagination
       const [photos, total] = await Promise.all([
-        gallery
-          .find()
+        Gallery.find()
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
-          .select("-__v"),
-        gallery.countDocuments(),
+          .select("-__v")
+          .lean(),
+        Gallery.countDocuments(),
       ]);
 
       // Calculate pagination info
@@ -45,8 +58,15 @@ class GalleryService {
       const hasNext = page < totalPages;
       const hasPrev = page > 1;
 
+      // Format URLs for frontend
+      const formattedPhotos = photos.map((photo) => ({
+        ...photo,
+        id: photo._id.toString(),
+        url: `/uploads/${photo.fileName}`, // Ensure URL is properly formatted
+      }));
+
       return {
-        photos,
+        photos: formattedPhotos,
         pagination: {
           currentPage: page,
           limit,
@@ -63,13 +83,17 @@ class GalleryService {
 
   async getPhotoById(photoId) {
     try {
-      const photo = await gallery.findById(photoId).select("-__v");
+      const photo = await Gallery.findById(photoId).select("-__v").lean();
 
       if (!photo) {
         throw new Error("Photo not found");
       }
 
-      return photo;
+      // Format URL
+      return {
+        ...photo,
+        url: `/uploads/${photo.fileName}`,
+      };
     } catch (error) {
       throw new Error(`Error fetching photo: ${error.message}`);
     }
@@ -77,22 +101,25 @@ class GalleryService {
 
   async updatePhoto(photoId, updateData) {
     try {
-      const photo = await gallery
-        .findByIdAndUpdate(
-          photoId,
-          { $set: updateData },
-          {
-            new: true, // Return updated document
-            runValidators: true, // Run schema validators
-          }
-        )
-        .select("-__v");
+      const photo = await Gallery.findByIdAndUpdate(
+        photoId,
+        { $set: updateData },
+        {
+          new: true,
+          runValidators: true,
+        }
+      )
+        .select("-__v")
+        .lean();
 
       if (!photo) {
         throw new Error("Photo not found");
       }
 
-      return photo;
+      return {
+        ...photo,
+        url: `/uploads/${photo.fileName}`,
+      };
     } catch (error) {
       throw new Error(`Error updating photo: ${error.message}`);
     }
@@ -100,17 +127,14 @@ class GalleryService {
 
   async deletePhoto(photoId) {
     try {
-      const photo = await gallery.findById(photoId);
+      const photo = await Gallery.findById(photoId);
 
       if (!photo) {
         throw new Error("Photo not found");
       }
 
       // Delete from database
-      await gallery.findByIdAndDelete(photoId);
-
-      // Optional: Add file deletion logic here
-      // await fs.unlink(photo.url);
+      await Gallery.findByIdAndDelete(photoId);
 
       return true;
     } catch (error) {
@@ -127,17 +151,22 @@ class GalleryService {
       };
 
       const [photos, total] = await Promise.all([
-        gallery
-          .find(query)
+        Gallery.find(query)
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
-          .select("-__v"),
-        gallery.countDocuments(query),
+          .select("-__v")
+          .lean(),
+        Gallery.countDocuments(query),
       ]);
 
+      const formattedPhotos = photos.map((photo) => ({
+        ...photo,
+        url: `/uploads/${photo.fileName}`,
+      }));
+
       return {
-        photos,
+        photos: formattedPhotos,
         pagination: {
           currentPage: page,
           totalPages: Math.ceil(total / limit),
@@ -147,6 +176,25 @@ class GalleryService {
       };
     } catch (error) {
       throw new Error(`Error searching photos: ${error.message}`);
+    }
+  }
+
+  async toggleLike(photoId) {
+    try {
+      const photo = await Gallery.findById(photoId);
+      if (!photo) {
+        throw new Error("Photo not found");
+      }
+
+      photo.likes = (photo.likes || 0) + 1;
+      await photo.save();
+
+      return {
+        ...photo.toObject(),
+        url: `/uploads/${photo.fileName}`,
+      };
+    } catch (error) {
+      throw new Error(`Error toggling like: ${error.message}`);
     }
   }
 }
