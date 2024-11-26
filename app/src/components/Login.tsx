@@ -3,16 +3,14 @@ import {
     Box,
     Button,
     TextField,
-    Typography,
-    Alert,
     InputAdornment,
     IconButton,
+    Alert,
     Paper
 } from '@mui/material';
 import { Visibility, VisibilityOff, Email, Lock } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-import type { LoginCredentials } from '../types/auth';
-
+import { LoginCredentials } from '../types/auth';
 import { authService } from '../services/auth';
 
 export default function Login() {
@@ -35,92 +33,98 @@ export default function Login() {
         setError(null);
     };
 
+    
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setLoading(true);
         setError(null);
 
         try {
-            await authService.login(credentials);
+            const response = await authService.login(credentials);
+            console.log('Login successful:', response);
             navigate('/');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred');
+            console.error('Login error:', err);
+            setError(err instanceof Error ? err.message : 'Login failed');
         } finally {
             setLoading(false);
         }
     };
+    
 
     return (
-        <Paper elevation={3} sx={{ p: 4, maxWidth: 400, width: '100%' }}>
-            <Typography variant="h5" component="h1" gutterBottom align="center">
-                Sign In
-            </Typography>
-
+        <Box component="form" onSubmit={handleSubmit} noValidate>
             {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                     {error}
                 </Alert>
             )}
 
-            <Box component="form" onSubmit={handleSubmit}>
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    id="email"
-                    label="Email Address"
-                    name="email"
-                    autoComplete="email"
-                    autoFocus
-                    value={credentials.email}
-                    onChange={handleChange('email')}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Email />
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-                <TextField
-                    margin="normal"
-                    required
-                    fullWidth
-                    name="password"
-                    label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    id="password"
-                    autoComplete="current-password"
-                    value={credentials.password}
-                    onChange={handleChange('password')}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <Lock />
-                            </InputAdornment>
-                        ),
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    edge="end"
-                                >
-                                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    disabled={loading}
-                    sx={{ mt: 3, mb: 2 }}
-                >
-                    {loading ? 'Signing in...' : 'Sign In'}
-                </Button>
-            </Box>
-        </Paper>
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="email"
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                autoFocus
+                value={credentials.email}
+                onChange={handleChange('email')}
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <Email color="action" />
+                        </InputAdornment>
+                    ),
+                }}
+            />
+            <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                autoComplete="current-password"
+                value={credentials.password}
+                onChange={handleChange('password')}
+                InputProps={{
+                    startAdornment: (
+                        <InputAdornment position="start">
+                            <Lock color="action" />
+                        </InputAdornment>
+                    ),
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={() => setShowPassword(!showPassword)}
+                                edge="end"
+                            >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                        </InputAdornment>
+                    ),
+                }}
+            />
+            <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={loading}
+                sx={{
+                    mt: 3,
+                    mb: 2,
+                    py: 1.5,
+                    fontSize: '1rem',
+                    textTransform: 'none',
+                    borderRadius: 2
+                }}
+            >
+                {loading ? 'Signing in...' : 'Sign In'}
+            </Button>
+        </Box>
     );
 }

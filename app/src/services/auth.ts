@@ -1,13 +1,7 @@
 import type { LoginCredentials, SignupCredentials, AuthResponse } from '../types/auth';
-import { Auth } from '../models/Auth';
 
 class AuthService {
-    private auth: Auth;
-    private readonly API_BASE_URL = 'http://localhost:3003/auth';
-
-    constructor() {
-        this.auth = new Auth();
-    }
+    private readonly API_BASE_URL = 'http://localhost:3002/auth';
 
     async login(credentials: LoginCredentials): Promise<AuthResponse> {
         try {
@@ -19,19 +13,21 @@ class AuthService {
                 body: JSON.stringify(credentials),
             });
             
-            const data: AuthResponse = await response.json();
+            const data = await response.json();
             
             if (!response.ok) {
                 throw new Error(data.message || 'Login failed');
             }
             
-            this.auth.setAuthData(data);
+            // Store auth data
+            if (data.token) {
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+            }
+            
             return data;
         } catch (error) {
-            if (error instanceof Error) {
-                throw error;
-            }
-            throw new Error('An unexpected error occurred');
+            throw error;
         }
     }
 
@@ -45,31 +41,42 @@ class AuthService {
                 body: JSON.stringify(credentials),
             });
             
-            const data: AuthResponse = await response.json();
+            const data = await response.json();
             
             if (!response.ok) {
                 throw new Error(data.message || 'Signup failed');
             }
-            
-            return data;
+
+            // After signup, automatically log in
+            return this.login({
+                email: credentials.email,
+                password: credentials.password
+            });
         } catch (error) {
-            if (error instanceof Error) {
-                throw error;
-            }
-            throw new Error('An unexpected error occurred');
+            throw error;
         }
     }
 
+    handleGoogleLogin() {
+        window.location.href = `${this.API_BASE_URL}/google`;
+    }
+
     logout(): void {
-        this.auth.clearAuth();
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        window.location.href = '/auth';
     }
 
     isAuthenticated(): boolean {
-        return this.auth.isAuthenticated();
+        return !!localStorage.getItem('authToken');
     }
 
     getCurrentUser() {
-        return this.auth.user;
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            return JSON.parse(userStr);
+        }
+        return null;
     }
 }
 

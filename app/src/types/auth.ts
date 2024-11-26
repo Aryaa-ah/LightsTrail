@@ -3,18 +3,9 @@ export interface LoginCredentials {
     password: string;
 }
 
-export interface SignupCredentials {
-    email: string;
-    password: string;
+export interface SignupCredentials extends LoginCredentials {
     firstName: string;
     lastName: string;
-}
-
-export interface AuthResponse {
-    success: boolean;
-    message: string;
-    token?: string;
-    user?: User;
 }
 
 export interface User {
@@ -22,4 +13,12 @@ export interface User {
     email: string;
     firstName: string;
     lastName: string;
+    avatar?: string;
+}
+
+export interface AuthResponse {
+    success: boolean;
+    message: string;
+    token?: string;
+    user?: User;
 }

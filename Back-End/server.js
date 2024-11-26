@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 // Load environment variables
 dotenv.config();
 
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT;
 const MONGO_CONNECTION = process.env.MONGO_CONNECTION;
 
 // MongoDB connection with error handling

@@ -1,7 +1,18 @@
 import { useState } from 'react';
-import { Container, Box, Tabs, Tab } from '@mui/material';
+import {
+    Container,
+    Box,
+    Paper,
+    Tabs,
+    Tab,
+    Typography,
+    Button,
+    Divider
+} from '@mui/material';
+import { Google as GoogleIcon } from '@mui/icons-material';
 import Login from '../components/Login';
 import Signup from '../components/Signup';
+import { authService } from '../services/auth';
 
 export default function Auth() {
     const [tabIndex, setTabIndex] = useState(0);
@@ -14,29 +25,72 @@ export default function Auth() {
         <Box
             sx={{
                 minHeight: '100vh',
-                bgcolor: 'grey.50',
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
-                pt: 8,
-                px: 2
+                justifyContent: 'center',
+                backgroundColor: 'grey.50',
+                py: 4
             }}
         >
             <Container maxWidth="sm">
-                <Box sx={{ bgcolor: 'background.paper', borderRadius: '4px 4px 0 0' }}>
-                    <Tabs
-                        value={tabIndex}
-                        onChange={handleTabChange}
-                        variant="fullWidth"
-                        indicatorColor="primary"
-                        textColor="primary"
-                    >
-                        <Tab label="Sign In" />
-                        <Tab label="Sign Up" />
-                    </Tabs>
-                </Box>
-                
-                {tabIndex === 0 ? <Login /> : <Signup />}
+                <Paper
+                    elevation={3}
+                    sx={{
+                        borderRadius: 4,
+                        overflow: 'hidden'
+                    }}
+                >
+                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                        <Tabs
+                            value={tabIndex}
+                            onChange={handleTabChange}
+                            variant="fullWidth"
+                            sx={{
+                                '& .MuiTab-root': {
+                                    py: 3,
+                                    fontSize: '1.1rem'
+                                }
+                            }}
+                        >
+                            <Tab label="Sign In" />
+                            <Tab label="Sign Up" />
+                        </Tabs>
+                    </Box>
+
+                    <Box sx={{ p: 4 }}>
+                        <Typography
+                            variant="h5"
+                            align="center"
+                            fontWeight="bold"
+                            gutterBottom
+                            color="primary"
+                        >
+                            Welcome to LightsTrail
+                        </Typography>
+
+                        {/* Google Sign In Button */}
+                        <Button
+                            fullWidth
+                            variant="outlined"
+                            startIcon={<GoogleIcon />}
+                            onClick={() => authService.handleGoogleLogin()}
+                            sx={{
+                                mt: 2,
+                                py: 1.5,
+                                borderRadius: 2,
+                                textTransform: 'none',
+                                fontSize: '1rem'
+                            }}
+                        >
+                            Continue with Google
+                        </Button>
+
+                        <Divider sx={{ my: 3 }}>OR</Divider>
+
+                        {/* Login/Signup Forms */}
+                        {tabIndex === 0 ? <Login /> : <Signup />}
+                    </Box>
+                </Paper>
             </Container>
         </Box>
     );
