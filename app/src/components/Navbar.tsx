@@ -66,7 +66,7 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
 
   return (
     <>
-      <AppBar position="absolute" sx={{backgroundColor:'#00000000'}}>
+      <AppBar position="fixed" sx={{backgroundColor:'#00000000'}}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
           <img

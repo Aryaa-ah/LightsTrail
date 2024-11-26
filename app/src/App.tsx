@@ -2,7 +2,8 @@ import './App.css'
 import React from 'react';
 
 
-import ResponsiveAppBar from './components/Navbar.tsx'
+import ResponsiveAppBar from './components/Navbar.tsx';
+import Home from './pages/Home.tsx';
 
 
 interface Location {
@@ -20,10 +21,11 @@ function App() {
   
   return (
    
-        <div>
+        <>
           <ResponsiveAppBar  location={location} setLocation={setLocation} />
+          <Home latitude={location.latitude} longitude={location.longitude}/>
           
-        </div>
+        </>
         
     
     
