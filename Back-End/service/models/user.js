@@ -1,50 +1,39 @@
 import mongoose from 'mongoose';
 
-// user schema
-
 const userSchema = new mongoose.Schema({
-    firstName: {
-        type: String,   //user first name
-        required: true,
-        trim: true,
-    },
-    lastName: {
-        type: String,  //user last name
-        required: true,
-        trim: true,
-    },
     email: {
-        type: String,   // user email
+        type: String,
         required: true,
         unique: true,
-        lowercase: true,
-        trim: true,
-        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+        lowercase: true
     },
     password: {
-        type: String,   // password
-        required: true,
-        minlength: 8,
-    },
-}, { timestamps: true });
-
-
-// validate the password length 
-
-userSchema.pre('save', async function (next) {
-    if (this.isModified('password')) {
-        // Validate password strength (optional)
-        if (this.password.length < 8) {
-            throw new Error('Password must be at least 8 characters long');
+        type: String,
+        required: function() {
+            return !this.googleId; // Password only required if not using Google
         }
-
-    
+    },
+    firstName: {
+        type: String,
+        required: true
+    },
+    lastName: {
+        type: String,
+        required: true
+    },
+    googleId: {
+        type: String,
+        sparse: true,
+        unique: true
+    },
+    avatar: String,
+    provider: {
+        type: String,
+        enum: ['local', 'google'],
+        default: 'local'
     }
-    next();
+}, {
+    timestamps: true
 });
 
-const User = mongoose.model('User', userSchema);
-export default User;
-
-
-
+export default mongoose.model('User', userSchema);
