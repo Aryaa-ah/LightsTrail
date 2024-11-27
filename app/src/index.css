@@ -1,15 +1,42 @@
+/* index.css */
+/* First import Tailwind layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Root level custom properties and base styles */
 :root {
+  /* Font settings from original version */
   font-family: sans-serif, system-ui, Avenir, Helvetica, Arial;
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
+  /* Color scheme settings - combining both versions */
+  color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #121212;  /* Using the darker background from second version */
 
+  /* Font rendering optimizations */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Body styles */
+body {
+  margin: 0;
+  color: #fff;  /* Explicit text color for body */
+}
+
+/* Root container styles */
+#root {
+  min-height: 100vh;
+}
+
+/* Custom utility classes */
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600;
+  }
+}

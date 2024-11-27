@@ -5,7 +5,6 @@ import galleryService from "../services/galleryServices.js";
 const galleryController = {
   uploadPhoto: async (req, res) => {
     try {
-      // 1. Validate file
       if (!req.file) {
         return res.status(400).json({
           success: false,
@@ -13,34 +12,36 @@ const galleryController = {
         });
       }
 
-      // 2. Validate required fields
-      if (!req.body.userName || !req.body.location) {
-        return res.status(400).json({
-          success: false,
-          error: "userName and location are required",
-        });
-      }
-
-      // 3. Create new photo document
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
       const photo = new Gallery({
-        url: req.file.path, // Use full path
-        userName: req.body.userName,
+        url: `/uploads/${req.file.filename}`,
+        userName: req.body.userName || "Anonymous",
+        userId: req.body.userId || "testuser123",
         location: req.body.location,
-        description: req.body.description || "",
         fileName: req.file.filename,
+        visibility: "public",
+        likes: 0,
+        createdAt: new Date().toISOString(),
       });
 
-      // 4. Save to database
       const savedPhoto = await photo.save();
 
-      // 5. Send response
-      return res.status(201).json({
+      // Return the full URL in the response
+      res.status(201).json({
         success: true,
-        data: savedPhoto,
+        data: {
+          id: savedPhoto._id,
+          url: savedPhoto.url,
+          userName: savedPhoto.userName,
+          location: savedPhoto.location,
+          createdAt: savedPhoto.createdAt,
+          visibility: savedPhoto.visibility,
+          likes: savedPhoto.likes,
+        },
       });
     } catch (error) {
       console.error("Upload Error:", error);
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: error.message,
       });
@@ -60,6 +61,15 @@ const galleryController = {
 
       const total = await Gallery.countDocuments();
 
+      const transformedPhotos = photos.map((photo) => ({
+        id: photo._id,
+        url: photo.url, // This will be the relative path starting with /uploads/
+        userName: photo.userName,
+        location: photo.location,
+        createdAt: photo.createdAt,
+        visibility: photo.visibility,
+        likes: photo.likes,
+      }));
       res.status(200).json({
         success: true,
         data: photos,
