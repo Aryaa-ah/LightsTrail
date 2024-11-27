@@ -23,7 +23,7 @@
   /* Color scheme settings */
   color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #121212;
+  /* //background-color: #121212; */
 
   /* Font rendering optimizations */
   font-synthesis: none;
