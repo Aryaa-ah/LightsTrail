@@ -1,29 +1,36 @@
 // App.tsx
 import './App.css';
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { authService } from './services/auth';
 
 // Components
 import ResponsiveAppBar from './components/Navbar';
-// import Layout from "./components/Layout";
+import Auth from './pages/Auth';
 
 // Pages
 import Home from './pages/Home';
 import GalleryPage from "./pages/GalleryPage";
 import UserGallery from "./pages/UserGallery";
 
-// Define the Location interface
+// Define interfaces
 interface Location {
   city_country: string;
   latitude: number;
   longitude: number;
 }
 
-// Create theme configuration
+// Protected Route Component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const isAuthenticated = authService.isAuthenticated();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
+};
+
+// Create theme configuration (merged both themes)
 const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -44,6 +51,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
+          borderRadius: 8,
         },
       },
     },
@@ -62,6 +70,15 @@ const theme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 8,
+          }
+        }
+      }
+    }
   },
 });
 
@@ -79,18 +96,51 @@ function App() {
         <CssBaseline />
         <Provider store={store}>
           <Router>
-            {/* Pass location props to Navbar */}
-            <ResponsiveAppBar location={location} setLocation={setLocation} />
-            
-              <Routes>
-                {/* Home route with location props */}
-                <Route path="/" element={
-                  <Home latitude={location.latitude} longitude={location.longitude} />
-                } />
-                <Route path="/gallery" element={<GalleryPage userOnly={false} />} />
-                <Route path="/my-gallery" element={<UserGallery userOnly={true} />} />
-              </Routes>
-            
+            <Routes>
+            <Route path="/auth" element={<Auth />} />
+         
+              // changed from / to /home to make it the default route after auth
+              {/* Protected Routes */}
+              {/* <Route path="/" element={
+                <ProtectedRoute>
+                  <>
+                    <ResponsiveAppBar location={location} setLocation={setLocation} />
+                    <Home latitude={location.latitude} longitude={location.longitude} />
+                  </>
+                </ProtectedRoute>
+              } /> */}
+
+            <Route path="/home" element={
+            <ProtectedRoute>
+                <>
+                <ResponsiveAppBar location={location} setLocation={setLocation} />
+                <Home latitude={location.latitude} longitude={location.longitude} />
+                </>
+            </ProtectedRoute>
+            } />
+              
+              <Route path="/gallery" element={
+                <ProtectedRoute>
+                  <>
+                    <ResponsiveAppBar location={location} setLocation={setLocation} />
+                    <GalleryPage userOnly={false} />
+                  </>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/my-gallery" element={
+                <ProtectedRoute>
+                  <>
+                    <ResponsiveAppBar location={location} setLocation={setLocation} />
+                    <UserGallery userOnly={true} />
+                  </>
+                </ProtectedRoute>
+              } />
+              
+             {/* <Route path="*" element={<Navigate to="/" />} /> */}
+              <Route path="/" element={<Navigate to="/auth" />} />
+             <Route path="*" element={<Navigate to="/auth" />} />
+            </Routes>
           </Router>
         </Provider>
       </ThemeProvider>
