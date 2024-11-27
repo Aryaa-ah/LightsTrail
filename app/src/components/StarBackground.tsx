@@ -91,8 +91,8 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ starCount = 1000 }) => 
         width: '100%',
         height: '100%',
         zIndex: -1,
-        pointerEvents: 'none'
-      }}
+        pointerEvents: 'none',
+       }}
     />
   );
 };
