@@ -23,6 +23,7 @@ class AuthService {
             if (data.token) {
                 localStorage.setItem('authToken', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
+                window.location.href = '/home';  // changed here for redirecting to home page after login
             }
             
             return data;
