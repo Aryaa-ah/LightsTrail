@@ -36,6 +36,7 @@ $RECYCLE.BIN/
 # Created by https://www.toptal.com/developers/gitignore/api/windows,node,react
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,node,react
 
+app/.vite
 ### Node ###
 # Logs
 logs

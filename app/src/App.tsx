@@ -1,14 +1,36 @@
-import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// App.tsx
+import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { authService } from './services/auth';
 
-import Layout from "./components/Layout";
+// Components
+import ResponsiveAppBar from './components/Navbar';
+import Auth from './pages/Auth';
+
+// Pages
+import Home from './pages/Home';
 import GalleryPage from "./pages/GalleryPage";
 import UserGallery from "./pages/UserGallery";
 
+// Define interfaces
+interface Location {
+  city_country: string;
+  latitude: number;
+  longitude: number;
+}
+
+// Protected Route Component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const isAuthenticated = authService.isAuthenticated();
+  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
+};
+
+// Create theme configuration (merged both themes)
 const theme = createTheme({
   palette: {
     mode: 'dark',
@@ -29,6 +51,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           textTransform: 'none',
+          borderRadius: 8,
         },
       },
     },
@@ -47,22 +70,77 @@ const theme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 8,
+          }
+        }
+      }
+    }
   },
 });
 
 function App() {
+  // Location state management
+  const [location, setLocation] = React.useState<Location>({
+    city_country: 'Select Location',
+    latitude: 0,
+    longitude: 0,
+  });
+
   return (
     <div className="min-h-screen bg-background-default">
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Provider store={store}>
           <Router>
-            <Layout>
-              <Routes>
-                <Route path="/gallery" element={<GalleryPage userOnly={false} />} />
-                <Route path="/my-gallery" element={<UserGallery userOnly={true} />} />
-              </Routes>
-            </Layout>
+            <Routes>
+            <Route path="/auth" element={<Auth />} />
+         
+              // changed from / to /home to make it the default route after auth
+              {/* Protected Routes */}
+              {/* <Route path="/" element={
+                <ProtectedRoute>
+                  <>
+                    <ResponsiveAppBar location={location} setLocation={setLocation} />
+                    <Home latitude={location.latitude} longitude={location.longitude} />
+                  </>
+                </ProtectedRoute>
+              } /> */}
+
+            <Route path="/home" element={
+            <ProtectedRoute>
+                <>
+                <ResponsiveAppBar location={location} setLocation={setLocation} />
+                <Home latitude={location.latitude} longitude={location.longitude} />
+                </>
+            </ProtectedRoute>
+            } />
+              
+              <Route path="/gallery" element={
+                <ProtectedRoute>
+                  <>
+                    <ResponsiveAppBar location={location} setLocation={setLocation} />
+                    <GalleryPage userOnly={false} />
+                  </>
+                </ProtectedRoute>
+              } />
+              
+              <Route path="/my-gallery" element={
+                <ProtectedRoute>
+                  <>
+                    <ResponsiveAppBar location={location} setLocation={setLocation} />
+                    <UserGallery userOnly={true} />
+                  </>
+                </ProtectedRoute>
+              } />
+              
+             {/* <Route path="*" element={<Navigate to="/" />} /> */}
+              <Route path="/" element={<Navigate to="/auth" />} />
+             <Route path="*" element={<Navigate to="/auth" />} />
+            </Routes>
           </Router>
         </Provider>
       </ThemeProvider>

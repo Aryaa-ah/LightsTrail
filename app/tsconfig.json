@@ -1,4 +1,3 @@
-// tsconfig.json
 {
   "compilerOptions": {
     "target": "ES2020",
@@ -8,7 +7,6 @@
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
-
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -30,11 +28,14 @@
     "src",
     "Back-End/service/**/*.d.ts"
   ],
-  "files": [],
-  "exclude": ["node_modules", "build", "dist"],
-
+  "exclude": [
+    "node_modules",
+    "build",
+    "dist"
+  ],
   "references": [
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.app.json" }
-  ]
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ],
+  "files": []
 }
