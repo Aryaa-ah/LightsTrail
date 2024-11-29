@@ -1,19 +1,24 @@
 // App.tsx
-import './App.css';
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import "./App.css";
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
-import { ThemeProvider, createTheme} from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import { authService } from './services/auth';
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import { authService } from "./services/auth";
 
 // Components
-import ResponsiveAppBar from './components/Navbar';
-import Auth from './pages/Auth';
+import ResponsiveAppBar from "./components/Navbar";
+import Auth from "./pages/Auth";
 
 // Pages
-import Home from './pages/Home';
+import Home from "./pages/Home";
 import GalleryPage from "./pages/GalleryPage";
 import UserGallery from "./pages/UserGallery";
 
@@ -27,30 +32,36 @@ interface Location {
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = authService.isAuthenticated();
+  const isDevelopment = process.env.NODE_ENV === "development";
+
+  if (isDevelopment) {
+    return <>{children}</>;
+  }
+
   return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
 };
 
 // Create theme configuration (merged both themes)
 const theme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: "dark",
     primary: {
-      main: '#2196F3',
+      main: "#2196F3",
     },
     background: {
-      default: '#121212',
-      paper: '#1E1E1E',
+      default: "#121212",
+      paper: "#1E1E1E",
     },
     text: {
-      primary: '#FFFFFF',
-      secondary: 'rgba(255, 255, 255, 0.7)',
+      primary: "#FFFFFF",
+      secondary: "rgba(255, 255, 255, 0.7)",
     },
   },
   components: {
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
+          textTransform: "none",
           borderRadius: 8,
         },
       },
@@ -58,7 +69,7 @@ const theme = createTheme({
     MuiCard: {
       styleOverrides: {
         root: {
-          backgroundColor: '#1E1E1E',
+          backgroundColor: "#1E1E1E",
           borderRadius: 12,
         },
       },
@@ -66,26 +77,26 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundImage: 'none',
+          backgroundImage: "none",
         },
       },
     },
     MuiTextField: {
       styleOverrides: {
         root: {
-          '& .MuiOutlinedInput-root': {
+          "& .MuiOutlinedInput-root": {
             borderRadius: 8,
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   },
 });
 
 function App() {
   // Location state management
   const [location, setLocation] = React.useState<Location>({
-    city_country: 'Select Location',
+    city_country: "Select Location",
     latitude: 0,
     longitude: 0,
   });
@@ -97,8 +108,7 @@ function App() {
         <Provider store={store}>
           <Router>
             <Routes>
-            <Route path="/auth" element={<Auth />} />
-         
+              <Route path="/auth" element={<Auth />} />
               // changed from / to /home to make it the default route after auth
               {/* Protected Routes */}
               {/* <Route path="/" element={
@@ -109,37 +119,53 @@ function App() {
                   </>
                 </ProtectedRoute>
               } /> */}
-
-            <Route path="/home" element={
-            <ProtectedRoute>
-                <>
-                <ResponsiveAppBar location={location} setLocation={setLocation} />
-                <Home latitude={location.latitude} longitude={location.longitude} />
-                </>
-            </ProtectedRoute>
-            } />
-              
-              <Route path="/gallery" element={
-                <ProtectedRoute>
-                  <>
-                    <ResponsiveAppBar location={location} setLocation={setLocation} />
-                    <GalleryPage userOnly={false} />
-                  </>
-                </ProtectedRoute>
-              } />
-              
-              <Route path="/my-gallery" element={
-                <ProtectedRoute>
-                  <>
-                    <ResponsiveAppBar location={location} setLocation={setLocation} />
-                    <UserGallery userOnly={true} />
-                  </>
-                </ProtectedRoute>
-              } />
-              
-             {/* <Route path="*" element={<Navigate to="/" />} /> */}
+              <Route
+                path="/home"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <ResponsiveAppBar
+                        location={location}
+                        setLocation={setLocation}
+                      />
+                      <Home
+                        latitude={location.latitude}
+                        longitude={location.longitude}
+                      />
+                    </>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/gallery"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <ResponsiveAppBar
+                        location={location}
+                        setLocation={setLocation}
+                      />
+                      <GalleryPage userOnly={false} />
+                    </>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/my-gallery"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <ResponsiveAppBar
+                        location={location}
+                        setLocation={setLocation}
+                      />
+                      <UserGallery userOnly={true} />
+                    </>
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/" element={<Navigate to="/auth" />} />
-             <Route path="*" element={<Navigate to="/auth" />} />
+              <Route path="*" element={<Navigate to="/auth" />} />
             </Routes>
           </Router>
         </Provider>
