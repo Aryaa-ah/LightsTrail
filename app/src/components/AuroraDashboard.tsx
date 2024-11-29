@@ -45,7 +45,7 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
 
   return (
     <Card sx={{
-      width: '72%',
+      width: '74%',
       margin: 'auto',
       padding: 2,
       bgcolor: 'grey.800',

@@ -10,7 +10,6 @@ import {
   List as ListIcon,
   Search,
   MapPin,
-  //   SlidersHorizontal,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { debounce } from "lodash";
@@ -22,7 +21,6 @@ import { Box, Typography, Chip } from "@mui/material";
 
 // Custom Components
 import GalleryGrid from "../components/GalleryGrid";
-// import LoadingSkeleton from "../components/LoadingSkeleton";
 import PhotoUpload from "../components/PhotoUpload";
 import ErrorState from "../../../app/src/components/errorState";
 import PhotoDetail from "../components/PhotoDetail";
@@ -32,7 +30,6 @@ import EmptyState from "../../../app/src/components/EmptyState";
 // State and Types
 import {
   fetchPhotos,
-  // addPhoto,
   setSelectedPhoto,
   updateFilters,
   uploadPhoto,
@@ -50,6 +47,7 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   const dispatch = useDispatch<AppDispatch>();
   const { photos, loading, error, currentPage, totalPages, filters } =
     useSelector((state: RootState) => state.gallery);
+
   const dummyPhoto = React.useMemo(
     () => ({
       id: "1",
@@ -64,6 +62,7 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     }),
     []
   );
+
   // Local state
   const [displayPhotos, setDisplayPhotos] = useState<Photo[]>([]);
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
@@ -98,13 +97,14 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   }, [inView, loading, currentPage, totalPages, dispatch, userOnly]);
 
   useEffect(() => {
-    // Combine real photos with dummy photo
+    // If there are uploaded photos, use them; otherwise, use mock photos
     if (photos && photos.length > 0) {
-      setDisplayPhotos([dummyPhoto, ...photos]);
+      setDisplayPhotos(photos);
     } else {
       setDisplayPhotos([dummyPhoto]);
     }
-  }, [dummyPhoto, photos]);
+  }, [photos, dummyPhoto]);
+
   if (loading && !displayPhotos.length) {
     return (
       <Box
@@ -200,6 +200,7 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
           minHeight: "100vh",
           bgcolor: "background.default",
           p: { xs: 2, sm: 3 },
+          mt: { xs: 8, sm: 10 }, // Add top margin to create space below the navbar
         }}
       >
         {/* Header Section */}
@@ -350,9 +351,9 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
             <GalleryGrid
               photos={displayPhotos}
               viewMode={viewMode}
-              setViewMode={setViewMode}
+              // setViewMode={setViewMode}
               onPhotoClick={handlePhotoClick}
-              userOnly={userOnly}
+              // userOnly={userOnly}
             />
           )}
         </AnimatePresence>
