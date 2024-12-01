@@ -50,7 +50,7 @@ class AuthService {
 
     
     handleGoogleLogin() {
-        // Store current URL to return to after auth
+        // Stores current URL to return to after auth
         localStorage.setItem('returnTo', window.location.pathname);
         // Redirect to Google auth endpoint
         window.location.href = `${this.API_BASE_URL}/google`;
@@ -63,7 +63,7 @@ class AuthService {
         localStorage.removeItem('returnTo'); // Clean up
         window.location.href = returnTo;
     }
-    
+
     logout(): void {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
