@@ -21,7 +21,9 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import { Photo } from "../types/gallery.types";
-
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../src/store";
+import { uploadPhoto, fetchPhotos } from "../store/gallerySlice";
 // Styled Components
 const DropZone = styled(Box, {
   shouldForwardProp: (prop) => prop !== "isDragActive",
@@ -54,9 +56,10 @@ interface PhotoUploadProps {
 const PhotoUpload: React.FC<PhotoUploadProps> = ({
   isOpen,
   onClose,
-  onUpload,
+  // onUpload,
   onUploadSuccess,
 }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string>("");
   const [location, setLocation] = useState("");
@@ -89,31 +92,22 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
 
     try {
       setUploading(true);
-
-      // Create FormData
       const formData = new FormData();
-      formData.append("image", selectedFile);
+      formData.append("image", selectedFile, selectedFile.name);
       formData.append("location", location);
-      formData.append("userName", "testUser"); // Temporary hardcoded user
-      // formData.append("userId", "testUserId"); // Temporary hardcoded ID
+      formData.append("userName", "testUser");
 
-      // Make API call
-      const response = await fetch("/api/gallery/photos", {
-        method: "POST",
-        body: formData, 
-      });
+      const uploadedPhoto = await dispatch(uploadPhoto(formData));
+      if (uploadPhoto.fulfilled.match(uploadedPhoto)) {
+        await dispatch(fetchPhotos({ page: 1, limit: 12 }));
 
-      if (!response.ok) {
-        throw new Error("Failed to upload photo");
+        if (onUploadSuccess) {
+          onUploadSuccess();
+        }
+
+        // Reset form and close modal
+        resetForm();
       }
-
-      const result = await response.json();
-
-      // Call onUpload with the new photo data
-      onUpload(result.data);
-      onUploadSuccess?.();
-      resetForm();
-      console.log("Photo uploaded successfully");
     } catch (error) {
       console.error("Upload failed:", error);
     } finally {

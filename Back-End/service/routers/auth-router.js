@@ -1,5 +1,5 @@
 import express from 'express';
-import passport from 'passport';
+import passport from '../middleware/passport-config.js';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();

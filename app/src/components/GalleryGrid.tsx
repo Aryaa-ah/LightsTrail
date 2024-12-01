@@ -1,10 +1,12 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { useState } from "react";
 import {
   ImageList,
   ImageListItem,
   ImageListItemBar,
   IconButton,
   Box,
+  Skeleton,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -12,19 +14,19 @@ import { LocationOn } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { Photo } from "../types/gallery.types";
 
-// Styled components remain the same
+const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
+const PLACEHOLDER_IMAGE = "/placeholder.jpg";
+
 const StyledImageListItem = styled(ImageListItem)(({ theme }) => ({
   cursor: "pointer",
   overflow: "hidden",
   borderRadius: theme.shape.borderRadius,
+  backgroundColor: theme.palette.grey[900],
   "& img": {
     transition: "transform 0.3s ease-in-out",
   },
   "&:hover img": {
     transform: "scale(1.05)",
-  },
-  "&:hover .MuiImageListItemBar-root": {
-    opacity: 1,
   },
 }));
 
@@ -56,6 +58,7 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
+  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
 
   const getImageListCols = () => {
     if (viewMode === "list") return 1;
@@ -63,6 +66,35 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
     if (isTablet) return 2;
     if (isDesktop) return 4;
     return 3;
+  };
+
+  const getImageUrl = (photo: Photo): string => {
+    if (!photo?.url) return PLACEHOLDER_IMAGE;
+    
+    // Handle full URLs
+    if (photo.url.startsWith('http')) return photo.url;
+    
+    // Handle relative URLs
+    const cleanUrl = photo.url.startsWith('/') ? photo.url : `/${photo.url}`;
+    return `${BACKEND_URL}${cleanUrl}`;
+  };
+
+  const handleImageLoad = (photoId: string) => {
+    setLoadedImages((prev) => ({ ...prev, [photoId]: true }));
+    console.log("Image loaded successfully:", photoId);
+  };
+
+  const handleImageError = (
+    e: React.SyntheticEvent<HTMLImageElement>,
+    photo: Photo
+  ) => {
+    console.error(`Failed to load image: ${photo.url}`);
+    const imgElement = e.currentTarget;
+    if (!loadedImages[photo.id]) {
+      console.log("Setting placeholder for:", photo.id);
+      imgElement.src = PLACEHOLDER_IMAGE;
+      setLoadedImages((prev) => ({ ...prev, [photo.id]: true }));
+    }
   };
 
   return (
@@ -74,7 +106,6 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
         ".MuiImageListItem-root": {
           borderRadius: 2,
           overflow: "hidden",
-          bgcolor: "grey.800",
           border: "1px solid",
           borderColor: "grey.700",
         },
@@ -83,23 +114,29 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
       rowHeight={viewMode === "list" ? 200 : 340}
     >
       {photos.map((photo) => (
-        <StyledImageListItem
-          key={photo.id}
-          onClick={() => onPhotoClick(photo)}
-          cols={viewMode === "list" ? 2 : 1}
-          rows={viewMode === "list" ? 1 : undefined}
-        >
+        <StyledImageListItem key={photo.id} onClick={() => onPhotoClick(photo)}>
+          {!loadedImages[photo.id] && (
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={viewMode === "list" ? 200 : 340}
+              animation="wave"
+            />
+          )}
           <img
-            src={photo.url}
+            src={getImageUrl(photo)}
             alt={`Aurora at ${photo.location}`}
             loading="lazy"
+            onLoad={() => handleImageLoad(photo.id)}
+            onError={(e) => handleImageError(e, photo)}
             style={{
               height: "100%",
               width: "100%",
               objectFit: "cover",
+              display: loadedImages[photo.id] ? "block" : "none",
             }}
           />
-          <StyledImageListItemBar
+          <ImageListItemBar
             title={photo.location}
             subtitle={
               <Box
