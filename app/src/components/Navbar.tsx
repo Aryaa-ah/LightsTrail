@@ -18,6 +18,9 @@ import LocationDialogPopUp from "./../components/LocationPopUp";
 import auroraIcon from "../images/logo.png";
 import { useAuth } from "../hooks/useAuth"; // Import useAuth hook
 
+
+import { authService } from '../services/auth';
+
 interface Location {
   city_country: string;
   latitude: number;
@@ -29,9 +32,15 @@ interface ResponsiveAppBarProps {
   setLocation: (location: Location) => void;
 }
 
+
 // Define the navigation items including new gallery routes
 const pages = ["Gallery", "My Gallery", "Glossary", "Weather Forecast"];
 const settings = ["Profile", "Change Language", "Logout"];
+
+const handleLogout = () => {
+  authService.logout();  // clear auth data and redirect to login
+  handleCloseUserMenu(); // Close the menu
+};
 
 function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
   const navigate = useNavigate();
@@ -233,7 +242,7 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+                 <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -252,13 +261,27 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
+
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography sx={{ textAlign: "center" }}>
-                      {setting}
-                    </Typography>
-                  </MenuItem>
-                ))}
+                      <MenuItem 
+                        key={setting} 
+                        onClick={() => {
+                          if (setting === 'Logout') {
+                            handleLogout();
+                          } else if (setting === 'Profile') {
+                            navigate('/profile');
+                            handleCloseUserMenu();
+                          } else if (setting === 'Change Language') {
+                            // Handle language change
+                            handleCloseUserMenu();
+                          }
+                        }}
+                      >
+                        <Typography sx={{ textAlign: "center" }}>
+                          {setting}
+                        </Typography>
+                      </MenuItem>
+                    ))}
               </Menu>
             </Box>
           </Toolbar>
