@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
 import { Photo } from "../types/gallery.types";
 
@@ -43,10 +44,13 @@ import { motion } from "framer-motion";
 const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   userOnly = false,
 }) => {
-  // Redux
   const dispatch = useDispatch<AppDispatch>();
-  const { photos, loading, error, currentPage, totalPages, filters } =
-    useSelector((state: RootState) => state.gallery);
+  const {
+    photos = [],
+    loading = false,
+    error,
+    filters,
+  } = useSelector((state: RootState) => state.gallery);
 
   const dummyPhoto = React.useMemo(
     () => ({
@@ -73,31 +77,43 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   );
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Infinite scroll setup
-  const { ref: loadMoreRef, inView } = useInView({
-    threshold: 0.5,
-    triggerOnce: false,
-  });
+  // const debouncedSearch = useCallback(
+  //   (query: string) => {
+  //     debounce(() => {
+  //       dispatch(updateFilters({ searchQuery: query }));
+  //       dispatch(
+  //         fetchPhotos({
+  //           page: 1,
+  //           limit: 12,
+  //           userOnly,
+  //         })
+  //       );
+  //     }, 500)();
+  //   },
+  //   [dispatch, userOnly]
+  // );
 
-  // Load more photos when scrolling
+  // useEffect(() => {
+  //   // If there are uploaded photos, use them; otherwise, use mock photos
+  //   if (photos && photos.length > 0) {
+  //     setDisplayPhotos(photos);
+  //   } else {
+  //     setDisplayPhotos([dummyPhoto]);
+  //   }
+  // }, [photos, dummyPhoto]);
   useEffect(() => {
-    try {
-      if (inView && !loading && currentPage < totalPages) {
-        dispatch(
-          fetchPhotos({
-            page: currentPage + 1,
-            limit: 12,
-            userOnly: userOnly,
-          })
-        );
+    const loadInitialPhotos = async () => {
+      try {
+        await dispatch(fetchPhotos({ userOnly })).unwrap();
+      } catch (error) {
+        console.error("Error loading photos:", error);
       }
-    } catch (error) {
-      console.error("Error loading more photos:", error);
-    }
-  }, [inView, loading, currentPage, totalPages, dispatch, userOnly]);
+    };
+    loadInitialPhotos();
+  }, [dispatch, userOnly]);
 
+  // Update display photos when photos change
   useEffect(() => {
-    // If there are uploaded photos, use them; otherwise, use mock photos
     if (photos && photos.length > 0) {
       setDisplayPhotos(photos);
     } else {
@@ -105,74 +121,41 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     }
   }, [photos, dummyPhoto]);
 
-  if (loading && !displayPhotos.length) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        minHeight="50vh"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-  if (error) {
-    return (
-      <Box p={3}>
-        <Typography color="error">{error}</Typography>
-      </Box>
-    );
-  }
   // Debounced search handler
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const debouncedSearch = useCallback(
-    (query: string) => {
+
+  // Handle search input
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const query = e.target.value;
+      setSearchQuery(query);
+
       debounce(() => {
         dispatch(updateFilters({ searchQuery: query }));
-        dispatch(
-          fetchPhotos({
-            page: 1,
-            limit: 12,
-            userOnly,
-          })
-        );
+        dispatch(fetchPhotos({ userOnly }));
       }, 500)();
     },
     [dispatch, userOnly]
   );
-
-  // Handle search input
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    debouncedSearch(query);
-  };
-
   // Handle photo selection for detail view
-
-  const handlePhotoClick = (photo: Photo) => {
-    setSelectedPhotoState(photo);
-    dispatch(setSelectedPhoto(photo));
-  };
 
   const handlePhotoUpload = async (photo: Photo) => {
     try {
-      // Create FormData from the photo
-      const file = photo instanceof File ? photo : null;
-      if (!file) {
-        throw new Error("Invalid file data");
-      }
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append("image", photo as unknown as Blob);
       formData.append("location", photo.location);
       formData.append("userName", photo.userName);
 
       await dispatch(uploadPhoto(formData)).unwrap();
-      handleUploadSuccess();
+      await dispatch(fetchPhotos({ userOnly }));
+      setUploadModalOpen(false);
     } catch (error) {
-      console.error("Failed to upload photo:", error);
+      console.error("Upload failed:", error);
     }
+  };
+
+  const handlePhotoClick = (photo: Photo) => {
+    setSelectedPhotoState(photo);
+    dispatch(setSelectedPhoto(photo));
   };
 
   // Handle upload success
@@ -189,6 +172,10 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
       console.error("Error refreshing photos:", error);
     }
   };
+
+  // Add safe loading check
+  const isLoading = loading && !displayPhotos.length;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -336,33 +323,27 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
 
         {/* Main Content */}
         <AnimatePresence mode="wait">
-          {loading && !displayPhotos.length ? (
-            <div>Loading...</div>
+          {isLoading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+              <CircularProgress />
+            </Box>
           ) : error ? (
             <ErrorState
               error={error}
-              onRetry={() =>
-                dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }))
-              }
+              onRetry={() => dispatch(fetchPhotos({ userOnly }))}
             />
-          ) : displayPhotos.length === 0 ? (
+          ) : !displayPhotos.length ? (
             <EmptyState onUpload={() => setUploadModalOpen(true)} />
           ) : (
             <GalleryGrid
               photos={displayPhotos}
               viewMode={viewMode}
-              // setViewMode={setViewMode}
               onPhotoClick={handlePhotoClick}
-              // userOnly={userOnly}
             />
           )}
         </AnimatePresence>
 
-        {/* Infinite Scroll & Loading */}
-        {!loading && currentPage < totalPages && (
-          <div ref={loadMoreRef} style={{ height: 40 }} />
-        )}
-        {loading && photos.length > 0 && (
+        {isLoading && (
           <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
             <CircularProgress />
           </Box>

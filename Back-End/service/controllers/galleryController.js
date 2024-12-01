@@ -1,53 +1,56 @@
 // service/controllers/galleryController.js
 import Gallery from "../models/gallery.js";
 import galleryService from "../services/galleryServices.js";
+import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.join(__dirname, "../../uploads");
 
 const galleryController = {
   uploadPhoto: async (req, res) => {
     try {
       if (!req.file) {
-        return res.status(400).json({
-          success: false,
-          error: "No image file provided",
-        });
+        return res.status(400).json({ error: "No file uploaded" });
       }
 
-      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      // Check if file exists in uploads directory
+      const filePath = path.join(uploadsDir, req.file.filename);
+      if (!fs.existsSync(filePath)) {
+        return res.status(400).json({ error: "File upload failed" });
+      }
+
       const photo = new Gallery({
+        fileName: req.file.filename,
         url: `/uploads/${req.file.filename}`,
         userName: req.body.userName || "Anonymous",
-        userId: req.body.userId || "testuser123",
         location: req.body.location,
-        fileName: req.file.filename,
         visibility: "public",
         likes: 0,
-        createdAt: new Date().toISOString(),
       });
 
       const savedPhoto = await photo.save();
 
-      // Return the full URL in the response
       res.status(201).json({
         success: true,
         data: {
           id: savedPhoto._id,
           url: savedPhoto.url,
+          fileName: savedPhoto.fileName,
           userName: savedPhoto.userName,
           location: savedPhoto.location,
-          createdAt: savedPhoto.createdAt,
           visibility: savedPhoto.visibility,
           likes: savedPhoto.likes,
+          createdAt: savedPhoto.createdAt,
         },
       });
     } catch (error) {
-      console.error("Upload Error:", error);
-      res.status(400).json({
-        success: false,
-        error: error.message,
-      });
+      console.error("Upload error:", error);
+      res.status(400).json({ error: error.message });
     }
   },
-
   getPhotos: async (req, res) => {
     try {
       const page = parseInt(req.query.page) || 1;
@@ -55,24 +58,35 @@ const galleryController = {
       const skip = (page - 1) * limit;
 
       const photos = await Gallery.find()
+        .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 });
+        .limit(limit);
 
       const total = await Gallery.countDocuments();
 
-      const transformedPhotos = photos.map((photo) => ({
-        id: photo._id,
-        url: photo.url, // This will be the relative path starting with /uploads/
-        userName: photo.userName,
-        location: photo.location,
-        createdAt: photo.createdAt,
-        visibility: photo.visibility,
-        likes: photo.likes,
-      }));
+      const transformedPhotos = photos.map((photo) => {
+        const filePath = path.join(uploadsDir, photo.fileName);
+        const fileExists = fs.existsSync(filePath);
+
+        if (!fileExists) {
+          console.warn(`File not found: ${filePath}`);
+        }
+
+        return {
+          id: photo._id,
+          url: `/uploads/${photo.fileName}`,
+          userName: photo.userName,
+          location: photo.location,
+          createdAt: photo.createdAt,
+          visibility: photo.visibility,
+          likes: photo.likes,
+          fileExists,
+        };
+      });
+
       res.status(200).json({
         success: true,
-        data: photos,
+        data: transformedPhotos,
         pagination: {
           currentPage: page,
           totalPages: Math.ceil(total / limit),
@@ -80,6 +94,7 @@ const galleryController = {
         },
       });
     } catch (error) {
+      console.error("Get photos error:", error);
       res.status(400).json({
         success: false,
         error: error.message,
