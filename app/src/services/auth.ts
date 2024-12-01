@@ -1,4 +1,5 @@
-import type { LoginCredentials, SignupCredentials, AuthResponse } from '../types/auth';
+// src/services/auth.ts
+import { LoginCredentials, SignupCredentials, AuthResponse } from '../types/auth';
 
 class AuthService {
     private readonly API_BASE_URL = 'http://localhost:3002/auth';
@@ -12,17 +13,16 @@ class AuthService {
             body: JSON.stringify(credentials),
         });
         
-        const data = await response.json();
+        const data: AuthResponse = await response.json();
         
         if (!response.ok) {
             throw new Error(data.message || 'Login failed');
         }
         
-        // Store auth data
         if (data.token) {
             localStorage.setItem('authToken', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            window.location.href = '/home';  // Redirect to home page after login
+            window.location.href = '/home';
         }
         
         return data;
@@ -37,27 +37,37 @@ class AuthService {
             body: JSON.stringify(credentials),
         });
         
-        const data = await response.json();
+        const data: AuthResponse = await response.json();
         
         if (!response.ok) {
             throw new Error(data.message || 'Signup failed');
         }
-
-        // After signup, automatically log in
-        return this.login({
-            email: credentials.email,
-            password: credentials.password
-        });
+    
+        // Instead of auto-login, redirect to login page
+        window.location.href = '/login';
+        return data;
     }
 
+    
     handleGoogleLogin() {
+        // Store current URL to return to after auth
+        localStorage.setItem('returnTo', window.location.pathname);
+        // Redirect to Google auth endpoint
         window.location.href = `${this.API_BASE_URL}/google`;
     }
 
+    handleGoogleAuthSuccess(token: string) {
+        localStorage.setItem('authToken', token);
+        // Get return URL or default to home
+        const returnTo = localStorage.getItem('returnTo') || '/home';
+        localStorage.removeItem('returnTo'); // Clean up
+        window.location.href = returnTo;
+    }
+    
     logout(): void {
         localStorage.removeItem('authToken');
         localStorage.removeItem('user');
-        window.location.href = '/auth';
+        window.location.href = '/login';
     }
 
     isAuthenticated(): boolean {
