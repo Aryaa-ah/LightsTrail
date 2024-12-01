@@ -17,7 +17,7 @@ const __dirname = dirname(__filename);
 dotenv.config();
 
 // Create uploads directory path
-const uploadsDir = path.join(__dirname, "../uploads"); 
+const uploadsDir = path.join(__dirname, "uploads"); 
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
