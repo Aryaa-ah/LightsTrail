@@ -1,46 +1,36 @@
-// import express from 'express';
-// import * as authController from '../controllers/auth-controller.js';
-
-// const router = express.Router();
-
-// router.post('/signup', authController.signup); // User signup
-// router.post('/login', authController.login);   // User login
-
-// export default router;
-
-
 import express from 'express';
-import passport from '../middleware/passport-config.js';
-import * as authController from '../controllers/auth-controller.js';
+import passport from 'passport';
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
-// Existing routes
-router.post('/signup', authController.signup);
-router.post('/login', authController.login);
-
 // Google OAuth routes
 router.get('/google',
     passport.authenticate('google', { 
-        scope: ['profile', 'email'],
-        session: false 
+        scope: ['profile', 'email'], 
+        prompt: 'select_account' 
+
     })
 );
 
 router.get('/google/callback',
     passport.authenticate('google', { 
         session: false,
-        failureRedirect: '/auth?error=1'
+        failureRedirect: '/login?error=Authentication%20failed'
     }),
-    (req, res) => {
-        const token = jwt.sign(
-            { id: req.user._id },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-
-        res.redirect(`http://localhost:5173/auth/google/success?token=${token}`);
+    async (req, res) => {
+        try {
+            const token = jwt.sign(
+                { id: req.user._id },
+                process.env.JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+            
+            // Redirect to frontend with token
+            res.redirect(`${process.env.FRONTEND_URL}/auth/google/success?token=${token}`);
+        } catch (error) {
+            res.redirect(`${process.env.FRONTEND_URL}/login?error=${encodeURIComponent(error.message)}`);
+        }
     }
 );
 

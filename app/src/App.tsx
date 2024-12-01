@@ -13,9 +13,13 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { authService } from "./services/auth";
 
+
 // Components
 import ResponsiveAppBar from "./components/Navbar";
-import Auth from "./pages/Auth";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import GoogleAuthCallback from './components/GoogleAuthCallback';
+
 
 // Pages
 import Home from "./pages/Home";
@@ -108,7 +112,10 @@ function App() {
         <Provider store={store}>
           <Router>
             <Routes>
-              <Route path="/auth" element={<Auth />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/auth/google/success" element={<GoogleAuthCallback />} />
+
               // changed from / to /home to make it the default route after auth
               {/* Protected Routes */}
               {/* <Route path="/" element={
@@ -164,8 +171,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-              <Route path="/" element={<Navigate to="/auth" />} />
-              <Route path="*" element={<Navigate to="/auth" />} />
+                <Route path="/" element={<Navigate to="/login" />} />
+                {/* // <Route path="*" element={<Navigate to="/login" />} /> */}
             </Routes>
           </Router>
         </Provider>
