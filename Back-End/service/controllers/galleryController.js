@@ -9,6 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const uploadsDir = path.join(__dirname, "../../uploads");
 
+// Ensure uploads directory exists
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const galleryController = {
   uploadPhoto: async (req, res) => {
     try {
@@ -16,15 +21,22 @@ const galleryController = {
         return res.status(400).json({ error: "No file uploaded" });
       }
 
-      // Check if file exists in uploads directory
+      // Ensure file was saved correctly
       const filePath = path.join(uploadsDir, req.file.filename);
+      
+      // Copy file to uploads directory if it's not there
+      if (!fs.existsSync(filePath) && req.file.path) {
+        fs.copyFileSync(req.file.path, filePath);
+      }
+
       if (!fs.existsSync(filePath)) {
         return res.status(400).json({ error: "File upload failed" });
       }
 
+      const serverUrl = `${req.protocol}://${req.get('host')}`;
       const photo = new Gallery({
         fileName: req.file.filename,
-        url: `/uploads/${req.file.filename}`,
+        url: `/uploads/${req.file.filename}`, // Keep URL relative
         userName: req.body.userName || "Anonymous",
         location: req.body.location,
         visibility: "public",
@@ -33,22 +45,17 @@ const galleryController = {
 
       const savedPhoto = await photo.save();
 
+      // Return absolute URL in response
       res.status(201).json({
         success: true,
         data: {
-          id: savedPhoto._id,
-          url: savedPhoto.url,
-          fileName: savedPhoto.fileName,
-          userName: savedPhoto.userName,
-          location: savedPhoto.location,
-          visibility: savedPhoto.visibility,
-          likes: savedPhoto.likes,
-          createdAt: savedPhoto.createdAt,
-        },
+          ...savedPhoto.toObject(),
+          url: `${serverUrl}${savedPhoto.url}`
+        }
       });
     } catch (error) {
       console.error("Upload error:", error);
-      res.status(400).json({ error: error.message });
+      res.status(400).json({ error: error.message }); // Return error message
     }
   },
   getPhotos: async (req, res) => {
@@ -162,23 +169,31 @@ const galleryController = {
 
   deletePhoto: async (req, res) => {
     try {
-      const photo = await Gallery.findByIdAndDelete(req.params.photoId);
-
+      const photo = await Gallery.findById(req.params.photoId);
+      
       if (!photo) {
         return res.status(404).json({
           success: false,
-          error: "Photo not found",
+          error: "Photo not found"
         });
       }
 
+      // Delete file if it exists
+      const filePath = path.join(uploadsDir, photo.fileName);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+
+      await Gallery.findByIdAndDelete(req.params.photoId);
+
       res.status(200).json({
         success: true,
-        message: "Photo deleted successfully",
+        message: "Photo deleted successfully"
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        error: error.message,
+        error: error.message
       });
     }
   },

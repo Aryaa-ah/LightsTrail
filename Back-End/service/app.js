@@ -16,7 +16,8 @@ const __dirname = dirname(__filename);
 // Load environment variables
 dotenv.config();
 
-const uploadsDir = path.join(__dirname, "..", "uploads");
+// Create uploads directory path
+const uploadsDir = path.join(__dirname, "../uploads"); 
 
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -25,39 +26,34 @@ if (!fs.existsSync(uploadsDir)) {
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://localhost:3002"],
-    credentials: true,
-  })
-);
-app.use('/uploads', express.static(uploadsDir));
- 
-app.use(
-  "/uploads",
-  express.static(uploadsDir, {
-    setHeaders: (res) => {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "GET");
-      res.setHeader("Cache-Control", "no-cache");
-      res.setHeader("Content-Type", "image/jpg");
-    },
-  })
-);
+// CORS middleware
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:3002"],
+  credentials: true
+}));
 
-pp.use("/uploads", (req, res, next) => {
-  console.log(`Accessing file: ${req.url}`);
-  console.log(`Full path: ${path.join(uploadsDir, req.url)}`);
-  const filePath = path.join(uploadsDir, req.url);
+app.use(express.json());
 
+// Serve static files from uploads directory
+app.use("/uploads", express.static(uploadsDir));
+
+app.use("/uploads", (req, res, next) => {
+  const filePath = path.join(uploadsDir, path.basename(req.url));
+  console.log(`Accessing file: ${filePath}`);
+  
   if (fs.existsSync(filePath)) {
-    console.log("File exists at path");
+    console.log("File exists, proceeding to next middleware");
+    next();
   } else {
-    console.log("File does not exist at path");
+    console.log("File not found:", filePath);
+    res.status(404).json({ 
+      success: false,
+      error: "File not found" 
+    });
   }
-  next();
 });
 
+// Initialize routes
 initializeRouter(app);
 
 app.use((err, req, res, next) => {

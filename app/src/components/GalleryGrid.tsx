@@ -14,9 +14,8 @@ import { LocationOn } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { Photo } from "../types/gallery.types";
 
-const BACKEND_URL = "http://localhost:3002";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PLACEHOLDER_IMAGE = "/app/src/assets/mock.jpg";
+const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
+const PLACEHOLDER_IMAGE = "/placeholder.jpg";
 
 const StyledImageListItem = styled(ImageListItem)(({ theme }) => ({
   cursor: "pointer",
@@ -70,11 +69,13 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
   };
 
   const getImageUrl = (photo: Photo): string => {
-    if (!photo.url) return PLACEHOLDER_IMAGE;
-    if (photo.url.startsWith("http")) return photo.url;
-
-    // Ensure URL is properly formatted
-    const cleanUrl = photo.url.startsWith("/") ? photo.url : `/${photo.url}`;
+    if (!photo?.url) return PLACEHOLDER_IMAGE;
+    
+    // Handle full URLs
+    if (photo.url.startsWith('http')) return photo.url;
+    
+    // Handle relative URLs
+    const cleanUrl = photo.url.startsWith('/') ? photo.url : `/${photo.url}`;
     return `${BACKEND_URL}${cleanUrl}`;
   };
 
