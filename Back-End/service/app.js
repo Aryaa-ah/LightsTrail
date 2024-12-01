@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import initializeRouter from "./routers/index.js";
 import fs from "fs";
+import passport from './middleware/passport-config.js';
 
 // ES module fixes for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -53,6 +54,7 @@ app.use("/uploads", (req, res, next) => {
   }
 });
 
+app.use(passport.initialize());
 // Initialize routes
 initializeRouter(app);
 
