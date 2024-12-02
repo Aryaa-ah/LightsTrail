@@ -15,21 +15,21 @@ export interface GalleryState {
   photos: Photo[];
   loading: boolean;
   error: string | null;
-  currentPage: number;
-  totalPages: number;
+  currentPage?: number;
+  totalPages?: number;
   selectedPhoto: Photo | null;
   filters: GalleryFilters;
 }
 
 export interface FetchPhotosParams {
-  page: number;
-  limit: number;
+  page?: number;
+  limit?: number;
   userOnly?: boolean;
 }
 
 export interface FetchPhotosResponse {
   photos: Photo[];
-  pagination: {
+  pagination?: {
     currentPage: number;
     totalPages: number;
     totalPhotos: number;

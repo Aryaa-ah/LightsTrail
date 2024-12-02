@@ -1,6 +1,6 @@
 // Back-End/service/routers/auth-router.js
 import express from 'express';
-import passport from 'passport';
+import passport from '../middleware/passport-config.js';
 import jwt from 'jsonwebtoken';
 import * as authController from '../controllers/auth-controller.js';
 import { authenticateToken } from '../middleware/auth.js';

@@ -7,6 +7,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import initializeRouter from "./routers/index.js";
+import fs from "fs";
+import passport from './middleware/passport-config.js';
 
 // ES module fixes for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -15,19 +17,47 @@ const __dirname = dirname(__filename);
 // Load environment variables
 dotenv.config();
 
-const app = express();
+// Create uploads directory path
+const uploadsDir = path.join(__dirname, "uploads"); 
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
+const app = express();
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// CORS middleware
+app.use(cors({
+  origin: ["http://localhost:5173", "http://localhost:3002"],
+  credentials: true
+}));
 
-// Initialize all routes
+app.use(express.json());
+
+// Serve static files from uploads directory
+app.use("/uploads", express.static(uploadsDir));
+
+app.use("/uploads", (req, res, next) => {
+  const filePath = path.join(uploadsDir, path.basename(req.url));
+  console.log(`Accessing file: ${filePath}`);
+  
+  if (fs.existsSync(filePath)) {
+    console.log("File exists, proceeding to next middleware");
+    next();
+  } else {
+    console.log("File not found:", filePath);
+    res.status(404).json({ 
+      success: false,
+      error: "File not found" 
+    });
+  }
+});
+
+app.use(passport.initialize());
+// Initialize routes
 initializeRouter(app);
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error("App Error:", err.stack);
   res.status(err.status || 500).json({
@@ -37,13 +67,3 @@ app.use((err, req, res, next) => {
 });
 
 export default app;
-
-// CORS configuration
-const corsOptions = {
-    origin: 'http://localhost:5173',  // Your frontend URL
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-};
-
-app.use(cors(corsOptions));
