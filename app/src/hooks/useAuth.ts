@@ -9,6 +9,16 @@ interface User {
   email: string;
 }
 
+interface User {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  provider?: 'local' | 'google';
+  avatar?: string;
+  createdAt?: string;
+}
+
 export const useAuth = () => {
   // Get auth state from Redux store
   const auth = useSelector((state: RootState) => state.auth);
