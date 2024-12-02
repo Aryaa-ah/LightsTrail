@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Photo } from "../types/gallery.types";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useInView } from "react-intersection-observer";
+// import { useInView } from "react-intersection-observer";
 import { Grid as GridIcon, List as ListIcon } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { debounce } from "lodash";
@@ -21,14 +21,14 @@ import {
   Chip,
   useTheme,
   alpha,
-  Dialog,
+  // Dialog,
 } from "@mui/material";
 import {
   Search,
   Camera,
   Filter,
   GridView,
-  ViewList,
+  // ViewList,
   LocationOn,
 } from "@mui/icons-material";
 // Custom Components
@@ -36,7 +36,7 @@ import GalleryGrid from "../components/GalleryGrid";
 import PhotoUpload from "../components/PhotoUpload";
 import ErrorState from "../../../app/src/components/errorState";
 import PhotoDetail from "../components/PhotoDetail";
-import GalleryFilters from "../components/GalleryFilters";
+// import GalleryFilters from "../components/GalleryFilters";
 import EmptyState from "../../../app/src/components/EmptyState";
 
 // State and Types
@@ -89,30 +89,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   );
   const [searchQuery, setSearchQuery] = useState("");
 
-  // const debouncedSearch = useCallback(
-  //   (query: string) => {
-  //     debounce(() => {
-  //       dispatch(updateFilters({ searchQuery: query }));
-  //       dispatch(
-  //         fetchPhotos({
-  //           page: 1,
-  //           limit: 12,
-  //           userOnly,
-  //         })
-  //       );
-  //     }, 500)();
-  //   },
-  //   [dispatch, userOnly]
-  // );
-
-  // useEffect(() => {
-  //   // If there are uploaded photos, use them; otherwise, use mock photos
-  //   if (photos && photos.length > 0) {
-  //     setDisplayPhotos(photos);
-  //   } else {
-  //     setDisplayPhotos([dummyPhoto]);
-  //   }
-  // }, [photos, dummyPhoto]);
   useEffect(() => {
     const loadInitialPhotos = async () => {
       try {
@@ -133,8 +109,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     }
   }, [photos, dummyPhoto]);
 
-  // Debounced search handler
-
   // Handle search input
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -148,7 +122,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     },
     [dispatch, userOnly]
   );
-  // Handle photo selection for detail view
 
   const handlePhotoUpload = async (photo: Photo) => {
     try {
@@ -184,9 +157,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
       console.error("Error refreshing photos:", error);
     }
   };
-
-  // Add safe loading check
-  const isLoading = loading && !displayPhotos.length;
 
   return (
     <motion.div
@@ -370,7 +340,7 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
             <GalleryGrid
               photos={photos}
               viewMode={viewMode}
-              onPhotoClick={(photo) => setSelectedPhoto(photo)}
+              onPhotoClick={handlePhotoClick}
             />
           )}
         </AnimatePresence>
@@ -384,6 +354,12 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
             setUploadModalOpen(false);
             dispatch(fetchPhotos({ userOnly }));
           }}
+        />
+        <PhotoDetail
+          photo={selectedPhoto}
+          isOpen={!!selectedPhoto}
+          onClose={() => setSelectedPhotoState(null)}
+          userOnly={userOnly}
         />
       </Container>
     </motion.div>
