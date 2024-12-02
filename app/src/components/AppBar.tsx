@@ -3,6 +3,7 @@ import { AccountCircle } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { authService } from '../services/auth';
+import React from 'react';
 
 export default function AppBar() {
     const navigate = useNavigate();

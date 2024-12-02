@@ -25,6 +25,7 @@ import GoogleAuthCallback from './components/GoogleAuthCallback';
 import Home from "./pages/Home";
 import GalleryPage from "./pages/GalleryPage";
 import UserGallery from "./pages/UserGallery";
+import ProfilePage from "./pages/ProfilePage";
 
 // Define interfaces
 interface Location {
@@ -171,7 +172,25 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-                <Route path="/" element={<Navigate to="/login" />} />
+
+              // In App.tsx, add this route with your other routes:
+             <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <ResponsiveAppBar
+                        location={location}
+                        setLocation={setLocation}
+                      />
+                      <ProfilePage />
+                    </>
+                  </ProtectedRoute>
+                }
+              />
+
+              
+              <Route path="/" element={<Navigate to="/login" />} />
                 {/* // <Route path="*" element={<Navigate to="/login" />} /> */}
             </Routes>
           </Router>

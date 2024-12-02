@@ -77,6 +77,12 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
     setLocationDialogOpen(false);
   };
 
+  const handleProfileClick = () => {
+    navigate('/profile');
+    handleCloseUserMenu(); // Close the menu after clicking
+  };
+  
+
   // Handle navigation for pages
   const handleNavigation = (page: string) => {
     handleCloseNavMenu();
@@ -262,26 +268,26 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
                 onClose={handleCloseUserMenu}
               >
 
-                {settings.map((setting) => (
-                      <MenuItem 
-                        key={setting} 
-                        onClick={() => {
-                          if (setting === 'Logout') {
-                            handleLogout();
-                          } else if (setting === 'Profile') {
-                            navigate('/profile');
-                            handleCloseUserMenu();
-                          } else if (setting === 'Change Language') {
-                            // Handle language change
-                            handleCloseUserMenu();
-                          }
-                        }}
-                      >
-                        <Typography sx={{ textAlign: "center" }}>
-                          {setting}
-                        </Typography>
-                      </MenuItem>
-                    ))}
+                  {settings.map((setting) => (
+                    <MenuItem 
+                      key={setting} 
+                      onClick={() => {
+                        if (setting === 'Logout') {
+                          handleLogout();
+                        } else if (setting === 'Profile') {
+                          navigate('/profile');
+                          handleCloseUserMenu();
+                        } else if (setting === 'Change Language') {
+                          handleCloseUserMenu();
+                        }
+                      }}
+                    >
+                      <Typography sx={{ textAlign: "center" }}>
+                        {setting}
+                      </Typography>
+                    </MenuItem>
+                  ))}
+                  
               </Menu>
             </Box>
           </Toolbar>

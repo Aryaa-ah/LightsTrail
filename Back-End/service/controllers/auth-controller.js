@@ -34,3 +34,15 @@ export const login = async (req, res) => {
         setError(error, res);
     }
 };
+
+export const deleteAccount = async (req, res) => {
+    try {
+        await authService.deleteUser(req.user.id); // req.user comes from the JWT token
+        res.json({ 
+            success: true, 
+            message: 'Account successfully deleted' 
+        });
+    } catch (error) {
+        setError(error, res);
+    }
+};

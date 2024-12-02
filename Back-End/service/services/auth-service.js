@@ -34,3 +34,11 @@ export const authenticate = async (credentials) => {
 
     return { token, user };
 };
+
+export const deleteUser = async (userId) => {
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+        throw new Error('User not found');
+    }
+    return true;
+};

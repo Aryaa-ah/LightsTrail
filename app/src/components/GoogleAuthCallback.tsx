@@ -27,7 +27,22 @@ export default function GoogleAuthCallback() {
         }
 
         try {
-            authService.handleGoogleAuthSuccess(token);
+            // Make a request to get user data after Google auth
+            const getUserData = async () => {
+                const response = await fetch('http://localhost:3002/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const userData = await response.json();
+                    localStorage.setItem('user', JSON.stringify(userData));
+                }
+                authService.handleGoogleAuthSuccess(token);
+            };
+            
+            getUserData();
         } catch (err) {
             setError('Failed to process authentication');
             setTimeout(() => navigate('/login'), 3000);
