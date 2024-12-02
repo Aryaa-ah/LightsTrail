@@ -4,22 +4,33 @@ import { Photo } from "../types/gallery.types";
 
 import { useDispatch, useSelector } from "react-redux";
 import { useInView } from "react-intersection-observer";
-import {
-  Camera,
-  Filter,
-  Grid as GridIcon,
-  List as ListIcon,
-  Search,
-  MapPin,
-} from "lucide-react";
+import { Grid as GridIcon, List as ListIcon } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { debounce } from "lodash";
 
 // Material UI Components
-import { TextField, Button, IconButton, InputAdornment } from "@mui/material";
-import { CircularProgress } from "@mui/material";
-import { Box, Typography, Chip } from "@mui/material";
-
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Button,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+  Chip,
+  useTheme,
+  alpha,
+  Dialog,
+} from "@mui/material";
+import {
+  Search,
+  Camera,
+  Filter,
+  GridView,
+  ViewList,
+  LocationOn,
+} from "@mui/icons-material";
 // Custom Components
 import GalleryGrid from "../components/GalleryGrid";
 import PhotoUpload from "../components/PhotoUpload";
@@ -44,6 +55,7 @@ import { motion } from "framer-motion";
 const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   userOnly = false,
 }) => {
+  const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const {
     photos = [],
@@ -182,191 +194,198 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <Box
+      <Container
+        maxWidth="xl"
         sx={{
-          minHeight: "100vh",
-          bgcolor: "background.default",
+          py: 4,
           p: { xs: 2, sm: 3 },
-          mt: { xs: 8, sm: 10 }, // Add top margin to create space below the navbar
+          mt: { xs: 8, sm: 10 },
+          minHeight: "100vh",
+          bgcolor: "transparent",
         }}
       >
-        {/* Header Section */}
-        <Box sx={{ mb: 4 }}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
-              {userOnly ? "My Gallery" : "Aurora Gallery"}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {userOnly
-                ? "Manage and showcase your aurora captures"
-                : "Discover and share stunning aurora captures"}
-            </Typography>
-          </Box>
+        {/* Enhanced Header Section */}
+        <Box sx={{ mb: 6 }}>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 800,
+              background:
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)"
+                  : "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              mb: 2,
+            }}
+          >
+            {userOnly ? "My Gallery" : "Aurora Gallery"}
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            {userOnly
+              ? "Manage and showcase your aurora captures"
+              : "Discover and share stunning aurora captures"}
+          </Typography>
+        </Box>
 
-          {/* Controls Section */}
+        {/* Enhanced Controls Section */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 2,
+            mb: 4,
+            alignItems: "center",
+          }}
+        >
+          <TextField
+            fullWidth
+            size="medium"
+            placeholder="Search photos..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            sx={{
+              maxWidth: { md: 400 },
+              bgcolor: alpha(theme.palette.background.paper, 0.8),
+              backdropFilter: "blur(8px)",
+              borderRadius: 2,
+              "& .MuiOutlinedInput-root": {
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: theme.palette.primary.main,
+                },
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search color="primary" />
+                </InputAdornment>
+              ),
+            }}
+          />
+
           <Box
             sx={{
               display: "flex",
-              flexDirection: { xs: "column", md: "row" },
               gap: 2,
-              alignItems: { xs: "stretch", md: "center" },
-              justifyContent: "space-between",
+              ml: { md: "auto" },
+              alignItems: "center",
             }}
           >
-            {/* Search */}
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search photos..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              sx={{
-                maxWidth: { md: 300 },
-                "& .MuiOutlinedInput-root": {
-                  bgcolor: "background.paper",
-                  "&:hover": {
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "primary.main",
-                    },
-                  },
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            {/* Actions */}
+            {/* View Toggle */}
             <Box
               sx={{
                 display: "flex",
-                gap: 2,
-                flexWrap: "wrap",
-                justifyContent: { xs: "flex-start", md: "flex-end" },
+                bgcolor: alpha(theme.palette.background.paper, 0.8),
+                borderRadius: 2,
+                p: 0.5,
+                border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
               }}
             >
-              {/* View Toggle */}
-              <Box
-                sx={{
-                  display: "flex",
-                  bgcolor: "background.paper",
-                  borderRadius: 1,
-                  p: 0.5,
-                }}
+              <IconButton
+                onClick={() => setViewMode("grid")}
+                color={viewMode === "grid" ? "primary" : "default"}
               >
-                <IconButton
-                  onClick={() => setViewMode("grid")}
-                  color={viewMode === "grid" ? "primary" : "default"}
-                >
-                  <GridIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => setViewMode("list")}
-                  color={viewMode === "list" ? "primary" : "default"}
-                >
-                  <ListIcon />
-                </IconButton>
-              </Box>
-
-              {/* Filter & Upload Buttons */}
-              <Button
-                variant="outlined"
-                startIcon={<Filter />}
-                onClick={() => setFilterDrawerOpen(true)}
-                sx={{
-                  borderColor: "divider",
-                  "&:hover": { borderColor: "primary.main" },
-                }}
+                <GridView />
+              </IconButton>
+              <IconButton
+                onClick={() => setViewMode("list")}
+                color={viewMode === "list" ? "primary" : "default"}
               >
-                Filters
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<Camera />}
-                onClick={() => setUploadModalOpen(true)}
-              >
-                Upload
-              </Button>
+                <ListIcon />
+              </IconButton>
             </Box>
+
+            <Button
+              variant="outlined"
+              startIcon={<Filter />}
+              onClick={() => setFilterDrawerOpen(true)}
+              sx={{
+                borderColor: alpha(theme.palette.primary.main, 0.5),
+                "&:hover": {
+                  borderColor: theme.palette.primary.main,
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                },
+              }}
+            >
+              Filters
+            </Button>
+
+            <Button
+              variant="contained"
+              startIcon={<Camera />}
+              onClick={() => setUploadModalOpen(true)}
+              sx={{
+                background: "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)",
+                boxShadow: theme.shadows[4],
+                "&:hover": {
+                  background:
+                    "linear-gradient(45deg, #84fab0 20%, #8fd3f4 100%)",
+                },
+              }}
+            >
+              Upload
+            </Button>
           </Box>
-
-          {/* Active Filters */}
-          {(filters.location ||
-            filters.sortBy !== "latest" ||
-            filters.dateRange) && (
-            <Box sx={{ display: "flex", gap: 1, mt: 2, flexWrap: "wrap" }}>
-              {filters.location && (
-                <Chip
-                  icon={
-                    <Box sx={{ fontSize: 18 }}>
-                      <MapPin size={18} color="currentColor" strokeWidth={2} />
-                    </Box>
-                  }
-                  label={filters.location}
-                  onDelete={() => {
-                    dispatch(updateFilters({ location: undefined }));
-                    dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }));
-                  }}
-                  sx={{
-                    bgcolor: "background.paper",
-                    "&:hover": { bgcolor: "background.paper" },
-                  }}
-                />
-              )}
-            </Box>
-          )}
         </Box>
 
-        {/* Main Content */}
+        {/* Active Filters */}
+        {(filters.location || filters.dateRange) && (
+          <Box sx={{ display: "flex", gap: 1, mb: 3, flexWrap: "wrap" }}>
+            {filters.location && (
+              <Chip
+                icon={<LocationOn sx={{ fontSize: 18 }} />}
+                label={filters.location}
+                onDelete={() => {
+                  dispatch(updateFilters({ location: undefined }));
+                  dispatch(fetchPhotos({ userOnly }));
+                }}
+                sx={{
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                  borderColor: alpha(theme.palette.primary.main, 0.3),
+                  "& .MuiChip-deleteIcon": {
+                    color: theme.palette.primary.main,
+                  },
+                }}
+              />
+            )}
+          </Box>
+        )}
+
+        {/* Gallery Content */}
         <AnimatePresence mode="wait">
-          {isLoading ? (
+          {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-              <CircularProgress />
+              <CircularProgress size={40} />
             </Box>
           ) : error ? (
             <ErrorState
               error={error}
               onRetry={() => dispatch(fetchPhotos({ userOnly }))}
             />
-          ) : !displayPhotos.length ? (
+          ) : !photos.length ? (
             <EmptyState onUpload={() => setUploadModalOpen(true)} />
           ) : (
             <GalleryGrid
-              photos={displayPhotos}
+              photos={photos}
               viewMode={viewMode}
-              onPhotoClick={handlePhotoClick}
+              onPhotoClick={(photo) => setSelectedPhoto(photo)}
             />
           )}
         </AnimatePresence>
-
-        {isLoading && (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress />
-          </Box>
-        )}
 
         {/* Modals */}
         <PhotoUpload
           isOpen={isUploadModalOpen}
           onClose={() => setUploadModalOpen(false)}
           onUpload={handlePhotoUpload}
-          onUploadSuccess={handleUploadSuccess}
+          onUploadSuccess={() => {
+            setUploadModalOpen(false);
+            dispatch(fetchPhotos({ userOnly }));
+          }}
         />
-        <PhotoDetail
-          photo={selectedPhoto}
-          isOpen={!!selectedPhoto}
-          onClose={() => setSelectedPhotoState(null)}
-          userOnly={userOnly}
-        />
-        <GalleryFilters
-          isOpen={isFilterDrawerOpen}
-          onClose={() => setFilterDrawerOpen(false)}
-        />
-      </Box>
+      </Container>
     </motion.div>
   );
 };
