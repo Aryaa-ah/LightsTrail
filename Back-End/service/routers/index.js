@@ -6,6 +6,7 @@ import galleryRouter from "./galleryRouter.js";
 import { setError } from "../controllers/response-handler.js";
 
 
+
 const initializeRouter = (app) => {
 
   app.use("/auroraforecast", auroraForecastRouter);
@@ -13,6 +14,8 @@ const initializeRouter = (app) => {
   app.use("/longitudeLatitude", longitudeLatitudeRouter);
   app.use(`/api/gallery`, galleryRouter);
   app.use('/auth', authRouter);
+  //app.use("/users/me", authRouter); // for user deletion
+
 
   app.use((req, res) => {
     setError(Error, res, 404);

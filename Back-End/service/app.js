@@ -69,5 +69,9 @@ app.use((err, req, res, next) => {
 export default app;
 
 
-import authRouter from './routers/auth-router.js';
-app.use('/auth', authRouter);
+//import authRouter from './routers/auth-router.js';
+
+
+
+
+//app.use('/auth', authRouter);

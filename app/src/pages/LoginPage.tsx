@@ -112,7 +112,7 @@ export default function LoginPage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
+       // background: "linear-gradient(to right, #0f0c29, #302b63, #24243e)",
       }}
     >
       <Card
