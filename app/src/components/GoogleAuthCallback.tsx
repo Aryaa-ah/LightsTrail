@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Box, CircularProgress } from '@mui/material';
-import React from 'react';
 
 export default function GoogleAuthCallback() {
   const navigate = useNavigate();

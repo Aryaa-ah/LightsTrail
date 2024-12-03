@@ -48,7 +48,7 @@ class AuthService {
                 throw new Error(error.message || 'Login failed');
             }
 
-            const data: { user: User; token: string } = await response.json();
+            const data = await response.json();
             this.setSession(data.token, data.user);
             return data;
         } catch (error) {

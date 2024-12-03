@@ -113,10 +113,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
-              <Route
-                path="/auth/google/callback"
-                element={<GoogleAuthCallback />}
-              />
+              <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
               <Route path="/auth/success" element={<GoogleAuthCallback />} />
               <Route
                 path="/home"
