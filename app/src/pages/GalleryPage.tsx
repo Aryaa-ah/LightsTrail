@@ -287,6 +287,7 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
               startIcon={<Camera />}
               onClick={() => setUploadModalOpen(true)}
               sx={{
+                fontSize: 18,
                 background: "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)",
                 boxShadow: theme.shadows[4],
                 "&:hover": {
@@ -359,7 +360,9 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
           photo={selectedPhoto}
           isOpen={!!selectedPhoto}
           onClose={() => setSelectedPhotoState(null)}
-          userOnly={userOnly}
+          onPhotoDeleted={() => {
+            dispatch(fetchPhotos({ userOnly }));
+          }}
         />
       </Container>
     </motion.div>

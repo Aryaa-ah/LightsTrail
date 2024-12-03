@@ -18,6 +18,9 @@ const initialState: GalleryState = {
     visibility: "all",
   },
 };
+
+const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
+
 export const fetchPhotos = createAsyncThunk(
   "gallery/fetchPhotos",
   async (params: FetchPhotosParams = {}) => {
@@ -60,7 +63,17 @@ export const uploadPhoto = createAsyncThunk(
 export const deletePhoto = createAsyncThunk(
   "gallery/deletePhoto",
   async (photoId: string) => {
-    await galleryService.deletePhoto(photoId);
+    const response = await fetch(
+      `${BACKEND_URL}/api/gallery/photos/${photoId}`,
+      {
+        method: "DELETE",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete photo");
+    }
+
     return photoId;
   }
 );
@@ -115,6 +128,11 @@ const gallerySlice = createSlice({
       .addCase(uploadPhoto.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Upload failed";
+      })
+      .addCase(deletePhoto.fulfilled, (state, action) => {
+        state.photos = state.photos.filter(
+          (photo) => photo.id !== action.payload
+        );
       });
   },
 });
