@@ -1,12 +1,24 @@
 // service/services/galleryServices.js
+import mongoose from "mongoose";
 import Gallery from "../models/gallery.js";
 
 class GalleryService {
+  constructor() {
+    if (!Gallery) {
+      throw new Error("Gallery model not loaded");
+    }
+  }
+
+  async verifyConnection() {
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error("Database connection is not ready");
+    }
+  }
+
   async createPhoto(photoData, file) {
     try {
       // Create new photo document
       const photo = new Gallery({
-        // Changed from 'gallery' to 'Gallery'
         url: `/uploads/${file.filename}`,
         userName: photoData.userName,
         location: photoData.location,
@@ -18,11 +30,7 @@ class GalleryService {
 
       // Save to database
       await photo.save();
-      return {
-        ...photo.toObject(), // Convert to plain object
-        id: photo._id,
-        url: `/uploads/${file.filename}`,
-      };
+      return photo;
     } catch (error) {
       throw new Error(`Error creating photo: ${error.message}`);
     }
@@ -30,51 +38,33 @@ class GalleryService {
 
   async getPhotos(page = 1, limit = 10) {
     try {
-      console.log("Starting getPhotos...", { page, limit });
-      console.log("Gallery model:", Gallery);
-
-      if (!Gallery || typeof Gallery.find !== "function") {
-        throw new Error("Gallery model is not properly initialized");
-      }
-
-      // Ensure positive integers
-      page = Math.max(1, parseInt(page));
-      limit = Math.max(1, Math.min(20, parseInt(limit)));
-
+      await this.verifyConnection();
+      
       const skip = (page - 1) * limit;
-
       const [photos, total] = await Promise.all([
         Gallery.find()
           .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit)
-          .select("-__v")
           .lean(),
-        Gallery.countDocuments(),
+        Gallery.countDocuments()
       ]);
 
-      // Calculate pagination info
-      const totalPages = Math.ceil(total / limit);
-      const hasNext = page < totalPages;
-      const hasPrev = page > 1;
-
-      // Format URLs for frontend
-      const formattedPhotos = photos.map((photo) => ({
-        ...photo,
-        id: photo._id.toString(),
-        url: `/uploads/${photo.fileName}`, // Ensure URL is properly formatted
-      }));
-
       return {
-        photos: formattedPhotos,
+        photos: photos.map(photo => ({
+          id: photo._id.toString(),
+          url: `/uploads/${photo.fileName}`,
+          userName: photo.userName,
+          location: photo.location,
+          likes: photo.likes,
+          visibility: photo.visibility,
+          createdAt: photo.createdAt
+        })),
         pagination: {
           currentPage: page,
-          limit,
-          totalPhotos: total,
-          totalPages,
-          hasNext,
-          hasPrev,
-        },
+          totalPages: Math.ceil(total / limit),
+          totalPhotos: total
+        }
       };
     } catch (error) {
       throw new Error(`Error fetching photos: ${error.message}`);

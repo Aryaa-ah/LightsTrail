@@ -1,83 +1,156 @@
-import type { LoginCredentials, SignupCredentials, AuthResponse } from '../types/auth';
+export interface User {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    provider: 'local' | 'google';
+}
 
 class AuthService {
-    private readonly API_BASE_URL = 'http://localhost:3002/auth';
+    private tokenKey = 'token';
+    private userKey = 'user';
 
-    async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    isAuthenticated(): boolean {
+        const token = localStorage.getItem(this.tokenKey);
+        const user = localStorage.getItem(this.userKey);
+        return Boolean(token && user);
+    }
+
+    getToken(): string | null {
+        return localStorage.getItem(this.tokenKey);
+    }
+
+    getCurrentUser(): User | null {
+        const userStr = localStorage.getItem(this.userKey);
+        if (!userStr) return null;
+        
         try {
-            const response = await fetch(`${this.API_BASE_URL}/login`, {
+            return JSON.parse(userStr);
+        } catch {
+            this.logout(); // Clear invalid data
+            return null;
+        }
+    }
+
+    async login(credentials: { email: string; password: string }): Promise<{ user: User; token: string }> {
+        try {
+            const response = await fetch('http://localhost:3002/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(credentials),
+                credentials: 'include' // Important for cookies
             });
-            
-            const data = await response.json();
-            
+
             if (!response.ok) {
-                throw new Error(data.message || 'Login failed');
+                const error = await response.json();
+                throw new Error(error.message || 'Login failed');
             }
-            
-            // Store auth data
-            if (data.token) {
-                localStorage.setItem('authToken', data.token);
-                localStorage.setItem('user', JSON.stringify(data.user));
-                window.location.href = '/home';  // changed here for redirecting to home page after login
-            }
-            
+
+            const data = await response.json();
+            this.setSession(data.token, data.user);
             return data;
         } catch (error) {
-            throw error;
+            if (error instanceof Error) {
+                throw error;
+            }
+            throw new Error('Login failed');
         }
     }
 
-    async signup(credentials: SignupCredentials): Promise<AuthResponse> {
+    async signup(userData: {
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+    }): Promise<{ user: User; token: string }> {
         try {
-            const response = await fetch(`${this.API_BASE_URL}/signup`, {
+            const response = await fetch('http://localhost:3002/auth/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(credentials),
+                body: JSON.stringify(userData),
+                credentials: 'include'
             });
-            
-            const data = await response.json();
-            
+
             if (!response.ok) {
-                throw new Error(data.message || 'Signup failed');
+                const error = await response.json();
+                throw new Error(error.message || 'Signup failed');
             }
 
-            // After signup, automatically log in
-            return this.login({
-                email: credentials.email,
-                password: credentials.password
-            });
+            const data = await response.json();
+            this.setSession(data.token, data.user);
+            return data;
         } catch (error) {
-            throw error;
+            if (error instanceof Error) {
+                throw error;
+            }
+            throw new Error('Signup failed');
         }
     }
 
-    handleGoogleLogin() {
-        window.location.href = `${this.API_BASE_URL}/google`;
+    handleGoogleAuthSuccess(token: string, userData: string): void {
+        try {
+            const user = JSON.parse(decodeURIComponent(userData));
+            this.setSession(token, user);
+        } catch (error) {
+            console.error('Error processing Google auth data:', error);
+            throw new Error('Failed to process authentication data');
+        }
+    }
+
+    private setSession(token: string, user: User): void {
+        try {
+            localStorage.setItem(this.tokenKey, token);
+            localStorage.setItem(this.userKey, JSON.stringify(user));
+        } catch (error) {
+            console.error('Error setting session:', error);
+            this.clearSession();
+            throw new Error('Failed to save authentication data');
+        }
+    }
+
+    private clearSession(): void {
+        localStorage.removeItem(this.tokenKey);
+        localStorage.removeItem(this.userKey);
     }
 
     logout(): void {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('user');
-        window.location.href = '/auth';
+        this.clearSession();
+        // Optional: Call backend to invalidate token
+        fetch('http://localhost:3002/auth/logout', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${this.getToken()}`
+            },
+            credentials: 'include'
+        }).finally(() => {
+            window.location.href = '/login';
+        });
     }
 
-    isAuthenticated(): boolean {
-        return !!localStorage.getItem('authToken');
-    }
+    // Refresh token functionality if needed
+    async refreshToken(): Promise<string | null> {
+        try {
+            const response = await fetch('http://localhost:3002/auth/refresh', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${this.getToken()}`
+                },
+                credentials: 'include'
+            });
 
-    getCurrentUser() {
-        const userStr = localStorage.getItem('user');
-        if (userStr) {
-            return JSON.parse(userStr);
+            if (!response.ok) throw new Error('Failed to refresh token');
+
+            const { token } = await response.json();
+            localStorage.setItem(this.tokenKey, token);
+            return token;
+        } catch (error) {
+            this.logout();
+            return null;
         }
-        return null;
     }
 }
 

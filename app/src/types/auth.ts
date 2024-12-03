@@ -22,3 +22,12 @@ export interface AuthResponse {
     token?: string;
     user?: User;
 }
+
+export interface User {
+    id?: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    avatar?: string;
+    provider?: 'local' | 'google';
+}

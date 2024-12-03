@@ -3,78 +3,35 @@ import mongoose from "mongoose";
 
 const gallerySchema = new mongoose.Schema(
   {
-    url: {
-      type: String,
-      required: [true, "Image URL is required"],
-      trim: true,
-    },
     fileName: {
+      type: String,
+      required: true,
+    },
+    url: {
       type: String,
       required: true,
     },
     userName: {
       type: String,
-      required: [true, "Username is required"],
-      trim: true,
-      minlength: [2, "Username must be at least 2 characters"],
-      maxlength: [50, "Username cannot exceed 50 characters"],
-    },
-    userId: {
-      type: String,
-      ref: "User",
-      required: false, // change later.
+      required: true,
     },
     location: {
       type: String,
-      required: [true, "Location is required"],
-      trim: true,
-    },
-    description: {
-      type: String,
-      trim: true,
+      required: true,
     },
     visibility: {
       type: String,
       enum: ["public", "private"],
-      default: "public",
+      default: "public"
     },
     likes: {
       type: Number,
-      default: 0,
-    },
-    metadata: {
-      camera: String,
-      settings: {
-        iso: Number,
-        exposure: String,
-        aperture: String,
-      },
-    },
+      default: 0
+    }
   },
-  {
-    timestamps: true,
-    collection: "gallery",
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
+  { timestamps: true }
 );
 
-gallerySchema.virtual("fullUrl").get(function () {
-  return `/uploads/${this.fileName}`;
-});
-
-gallerySchema.index({ userName: 1 });
-gallerySchema.index({ location: 1 });
-gallerySchema.index({ createdAt: -1 });
-
-gallerySchema.pre("save", function (next) {
-  console.log("Saving gallery item:", this);
-  next();
-});
-
-gallerySchema.post("save", function (doc) {
-  console.log("Saved gallery item:", doc);
-});
-
-const Gallery = mongoose.model("Gallery", gallerySchema, "gallery");
+// Create and export model
+const Gallery = mongoose.model("Gallery", gallerySchema);
 export default Gallery;

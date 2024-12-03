@@ -1,36 +1,52 @@
-// import * as authService from './../services/auth-service.js';
-// import { setSuccess, setError } from './response-handler.js';
-
-import * as authService from '../services/auth-service.js';
+import authService from '../services/auth-service.js';
 import { setSuccess, setError } from './response-handler.js';
 
-
-// user registration
-
 export const signup = async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
-
-    if (!firstName || !lastName || !email || !password) {
-        return res.status(400).json({ message: 'All fields are required' });
-    }
-    if (password.length < 8) {
-        return res.status(400).json({ message: 'Password must be at least 8 characters long' });   
-    }
-
     try {
-        const user = await authService.register(req.body);
-        res.status(201).json({ message: 'User successfully registered', user });
+        const result = await authService.register(req.body);
+        setSuccess({
+            message: 'Registration successful',
+            ...result
+        }, res, 201);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        const status = error.message.includes('already registered') ? 409 : 400;
+        setError({ message: error.message }, res, status);
     }
 };
 
-// user authentication
 export const login = async (req, res) => {
     try {
-        const { token, user } = await authService.authenticate(req.body);
-        setSuccess({ message: 'Login successful', token, user }, res);
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            return setError({ message: 'Email and password are required' }, res, 400);
+        }
+
+        const result = await authService.login(req.body);
+        setSuccess({
+            message: 'Login successful',
+            ...result
+        }, res);
     } catch (error) {
-        setError(error, res);
+        setError({ message: error.message }, res, 401);
+    }
+};
+
+
+// Get current user
+export const getCurrentUser = async (req, res) => {
+    try {
+        if (!req.user) {
+            return setError({ message: 'Not authenticated' }, res, 401);
+        }
+
+        const user = await User.findById(req.user.id).select('-password');
+        if (!user) {
+            return setError({ message: 'User not found' }, res, 404);
+        }
+
+        setSuccess({ user }, res);
+    } catch (error) {
+        setError({ message: error.message }, res, 500);
     }
 };

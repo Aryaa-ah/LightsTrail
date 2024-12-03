@@ -112,6 +112,41 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 
+  /users/me:
+    delete:
+      summary: Delete current user's account
+      tags:
+        - User Management
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: User successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Account successfully deleted"
+        "401":
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not Found - User doesn't exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+
   /gallery/photos:
     get:
       summary: Get aurora photos
@@ -388,6 +423,7 @@ components:
           description: Success message
           example: "Operation successful"
 
+    
     ErrorResponse:
       type: object
       properties:
