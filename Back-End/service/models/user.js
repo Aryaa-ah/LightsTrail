@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: function() {
-            return !this.googleId; // Password only required if not using Google
+            return !this.googleId;
         }
     },
     firstName: {
@@ -21,12 +21,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    googleId: {
-        type: String,
-        sparse: true,
-        unique: true
-    },
-    avatar: String,
+    googleId: String,
     provider: {
         type: String,
         enum: ['local', 'google'],

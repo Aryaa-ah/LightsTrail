@@ -1,83 +1,62 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { CircularProgress, Box, Typography } from '@mui/material';
-import { authService } from '../services/auth';
+import { Box, CircularProgress } from '@mui/material';
 import React from 'react';
 
 export default function GoogleAuthCallback() {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    useEffect(() => {
+  useEffect(() => {
+    const handleCallback = async () => {
+      try {
+        // Handle popup message
+        if (window.opener) {
+          // This is a popup window
+          const data = location.search;
+          window.opener.postMessage({ type: 'AUTH_SUCCESS', data }, window.location.origin);
+          window.close();
+          return;
+        }
+
+        // Handle direct navigation
         const params = new URLSearchParams(location.search);
         const token = params.get('token');
-        const error = params.get('error');
+        const userStr = params.get('user');
 
-        if (error) {
-            setError(decodeURIComponent(error));
-            setTimeout(() => navigate('/login'), 3000);
-            return;
+        if (!token || !userStr) {
+          throw new Error('Invalid authentication response');
         }
 
-        if (!token) {
-            setError('No authentication token received');
-            setTimeout(() => navigate('/login'), 3000);
-            return;
-        }
+        const user = JSON.parse(decodeURIComponent(userStr));
+        
+        // Store auth data
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
 
-        try {
-            // Make a request to get user data after Google auth
-            const getUserData = async () => {
-                const response = await fetch('http://localhost:3002/auth/me', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                
-                if (response.ok) {
-                    const userData = await response.json();
-                    localStorage.setItem('user', JSON.stringify(userData));
-                }
-                authService.handleGoogleAuthSuccess(token);
-            };
-            
-            getUserData();
-        } catch (err) {
-            setError('Failed to process authentication');
-            setTimeout(() => navigate('/login'), 3000);
-        }
-    }, [navigate, location]);
+        // Navigate to home
+        navigate('/home', { replace: true });
+      } catch (error) {
+        console.error('Auth callback error:', error);
+        navigate('/login', { 
+          replace: true,
+          state: { error: 'Authentication failed' }
+        });
+      }
+    };
 
-    if (error) {
-        return (
-            <Box
-                sx={{
-                    height: '100vh',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: 2
-                }}
-            >
-                <Typography color="error">{error}</Typography>
-                <Typography>Redirecting to login...</Typography>
-                <CircularProgress />
-            </Box>
-        );
-    }
+    handleCallback();
+  }, [navigate, location]);
 
-    return (
-        <Box
-            sx={{
-                height: '100vh',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-            }}
-        >
-            <CircularProgress />
-        </Box>
-    );
+  return (
+    <Box sx={{ 
+      height: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(to right, #0f0c29, #302b63, #24243e)'
+    }}>
+      <CircularProgress />
+    </Box>
+  );
 }

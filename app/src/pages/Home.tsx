@@ -4,6 +4,7 @@ import NorthernHemisphere from '../components/Northern.tsx'
 import SouthernHemisphere from '../components/Southern.tsx'
 import KpIndexInterface from '../components/KpIndexInterface.tsx'
 import { Box } from '@mui/material'
+import React from 'react'
 interface HomeProps{
     latitude: number,
     longitude: number

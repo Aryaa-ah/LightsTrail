@@ -13,13 +13,11 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { authService } from "./services/auth";
 
-
 // Components
 import ResponsiveAppBar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
-import GoogleAuthCallback from './components/GoogleAuthCallback';
-
+import GoogleAuthCallback from "./components/GoogleAuthCallback";
 
 // Pages
 import Home from "./pages/Home";
@@ -113,20 +111,13 @@ function App() {
         <Provider store={store}>
           <Router>
             <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/auth/google/success" element={<GoogleAuthCallback />} />
-
-              // changed from / to /home to make it the default route after auth
-              {/* Protected Routes */}
-              {/* <Route path="/" element={
-                <ProtectedRoute>
-                  <>
-                    <ResponsiveAppBar location={location} setLocation={setLocation} />
-                    <Home latitude={location.latitude} longitude={location.longitude} />
-                  </>
-                </ProtectedRoute>
-              } /> */}
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route
+                path="/auth/google/callback"
+                element={<GoogleAuthCallback />}
+              />
+              <Route path="/auth/success" element={<GoogleAuthCallback />} />
               <Route
                 path="/home"
                 element={
@@ -172,9 +163,8 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
               // In App.tsx, add this route with your other routes:
-             <Route
+              <Route
                 path="/profile"
                 element={
                   <ProtectedRoute>
@@ -188,10 +178,9 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-
-              
-              <Route path="/" element={<Navigate to="/login" />} />
-                {/* // <Route path="*" element={<Navigate to="/login" />} /> */}
+              {/* Redirect root to login */}
+              <Route path="/" element={<Navigate to="/login" replace />} />
+              <Route path="*" element={<Navigate to="/login" replace />} />
             </Routes>
           </Router>
         </Provider>
