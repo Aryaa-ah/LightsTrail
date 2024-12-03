@@ -150,21 +150,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     dispatch(setSelectedPhoto(photo));
   };
 
-  // Handle upload success
-  // const handleUploadSuccess = async () => {
-  //   try {
-  //     setUploadModalOpen(false);
-  //     console.log("Refreshing photos after upload");
-  //     await dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }));
-
-  //     // Log the current state to verify update
-  //     console.log("Photos updated:", photos);
-  //     console.log("Display photos:", displayPhotos);
-  //   } catch (error) {
-  //     console.error("Error refreshing photos:", error);
-  //   }
-  // };
-
   const handleUpdatePhoto = async (photoId: string, updates: EditPhotoData) => {
     try {
       await dispatch(updatePhoto({ photoId, updates })).unwrap();

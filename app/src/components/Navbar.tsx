@@ -16,10 +16,8 @@ import AdbIcon from "@mui/icons-material/Adb";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LocationDialogPopUp from "./../components/LocationPopUp";
 import auroraIcon from "../images/logo.png";
-import { useAuth } from "../hooks/useAuth"; // Import useAuth hook
-
-
-import { authService } from '../services/auth';
+import { useAuth } from "../hooks/useAuth"; 
+import { authService } from "../services/auth";
 
 interface Location {
   city_country: string;
@@ -32,13 +30,12 @@ interface ResponsiveAppBarProps {
   setLocation: (location: Location) => void;
 }
 
-
 // Define the navigation items including new gallery routes
-const pages = ["Gallery", "My Gallery", "Glossary", "Weather Forecast"];
+const pages = ["Gallery", "Glossary", "Weather Forecast"];
 const settings = ["Profile", "Change Language", "Logout"];
 
 const handleLogout = () => {
-  authService.logout();  // clear auth data and redirect to login
+  authService.logout(); // clear auth data and redirect to login
   handleCloseUserMenu(); // Close the menu
 };
 
@@ -78,10 +75,9 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
   };
 
   const handleProfileClick = () => {
-    navigate('/profile');
+    navigate("/profile");
     handleCloseUserMenu(); // Close the menu after clicking
   };
-  
 
   // Handle navigation for pages
   const handleNavigation = (page: string) => {
@@ -90,14 +86,7 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
       case "Gallery":
         navigate("/gallery");
         break;
-      case "My Gallery":
-        if (user) {
-          navigate("/my-gallery");
-        } else {
-          // Handle unauthorized access - maybe redirect to login
-          navigate("/login");
-        }
-        break;
+
       case "Glossary":
         navigate("/glossary");
         break;
@@ -248,7 +237,7 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                 <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+                  <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
                 </IconButton>
               </Tooltip>
               <Menu
@@ -267,27 +256,25 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
                 open={Boolean(anchorElUser)}
                 onClose={handleCloseUserMenu}
               >
-
-                  {settings.map((setting) => (
-                    <MenuItem 
-                      key={setting} 
-                      onClick={() => {
-                        if (setting === 'Logout') {
-                          handleLogout();
-                        } else if (setting === 'Profile') {
-                          navigate('/profile');
-                          handleCloseUserMenu();
-                        } else if (setting === 'Change Language') {
-                          handleCloseUserMenu();
-                        }
-                      }}
-                    >
-                      <Typography sx={{ textAlign: "center" }}>
-                        {setting}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-                  
+                {settings.map((setting) => (
+                  <MenuItem
+                    key={setting}
+                    onClick={() => {
+                      if (setting === "Logout") {
+                        handleLogout();
+                      } else if (setting === "Profile") {
+                        navigate("/profile");
+                        handleCloseUserMenu();
+                      } else if (setting === "Change Language") {
+                        handleCloseUserMenu();
+                      }
+                    }}
+                  >
+                    <Typography sx={{ textAlign: "center" }}>
+                      {setting}
+                    </Typography>
+                  </MenuItem>
+                ))}
               </Menu>
             </Box>
           </Toolbar>

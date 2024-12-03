@@ -15,6 +15,8 @@ import {
   DialogActions,
   TextField,
   DialogContent as ConfirmDialogContent,
+  Tooltip,
+  Fade,
 } from "@mui/material";
 import {
   Close,
@@ -25,6 +27,8 @@ import {
   Edit,
   Save,
   Cancel,
+  Visibility,
+  VisibilityOff,
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Photo } from "../types/gallery.types";
@@ -37,10 +41,7 @@ interface PhotoDetailProps {
   isOpen: boolean;
   onClose: () => void;
   onPhotoDeleted?: () => void;
-  onUpdatePhoto?: (
-    photoId: string,
-    updates: { location: string; description: string }
-  ) => void;
+  onUpdatePhoto?: (photoId: string, updates: { location: string }) => void;
 }
 
 const PhotoDetail: React.FC<PhotoDetailProps> = ({
@@ -56,6 +57,7 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editedLocation, setEditedLocation] = useState("");
   const [editedDescription, setEditedDescription] = useState("");
+  const [isPrivate, setIsPrivate] = useState(false);
 
   if (!photo) return null;
 
@@ -99,20 +101,22 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
     }
   };
 
+  const handleEdit = () => {
+    setEditedLocation(photo?.location || "");
+    setIsEditing(true);
+  };
+
   const handleSave = () => {
     if (photo && onUpdatePhoto) {
       onUpdatePhoto(photo.id, {
         location: editedLocation,
-        description: editedDescription,
       });
     }
     setIsEditing(false);
   };
 
-  const handleEdit = () => {
-    setEditedLocation(photo?.location || "");
-    setEditedDescription(photo?.description || "");
-    setIsEditing(true);
+  const toggleVisibility = () => {
+    setIsPrivate(!isPrivate);
   };
 
   return (
@@ -124,31 +128,32 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
         PaperProps={{
           sx: {
             bgcolor: "background.paper",
-            borderRadius: 1,
+            borderRadius: 2,
             overflow: "hidden",
-            maxHeight: "80vh",
+            maxHeight: "90vh",
             m: 2,
           },
         }}
       >
         <DialogContent sx={{ p: 0, position: "relative" }}>
+          {/* Main Content Container */}
           <Box
             sx={{
               display: "flex",
-              flexDirection: "column",
-              maxHeight: "80vh",
+              flexDirection: { xs: "column", md: "row" },
+              maxHeight: "90vh",
             }}
           >
-            {/* Image Container */}
+            {/* Left Side - Image */}
             <Box
               sx={{
+                flex: "1 1 60%",
                 position: "relative",
+                bgcolor: alpha(theme.palette.background.default, 0.95),
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                bgcolor: alpha(theme.palette.background.default, 0.95),
-                maxHeight: "60vh",
-                overflow: "hidden",
+                p: 2,
               }}
             >
               <img
@@ -156,208 +161,161 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
                 alt={`Aurora at ${photo.location}`}
                 style={{
                   maxWidth: "100%",
-                  maxHeight: "60vh",
+                  maxHeight: "70vh",
                   objectFit: "contain",
+                  borderRadius: theme.shape.borderRadius,
                 }}
               />
-              <IconButton
-                onClick={onClose}
-                sx={{
-                  position: "absolute",
-                  top: 8,
-                  right: 8,
-                  bgcolor: alpha(theme.palette.background.paper, 0.8),
-                  backdropFilter: "blur(4px)",
-                  "&:hover": {
-                    bgcolor: alpha(theme.palette.background.paper, 0.9),
-                  },
-                }}
-              >
-                <Close />
-              </IconButton>
             </Box>
 
-            {/* Details Container */}
+            {/* Right Side - Details */}
             <Box
               sx={{
-                p: 2,
-                bgcolor: "background.paper",
+                flex: "1 1 40%",
+                display: "flex",
+                flexDirection: "column",
+                borderLeft: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                maxHeight: "90vh",
+                overflow: "auto",
               }}
             >
-              {/* User Info and Date */}
+              {/* Header Actions */}
               <Box
                 sx={{
+                  p: 2,
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  mb: 1,
+                  justifyContent: "flex-end",
+                  gap: 1,
+                  borderBottom: `1px solid ${alpha(
+                    theme.palette.divider,
+                    0.1
+                  )}`,
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Avatar
-                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
-                    sx={{ width: 32, height: 32 }}
+                <Tooltip title="Download">
+                  <IconButton onClick={handleDownload} size="small">
+                    <Download />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Delete">
+                  <IconButton
+                    onClick={() => setIsDeleteDialogOpen(true)}
+                    size="small"
+                    sx={{ color: "error.main" }}
                   >
-                    {photo.userName.charAt(0).toUpperCase()}
-                  </Avatar>
-                  <Typography variant="subtitle1">{photo.userName}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                  <CalendarToday
-                    sx={{ fontSize: 14, color: "text.secondary" }}
-                  />
-                  <Typography variant="caption" color="text.secondary">
-                    {format(new Date(photo.createdAt), "MMM dd, yyyy")}
-                  </Typography>
-                </Box>
+                    <Delete />
+                  </IconButton>
+                </Tooltip>
+                <IconButton onClick={onClose} size="small">
+                  <Close />
+                </IconButton>
               </Box>
 
-              {/* Location and Description Section */}
-              {isEditing ? (
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="Location"
-                    value={editedLocation}
-                    onChange={(e) => setEditedLocation(e.target.value)}
-                    sx={{ mb: 2 }}
+              {/* Content */}
+              <Box sx={{ p: 3 }}>
+                {/* User Info */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 2,
+                    mb: 3,
+                  }}
+                >
+                  <Avatar
+                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
+                    sx={{ width: 48, height: 48 }}
                   />
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    label="Description"
-                    value={editedDescription}
-                    onChange={(e) => setEditedDescription(e.target.value)}
-                    sx={{ mb: 2 }}
-                  />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                    }}
-                  >
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Button
-                        startIcon={<Cancel />}
-                        onClick={() => setIsEditing(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="contained"
-                        startIcon={<Save />}
-                        onClick={handleSave}
-                      >
-                        Save
-                      </Button>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <IconButton
-                        onClick={() => setIsDeleteDialogOpen(true)}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(theme.palette.error.main, 0.1),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.error.main, 0.2),
-                          },
-                          color: theme.palette.error.main,
-                        }}
-                      >
-                        <Delete fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={handleDownload}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(theme.palette.background.paper, 0.8),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.background.paper, 0.9),
-                          },
-                        }}
-                      >
-                        <Download fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                </Box>
-              ) : (
-                <Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      mb: photo.description ? 1 : 0,
-                    }}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <LocationOn
-                        sx={{ fontSize: 18, color: "primary.main" }}
-                      />
-                      <Typography variant="body2">{photo.location}</Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <IconButton
-                        size="small"
-                        onClick={handleEdit}
-                        sx={{
-                          bgcolor: alpha(theme.palette.primary.main, 0.1),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.primary.main, 0.2),
-                          },
-                        }}
-                      >
-                        <Edit fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => setIsDeleteDialogOpen(true)}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(theme.palette.error.main, 0.1),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.error.main, 0.2),
-                          },
-                          color: theme.palette.error.main,
-                        }}
-                      >
-                        <Delete fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={handleDownload}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(theme.palette.background.paper, 0.8),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.background.paper, 0.9),
-                          },
-                        }}
-                      >
-                        <Download fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-
-                  {/* Description */}
-                  {photo.description && (
+                  <Box>
+                    <Typography variant="h6">{photo.userName}</Typography>
                     <Typography
                       variant="body2"
                       color="text.secondary"
-                      sx={{ mt: 1 }}
+                      sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
                     >
-                      {photo.description}
+                      <CalendarToday sx={{ fontSize: 14 }} />
+                      {format(new Date(photo.createdAt), "MMMM dd, yyyy")}
                     </Typography>
-                  )}
+                  </Box>
                 </Box>
-              )}
+
+                {/* Location */}
+                {isEditing ? (
+                  <Fade in={isEditing}>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+                    >
+                      <TextField
+                        fullWidth
+                        label="Location"
+                        value={editedLocation}
+                        onChange={(e) => setEditedLocation(e.target.value)}
+                        InputProps={{
+                          startAdornment: (
+                            <LocationOn sx={{ color: "primary.main", mr: 1 }} />
+                          ),
+                        }}
+                      />
+
+                      <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+                        <Button
+                          startIcon={<Cancel />}
+                          onClick={() => setIsEditing(false)}
+                          variant="outlined"
+                          fullWidth
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          startIcon={<Save />}
+                          onClick={handleSave}
+                          variant="contained"
+                          fullWidth
+                        >
+                          Save Changes
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Fade>
+                ) : (
+                  <Fade in={!isEditing}>
+                    <Box>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          mb: 2,
+                        }}
+                      >
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                        >
+                          <LocationOn sx={{ color: "primary.main" }} />
+                          <Typography variant="body1">
+                            {photo.location}
+                          </Typography>
+                        </Box>
+                        <Button
+                          startIcon={<Edit />}
+                          onClick={handleEdit}
+                          variant="outlined"
+                          size="small"
+                        >
+                          Edit
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Fade>
+                )}
+              </Box>
             </Box>
           </Box>
         </DialogContent>
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog
+      <ConfirmDialog
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
         maxWidth="xs"
@@ -376,7 +334,7 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
             Delete
           </Button>
         </DialogActions>
-      </Dialog>
+      </ConfirmDialog>
     </>
   );
 };

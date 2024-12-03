@@ -22,24 +22,11 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    }, 
-    "forceConsistentCasingInFileNames": true,
-    "lib": ["dom", "es2015"], 
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "target": "es5",
-    "module": "es2020",
+    },
+     "esModuleInterop": true
   },
-  "include": [
-    "src",
-    "Back-End/service/**/*.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "build",
-    "dist"
-  ],
+  "include": ["src", "Back-End/service/**/*.d.ts"],
+  "exclude": ["node_modules", "build", "dist"],
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
