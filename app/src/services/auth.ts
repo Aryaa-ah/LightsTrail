@@ -152,6 +152,30 @@ class AuthService {
             return null;
         }
     }
+
+     // Delete user details
+     // Update the deleteAccount method in your auth service
+async deleteAccount(): Promise<void> {
+    try {
+        const response = await fetch('http://localhost:3002/auth/users/me', {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${this.getToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to delete account');
+        }
+
+        this.clearSession();
+    } catch (error) {
+        throw error;
+    }
 }
+}
+
+
 
 export const authService = new AuthService();

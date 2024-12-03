@@ -3,6 +3,9 @@ import passport from 'passport';
 import * as authController from '../controllers/auth-controller.js';
 import { validateSignup, validateLogin } from '../middleware/validation.js';
 import authService from '../services/auth-service.js';
+import { authenticateToken } from '../middleware/auth.js';
+
+
 
 const router = express.Router();
 
@@ -37,5 +40,14 @@ router.get('/google/callback',
         }
     }
 );
+
+// delete user account
+// router.delete('/', authenticateToken, authController.deleteAccount);
+
+
+router.delete('/users/me', authenticateToken, authController.deleteAccount);
+
+
+
 
 export default router;
