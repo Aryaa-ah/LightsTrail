@@ -257,3 +257,5 @@ node_modules/
 *.log
  
 /Back-End/service/uploads
+
+/Back-End/uploads

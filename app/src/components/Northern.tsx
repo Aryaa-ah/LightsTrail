@@ -1,5 +1,12 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Box, Card, CardContent, Button, Typography, LinearProgress } from '@mui/material';
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Box,
+  Card,
+  CardContent,
+  Button,
+  Typography,
+  LinearProgress,
+} from "@mui/material";
 
 // Define the shape of each image object
 interface ImageData {
@@ -18,7 +25,9 @@ const NorthernHemisphere = () => {
 
   useEffect(() => {
     const fetchImages = async () => {
-      const response = await fetch('https://services.swpc.noaa.gov/products/animations/ovation_north_24h.json');
+      const response = await fetch(
+        "https://services.swpc.noaa.gov/products/animations/ovation_north_24h.json"
+      );
       const data = await response.json();
       setImages(data);
       setIsLoaded(true);
@@ -42,7 +51,7 @@ const NorthernHemisphere = () => {
   useEffect(() => {
     if (isLoaded && canvasRef.current) {
       const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       if (ctx) {
         const img = new Image();
         img.src = `https://services.swpc.noaa.gov${images[currentIndex].url}`;
@@ -74,27 +83,27 @@ const NorthernHemisphere = () => {
 
   return (
     <Box
-    sx={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      margin: '20px',
-      opacity: '0.7',
-    }}
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        margin: "20px",
+        opacity: "0.7",
+      }}
     >
-      <Card sx={{ bgcolor: 'grey.800', borderColor: 'grey.700', width: '77%' }}>
+      <Card sx={{ bgcolor: "grey.800", borderColor: "grey.700", width: "77%" }}>
         <CardContent sx={{ p: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
             <Typography
               variant="h4"
               component="h1"
               sx={{
-                background: 'linear-gradient(to right, #60A5FA, #22D3EE)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontWeight: 'bold',
+                background: "linear-gradient(to right, #60A5FA, #22D3EE)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                fontWeight: "bold",
               }}
             >
               Northern Hemisphere
@@ -104,10 +113,10 @@ const NorthernHemisphere = () => {
             <canvas
               ref={canvasRef}
               style={{
-                display: 'block',
-                margin: '0 auto',
-                border: '1px solid #444',
-                borderRadius: '8px',
+                display: "block",
+                margin: "0 auto",
+                border: "1px solid #444",
+                borderRadius: "8px",
               }}
             />
           </Box>
@@ -115,27 +124,27 @@ const NorthernHemisphere = () => {
             variant="determinate"
             value={progressBarValue}
             sx={{
-              bgcolor: 'grey.700',
-              '& .MuiLinearProgress-bar': {
-                bgcolor: 'primary.main',
+              bgcolor: "grey.700",
+              "& .MuiLinearProgress-bar": {
+                bgcolor: "primary.main",
               },
               mb: 3,
-              height: '10px',
+              height: "10px",
               borderRadius: 2,
             }}
           />
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
             <Button
               onClick={handlePlayPause}
               variant="contained"
               sx={{
-                bgcolor: isPlaying ? 'error.main' : 'primary.main',
-                '&:hover': {
-                  bgcolor: isPlaying ? 'error.dark' : 'primary.dark',
+                bgcolor: isPlaying ? "error.main" : "primary.main",
+                "&:hover": {
+                  bgcolor: isPlaying ? "error.dark" : "primary.dark",
                 },
               }}
             >
-              {isPlaying ? 'Pause' : 'Play'}
+              {isPlaying ? "Pause" : "Play"}
             </Button>
           </Box>
         </CardContent>
