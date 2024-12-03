@@ -13,6 +13,7 @@ import {
   Dialog as ConfirmDialog,
   DialogTitle,
   DialogActions,
+  TextField,
   DialogContent as ConfirmDialogContent,
 } from "@mui/material";
 import {
@@ -21,6 +22,9 @@ import {
   CalendarToday,
   Download,
   Delete,
+  Edit,
+  Save,
+  Cancel,
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Photo } from "../types/gallery.types";
@@ -33,6 +37,10 @@ interface PhotoDetailProps {
   isOpen: boolean;
   onClose: () => void;
   onPhotoDeleted?: () => void;
+  onUpdatePhoto?: (
+    photoId: string,
+    updates: { location: string; description: string }
+  ) => void;
 }
 
 const PhotoDetail: React.FC<PhotoDetailProps> = ({
@@ -40,10 +48,14 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
   isOpen,
   onClose,
   onPhotoDeleted,
+  onUpdatePhoto,
 }) => {
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedLocation, setEditedLocation] = useState("");
+  const [editedDescription, setEditedDescription] = useState("");
 
   if (!photo) return null;
 
@@ -85,6 +97,22 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
     } catch (error) {
       console.error("Failed to delete photo:", error);
     }
+  };
+
+  const handleSave = () => {
+    if (photo && onUpdatePhoto) {
+      onUpdatePhoto(photo.id, {
+        location: editedLocation,
+        description: editedDescription,
+      });
+    }
+    setIsEditing(false);
+  };
+
+  const handleEdit = () => {
+    setEditedLocation(photo?.location || "");
+    setEditedDescription(photo?.description || "");
+    setIsEditing(true);
   };
 
   return (
@@ -184,66 +212,145 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
                 </Box>
               </Box>
 
-              {/* Location */}
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                  mb: photo.description ? 1 : 0,
-                }}
-              >
-                <LocationOn sx={{ fontSize: 18, color: "primary.main" }} />
-                <Typography variant="body2">{photo.location}</Typography>
-              </Box>
+              {/* Location and Description Section */}
+              {isEditing ? (
+                <Box>
+                  <TextField
+                    fullWidth
+                    label="Location"
+                    value={editedLocation}
+                    onChange={(e) => setEditedLocation(e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                  <TextField
+                    fullWidth
+                    multiline
+                    rows={3}
+                    label="Description"
+                    value={editedDescription}
+                    onChange={(e) => setEditedDescription(e.target.value)}
+                    sx={{ mb: 2 }}
+                  />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <Button
+                        startIcon={<Cancel />}
+                        onClick={() => setIsEditing(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="contained"
+                        startIcon={<Save />}
+                        onClick={handleSave}
+                      >
+                        Save
+                      </Button>
+                    </Box>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <IconButton
+                        onClick={() => setIsDeleteDialogOpen(true)}
+                        size="small"
+                        sx={{
+                          bgcolor: alpha(theme.palette.error.main, 0.1),
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.error.main, 0.2),
+                          },
+                          color: theme.palette.error.main,
+                        }}
+                      >
+                        <Delete fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={handleDownload}
+                        size="small"
+                        sx={{
+                          bgcolor: alpha(theme.palette.background.paper, 0.8),
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.background.paper, 0.9),
+                          },
+                        }}
+                      >
+                        <Download fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                </Box>
+              ) : (
+                <Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      mb: photo.description ? 1 : 0,
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <LocationOn
+                        sx={{ fontSize: 18, color: "primary.main" }}
+                      />
+                      <Typography variant="body2">{photo.location}</Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      <IconButton
+                        size="small"
+                        onClick={handleEdit}
+                        sx={{
+                          bgcolor: alpha(theme.palette.primary.main, 0.1),
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.primary.main, 0.2),
+                          },
+                        }}
+                      >
+                        <Edit fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={() => setIsDeleteDialogOpen(true)}
+                        size="small"
+                        sx={{
+                          bgcolor: alpha(theme.palette.error.main, 0.1),
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.error.main, 0.2),
+                          },
+                          color: theme.palette.error.main,
+                        }}
+                      >
+                        <Delete fontSize="small" />
+                      </IconButton>
+                      <IconButton
+                        onClick={handleDownload}
+                        size="small"
+                        sx={{
+                          bgcolor: alpha(theme.palette.background.paper, 0.8),
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.background.paper, 0.9),
+                          },
+                        }}
+                      >
+                        <Download fontSize="small" />
+                      </IconButton>
+                    </Box>
+                  </Box>
 
-              {/* Description */}
-              {photo.description && (
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{ mt: 1 }}
-                >
-                  {photo.description}
-                </Typography>
+                  {/* Description */}
+                  {photo.description && (
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mt: 1 }}
+                    >
+                      {photo.description}
+                    </Typography>
+                  )}
+                </Box>
               )}
-
-              {/* Action Buttons */}
-              <Box
-                sx={{
-                  position: "absolute",
-                  right: 8,
-                  bottom: 8,
-                  display: "flex",
-                  gap: 1,
-                }}
-              >
-                <IconButton
-                  onClick={() => setIsDeleteDialogOpen(true)}
-                  size="small"
-                  sx={{
-                    bgcolor: alpha(theme.palette.error.main, 0.1),
-                    "&:hover": {
-                      bgcolor: alpha(theme.palette.error.main, 0.2),
-                    },
-                    color: theme.palette.error.main,
-                  }}
-                >
-                  <Delete fontSize="small" />
-                </IconButton>
-                <IconButton
-                  onClick={handleDownload}
-                  size="small"
-                  sx={{
-                    bgcolor: alpha(theme.palette.background.paper, 0.8),
-                    "&:hover": {
-                      bgcolor: alpha(theme.palette.background.paper, 0.9),
-                    },
-                  }}
-                >
-                  <Download fontSize="small" />
-                </IconButton>
-              </Box>
             </Box>
           </Box>
         </DialogContent>

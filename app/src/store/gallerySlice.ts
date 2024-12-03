@@ -60,6 +60,53 @@ export const uploadPhoto = createAsyncThunk(
   }
 );
 
+export const searchPhotosByLocation = createAsyncThunk(
+  "gallery/searchPhotosByLocation",
+  async (location: string) => {
+    const response = await fetch(
+      `${BACKEND_URL}/api/gallery/photos?location=${encodeURIComponent(
+        location
+      )}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to search photos");
+    }
+
+    const data = await response.json();
+    return data.data;
+  }
+);
+
+export const updatePhoto = createAsyncThunk(
+  "gallery/updatePhoto",
+  async ({
+    photoId,
+    updates,
+  }: {
+    photoId: string;
+    updates: Partial<Photo>;
+  }) => {
+    const response = await fetch(
+      `${BACKEND_URL}/api/gallery/photos/${photoId}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updates),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update photo");
+    }
+
+    const data = await response.json();
+    return data.data;
+  }
+);
+
 export const deletePhoto = createAsyncThunk(
   "gallery/deletePhoto",
   async (photoId: string) => {
@@ -75,6 +122,22 @@ export const deletePhoto = createAsyncThunk(
     }
 
     return photoId;
+  }
+);
+
+export const getPhotoById = createAsyncThunk(
+  "gallery/getPhotoById",
+  async (photoId: string) => {
+    const response = await fetch(
+      `${BACKEND_URL}/api/gallery/photos/${photoId}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch photo");
+    }
+
+    const data = await response.json();
+    return data.data;
   }
 );
 
@@ -128,6 +191,16 @@ const gallerySlice = createSlice({
       .addCase(uploadPhoto.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || "Upload failed";
+      })
+      .addCase(searchPhotosByLocation.fulfilled, (state, action) => {
+        state.photos = action.payload;
+      })
+      .addCase(updatePhoto.fulfilled, (state, action) => {
+        // Update photo in state
+        const index = state.photos.findIndex((p) => p.id === action.payload.id);
+        if (index !== -1) {
+          state.photos[index] = action.payload;
+        }
       })
       .addCase(deletePhoto.fulfilled, (state, action) => {
         state.photos = state.photos.filter(

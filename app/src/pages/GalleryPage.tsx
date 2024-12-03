@@ -21,7 +21,10 @@ import {
   Chip,
   useTheme,
   alpha,
-  // Dialog,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
 } from "@mui/material";
 import {
   Search,
@@ -38,7 +41,7 @@ import ErrorState from "../../../app/src/components/errorState";
 import PhotoDetail from "../components/PhotoDetail";
 // import GalleryFilters from "../components/GalleryFilters";
 import EmptyState from "../../../app/src/components/EmptyState";
-
+import { updatePhoto, getPhotoById } from "../store/gallerySlice";
 // State and Types
 import {
   fetchPhotos,
@@ -51,7 +54,10 @@ import type { Photo as GalleryPhoto } from "../types/gallery.types";
 import { AppDispatch } from "../store";
 
 import { motion } from "framer-motion";
-
+interface EditPhotoData {
+  location?: string;
+  description?: string;
+}
 const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   userOnly = false,
 }) => {
@@ -88,6 +94,7 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     null
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
 
   useEffect(() => {
     const loadInitialPhotos = async () => {
@@ -144,17 +151,28 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   };
 
   // Handle upload success
-  const handleUploadSuccess = async () => {
-    try {
-      setUploadModalOpen(false);
-      console.log("Refreshing photos after upload");
-      await dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }));
+  // const handleUploadSuccess = async () => {
+  //   try {
+  //     setUploadModalOpen(false);
+  //     console.log("Refreshing photos after upload");
+  //     await dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }));
 
-      // Log the current state to verify update
-      console.log("Photos updated:", photos);
-      console.log("Display photos:", displayPhotos);
+  //     // Log the current state to verify update
+  //     console.log("Photos updated:", photos);
+  //     console.log("Display photos:", displayPhotos);
+  //   } catch (error) {
+  //     console.error("Error refreshing photos:", error);
+  //   }
+  // };
+
+  const handleUpdatePhoto = async (photoId: string, updates: EditPhotoData) => {
+    try {
+      await dispatch(updatePhoto({ photoId, updates })).unwrap();
+      // Refresh photos after update
+      await dispatch(fetchPhotos({ userOnly }));
+      setEditingPhoto(null);
     } catch (error) {
-      console.error("Error refreshing photos:", error);
+      console.error("Error updating photo:", error);
     }
   };
 
@@ -323,7 +341,65 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
             )}
           </Box>
         )}
-
+        {/* Edit Photo Dialog */}
+        <Dialog
+          open={!!editingPhoto}
+          onClose={() => setEditingPhoto(null)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Edit Photo</DialogTitle>
+          <DialogContent>
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}
+            >
+              <TextField
+                fullWidth
+                label="Location"
+                defaultValue={editingPhoto?.location}
+                onChange={(e) => {
+                  if (editingPhoto) {
+                    setEditingPhoto({
+                      ...editingPhoto,
+                      location: e.target.value,
+                    });
+                  }
+                }}
+              />
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                label="Description"
+                defaultValue={editingPhoto?.description}
+                onChange={(e) => {
+                  if (editingPhoto) {
+                    setEditingPhoto({
+                      ...editingPhoto,
+                      description: e.target.value,
+                    });
+                  }
+                }}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditingPhoto(null)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                if (editingPhoto) {
+                  handleUpdatePhoto(editingPhoto.id, {
+                    location: editingPhoto.location,
+                    description: editingPhoto.description,
+                  });
+                }
+              }}
+              variant="contained"
+            >
+              Save Changes
+            </Button>
+          </DialogActions>
+        </Dialog>
         {/* Gallery Content */}
         <AnimatePresence mode="wait">
           {loading ? (
@@ -362,6 +438,18 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
           onClose={() => setSelectedPhotoState(null)}
           onPhotoDeleted={() => {
             dispatch(fetchPhotos({ userOnly }));
+          }}
+          onUpdatePhoto={async (photoId, updates) => {
+            try {
+              await dispatch(updatePhoto({ photoId, updates })).unwrap();
+              await dispatch(fetchPhotos({ userOnly }));
+              const updatedPhoto = await dispatch(
+                getPhotoById(photoId)
+              ).unwrap();
+              setSelectedPhotoState(updatedPhoto);
+            } catch (error) {
+              console.error("Error updating photo:", error);
+            }
           }}
         />
       </Container>
