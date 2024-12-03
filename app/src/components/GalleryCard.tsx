@@ -10,7 +10,6 @@ import {
   Avatar,
   Box,
   Tooltip,
-  Chip,
   useTheme,
   alpha,
 } from "@mui/material";
@@ -20,7 +19,6 @@ import {
   Delete,
   Edit,
   Share,
-  Lock,
   MoreVert,
   Download,
   CalendarToday,
@@ -165,20 +163,6 @@ const GalleryCard: React.FC<GalleryCardProps> = ({
             alt={`Aurora at ${photo.location}`}
             loading="lazy"
           />
-          {photo.visibility === "private" && (
-            <Chip
-              icon={<Lock sx={{ fontSize: 16 }} />}
-              label="Private"
-              size="small"
-              sx={{
-                position: "absolute",
-                top: theme.spacing(2),
-                left: theme.spacing(2),
-                bgcolor: alpha(theme.palette.background.paper, 0.9),
-                backdropFilter: "blur(4px)",
-              }}
-            />
-          )}
 
           <CardActions className="card-actions">
             {showActions && (
