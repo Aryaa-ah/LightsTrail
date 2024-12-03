@@ -1,5 +1,7 @@
 import authService from '../services/auth-service.js';
 import { setSuccess, setError } from './response-handler.js';
+import User from '../models/user.js';
+
 
 export const signup = async (req, res) => {
     try {
@@ -48,5 +50,39 @@ export const getCurrentUser = async (req, res) => {
         setSuccess({ user }, res);
     } catch (error) {
         setError({ message: error.message }, res, 500);
+    }
+};
+
+
+// Delete user account
+
+
+
+
+export const deleteAccount = async (req, res) => {
+    try {
+        if (!req.user) {
+            return setError({ message: 'Not authenticated' }, res, 401);
+        }
+
+        const userId = req.user.id;
+        const user = await User.findById(userId);
+        
+        if (!user) {
+            return setError({ 
+                message: "User doesn't exist" 
+            }, res, 404);
+        }
+
+        await User.findByIdAndDelete(userId);
+        
+        setSuccess({ 
+            success: true,
+            message: "Account successfully deleted"
+        }, res, 200);
+    } catch (error) {
+        setError({ 
+            message: 'Failed to delete account'
+        }, res, 500);
     }
 };
