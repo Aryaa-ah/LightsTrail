@@ -3,31 +3,45 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Photo } from "../types/gallery.types";
 
 import { useDispatch, useSelector } from "react-redux";
-import { useInView } from "react-intersection-observer";
-import {
-  Camera,
-  Filter,
-  Grid as GridIcon,
-  List as ListIcon,
-  Search,
-  MapPin,
-} from "lucide-react";
+// import { useInView } from "react-intersection-observer";
+import { Grid as GridIcon, List as ListIcon } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { debounce } from "lodash";
 
 // Material UI Components
-import { TextField, Button, IconButton, InputAdornment } from "@mui/material";
-import { CircularProgress } from "@mui/material";
-import { Box, Typography, Chip } from "@mui/material";
-
+import {
+  Box,
+  Container,
+  Typography,
+  TextField,
+  Button,
+  IconButton,
+  InputAdornment,
+  CircularProgress,
+  Chip,
+  useTheme,
+  alpha,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
+import {
+  Search,
+  Camera,
+  Filter,
+  GridView,
+  // ViewList,
+  LocationOn,
+} from "@mui/icons-material";
 // Custom Components
 import GalleryGrid from "../components/GalleryGrid";
 import PhotoUpload from "../components/PhotoUpload";
 import ErrorState from "../../../app/src/components/errorState";
 import PhotoDetail from "../components/PhotoDetail";
-import GalleryFilters from "../components/GalleryFilters";
+// import GalleryFilters from "../components/GalleryFilters";
 import EmptyState from "../../../app/src/components/EmptyState";
-
+import { updatePhoto, getPhotoById } from "../store/gallerySlice";
 // State and Types
 import {
   fetchPhotos,
@@ -40,10 +54,14 @@ import type { Photo as GalleryPhoto } from "../types/gallery.types";
 import { AppDispatch } from "../store";
 
 import { motion } from "framer-motion";
-
+interface EditPhotoData {
+  location?: string;
+  description?: string;
+}
 const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   userOnly = false,
 }) => {
+  const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const {
     photos = [],
@@ -76,31 +94,8 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     null
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
 
-  // const debouncedSearch = useCallback(
-  //   (query: string) => {
-  //     debounce(() => {
-  //       dispatch(updateFilters({ searchQuery: query }));
-  //       dispatch(
-  //         fetchPhotos({
-  //           page: 1,
-  //           limit: 12,
-  //           userOnly,
-  //         })
-  //       );
-  //     }, 500)();
-  //   },
-  //   [dispatch, userOnly]
-  // );
-
-  // useEffect(() => {
-  //   // If there are uploaded photos, use them; otherwise, use mock photos
-  //   if (photos && photos.length > 0) {
-  //     setDisplayPhotos(photos);
-  //   } else {
-  //     setDisplayPhotos([dummyPhoto]);
-  //   }
-  // }, [photos, dummyPhoto]);
   useEffect(() => {
     const loadInitialPhotos = async () => {
       try {
@@ -121,8 +116,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     }
   }, [photos, dummyPhoto]);
 
-  // Debounced search handler
-
   // Handle search input
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -136,7 +129,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     },
     [dispatch, userOnly]
   );
-  // Handle photo selection for detail view
 
   const handlePhotoUpload = async (photo: Photo) => {
     try {
@@ -159,22 +151,30 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   };
 
   // Handle upload success
-  const handleUploadSuccess = async () => {
-    try {
-      setUploadModalOpen(false);
-      console.log("Refreshing photos after upload");
-      await dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }));
+  // const handleUploadSuccess = async () => {
+  //   try {
+  //     setUploadModalOpen(false);
+  //     console.log("Refreshing photos after upload");
+  //     await dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }));
 
-      // Log the current state to verify update
-      console.log("Photos updated:", photos);
-      console.log("Display photos:", displayPhotos);
+  //     // Log the current state to verify update
+  //     console.log("Photos updated:", photos);
+  //     console.log("Display photos:", displayPhotos);
+  //   } catch (error) {
+  //     console.error("Error refreshing photos:", error);
+  //   }
+  // };
+
+  const handleUpdatePhoto = async (photoId: string, updates: EditPhotoData) => {
+    try {
+      await dispatch(updatePhoto({ photoId, updates })).unwrap();
+      // Refresh photos after update
+      await dispatch(fetchPhotos({ userOnly }));
+      setEditingPhoto(null);
     } catch (error) {
-      console.error("Error refreshing photos:", error);
+      console.error("Error updating photo:", error);
     }
   };
-
-  // Add safe loading check
-  const isLoading = loading && !displayPhotos.length;
 
   return (
     <motion.div
@@ -182,191 +182,277 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <Box
+      <Container
+        maxWidth="xl"
         sx={{
-          minHeight: "100vh",
-          bgcolor: "background.default",
+          py: 4,
           p: { xs: 2, sm: 3 },
-          mt: { xs: 8, sm: 10 }, // Add top margin to create space below the navbar
+          mt: { xs: 8, sm: 10 },
+          minHeight: "100vh",
+          bgcolor: "transparent",
         }}
       >
-        {/* Header Section */}
-        <Box sx={{ mb: 4 }}>
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h4" sx={{ fontWeight: "bold", mb: 1 }}>
-              {userOnly ? "My Gallery" : "Aurora Gallery"}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {userOnly
-                ? "Manage and showcase your aurora captures"
-                : "Discover and share stunning aurora captures"}
-            </Typography>
-          </Box>
+        {/* Enhanced Header Section */}
+        <Box sx={{ mb: 6 }}>
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 800,
+              background:
+                theme.palette.mode === "dark"
+                  ? "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)"
+                  : "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              mb: 2,
+            }}
+          >
+            {userOnly ? "My Gallery" : "Aurora Gallery"}
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            {userOnly
+              ? "Manage and showcase your aurora captures"
+              : "Discover and share stunning aurora captures"}
+          </Typography>
+        </Box>
 
-          {/* Controls Section */}
+        {/* Enhanced Controls Section */}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 2,
+            mb: 4,
+            alignItems: "center",
+          }}
+        >
+          <TextField
+            fullWidth
+            size="medium"
+            placeholder="Search photos..."
+            value={searchQuery}
+            onChange={handleSearchChange}
+            sx={{
+              maxWidth: { md: 400 },
+              bgcolor: alpha(theme.palette.background.paper, 0.8),
+              backdropFilter: "blur(8px)",
+              borderRadius: 2,
+              "& .MuiOutlinedInput-root": {
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: theme.palette.primary.main,
+                },
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search color="primary" />
+                </InputAdornment>
+              ),
+            }}
+          />
+
           <Box
             sx={{
               display: "flex",
-              flexDirection: { xs: "column", md: "row" },
               gap: 2,
-              alignItems: { xs: "stretch", md: "center" },
-              justifyContent: "space-between",
+              ml: { md: "auto" },
+              alignItems: "center",
             }}
           >
-            {/* Search */}
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search photos..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              sx={{
-                maxWidth: { md: 300 },
-                "& .MuiOutlinedInput-root": {
-                  bgcolor: "background.paper",
-                  "&:hover": {
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "primary.main",
-                    },
-                  },
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            {/* Actions */}
+            {/* View Toggle */}
             <Box
               sx={{
                 display: "flex",
-                gap: 2,
-                flexWrap: "wrap",
-                justifyContent: { xs: "flex-start", md: "flex-end" },
+                bgcolor: alpha(theme.palette.background.paper, 0.8),
+                borderRadius: 2,
+                p: 0.5,
+                border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
               }}
             >
-              {/* View Toggle */}
-              <Box
-                sx={{
-                  display: "flex",
-                  bgcolor: "background.paper",
-                  borderRadius: 1,
-                  p: 0.5,
-                }}
+              <IconButton
+                onClick={() => setViewMode("grid")}
+                color={viewMode === "grid" ? "primary" : "default"}
               >
-                <IconButton
-                  onClick={() => setViewMode("grid")}
-                  color={viewMode === "grid" ? "primary" : "default"}
-                >
-                  <GridIcon />
-                </IconButton>
-                <IconButton
-                  onClick={() => setViewMode("list")}
-                  color={viewMode === "list" ? "primary" : "default"}
-                >
-                  <ListIcon />
-                </IconButton>
-              </Box>
-
-              {/* Filter & Upload Buttons */}
-              <Button
-                variant="outlined"
-                startIcon={<Filter />}
-                onClick={() => setFilterDrawerOpen(true)}
-                sx={{
-                  borderColor: "divider",
-                  "&:hover": { borderColor: "primary.main" },
-                }}
+                <GridView />
+              </IconButton>
+              <IconButton
+                onClick={() => setViewMode("list")}
+                color={viewMode === "list" ? "primary" : "default"}
               >
-                Filters
-              </Button>
-              <Button
-                variant="contained"
-                startIcon={<Camera />}
-                onClick={() => setUploadModalOpen(true)}
-              >
-                Upload
-              </Button>
+                <ListIcon />
+              </IconButton>
             </Box>
+
+            <Button
+              variant="outlined"
+              startIcon={<Filter />}
+              onClick={() => setFilterDrawerOpen(true)}
+              sx={{
+                borderColor: alpha(theme.palette.primary.main, 0.5),
+                "&:hover": {
+                  borderColor: theme.palette.primary.main,
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                },
+              }}
+            >
+              Filters
+            </Button>
+
+            <Button
+              variant="contained"
+              startIcon={<Camera />}
+              onClick={() => setUploadModalOpen(true)}
+              sx={{
+                fontSize: 18,
+                background: "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)",
+                boxShadow: theme.shadows[4],
+                "&:hover": {
+                  background:
+                    "linear-gradient(45deg, #84fab0 20%, #8fd3f4 100%)",
+                },
+              }}
+            >
+              Upload
+            </Button>
           </Box>
-
-          {/* Active Filters */}
-          {(filters.location ||
-            filters.sortBy !== "latest" ||
-            filters.dateRange) && (
-            <Box sx={{ display: "flex", gap: 1, mt: 2, flexWrap: "wrap" }}>
-              {filters.location && (
-                <Chip
-                  icon={
-                    <Box sx={{ fontSize: 18 }}>
-                      <MapPin size={18} color="currentColor" strokeWidth={2} />
-                    </Box>
-                  }
-                  label={filters.location}
-                  onDelete={() => {
-                    dispatch(updateFilters({ location: undefined }));
-                    dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }));
-                  }}
-                  sx={{
-                    bgcolor: "background.paper",
-                    "&:hover": { bgcolor: "background.paper" },
-                  }}
-                />
-              )}
-            </Box>
-          )}
         </Box>
 
-        {/* Main Content */}
+        {/* Active Filters */}
+        {(filters.location || filters.dateRange) && (
+          <Box sx={{ display: "flex", gap: 1, mb: 3, flexWrap: "wrap" }}>
+            {filters.location && (
+              <Chip
+                icon={<LocationOn sx={{ fontSize: 18 }} />}
+                label={filters.location}
+                onDelete={() => {
+                  dispatch(updateFilters({ location: undefined }));
+                  dispatch(fetchPhotos({ userOnly }));
+                }}
+                sx={{
+                  bgcolor: alpha(theme.palette.primary.main, 0.1),
+                  borderColor: alpha(theme.palette.primary.main, 0.3),
+                  "& .MuiChip-deleteIcon": {
+                    color: theme.palette.primary.main,
+                  },
+                }}
+              />
+            )}
+          </Box>
+        )}
+        {/* Edit Photo Dialog */}
+        <Dialog
+          open={!!editingPhoto}
+          onClose={() => setEditingPhoto(null)}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>Edit Photo</DialogTitle>
+          <DialogContent>
+            <Box
+              sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}
+            >
+              <TextField
+                fullWidth
+                label="Location"
+                defaultValue={editingPhoto?.location}
+                onChange={(e) => {
+                  if (editingPhoto) {
+                    setEditingPhoto({
+                      ...editingPhoto,
+                      location: e.target.value,
+                    });
+                  }
+                }}
+              />
+              <TextField
+                fullWidth
+                multiline
+                rows={4}
+                label="Description"
+                defaultValue={editingPhoto?.description}
+                onChange={(e) => {
+                  if (editingPhoto) {
+                    setEditingPhoto({
+                      ...editingPhoto,
+                      description: e.target.value,
+                    });
+                  }
+                }}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setEditingPhoto(null)}>Cancel</Button>
+            <Button
+              onClick={() => {
+                if (editingPhoto) {
+                  handleUpdatePhoto(editingPhoto.id, {
+                    location: editingPhoto.location,
+                    description: editingPhoto.description,
+                  });
+                }
+              }}
+              variant="contained"
+            >
+              Save Changes
+            </Button>
+          </DialogActions>
+        </Dialog>
+        {/* Gallery Content */}
         <AnimatePresence mode="wait">
-          {isLoading ? (
+          {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-              <CircularProgress />
+              <CircularProgress size={40} />
             </Box>
           ) : error ? (
             <ErrorState
               error={error}
               onRetry={() => dispatch(fetchPhotos({ userOnly }))}
             />
-          ) : !displayPhotos.length ? (
+          ) : !photos.length ? (
             <EmptyState onUpload={() => setUploadModalOpen(true)} />
           ) : (
             <GalleryGrid
-              photos={displayPhotos}
+              photos={photos}
               viewMode={viewMode}
               onPhotoClick={handlePhotoClick}
             />
           )}
         </AnimatePresence>
 
-        {isLoading && (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress />
-          </Box>
-        )}
-
         {/* Modals */}
         <PhotoUpload
           isOpen={isUploadModalOpen}
           onClose={() => setUploadModalOpen(false)}
           onUpload={handlePhotoUpload}
-          onUploadSuccess={handleUploadSuccess}
+          onUploadSuccess={() => {
+            setUploadModalOpen(false);
+            dispatch(fetchPhotos({ userOnly }));
+          }}
         />
         <PhotoDetail
           photo={selectedPhoto}
           isOpen={!!selectedPhoto}
           onClose={() => setSelectedPhotoState(null)}
-          userOnly={userOnly}
+          onPhotoDeleted={() => {
+            dispatch(fetchPhotos({ userOnly }));
+          }}
+          onUpdatePhoto={async (photoId, updates) => {
+            try {
+              await dispatch(updatePhoto({ photoId, updates })).unwrap();
+              await dispatch(fetchPhotos({ userOnly }));
+              const updatedPhoto = await dispatch(
+                getPhotoById(photoId)
+              ).unwrap();
+              setSelectedPhotoState(updatedPhoto);
+            } catch (error) {
+              console.error("Error updating photo:", error);
+            }
+          }}
         />
-        <GalleryFilters
-          isOpen={isFilterDrawerOpen}
-          onClose={() => setFilterDrawerOpen(false)}
-        />
-      </Box>
+      </Container>
     </motion.div>
   );
 };

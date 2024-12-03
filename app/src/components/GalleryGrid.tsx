@@ -1,47 +1,66 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from "react";
+import { useState, useCallback } from "react";
 import {
   ImageList,
   ImageListItem,
-  ImageListItemBar,
   IconButton,
   Box,
   Skeleton,
   useMediaQuery,
   useTheme,
+  alpha,
+  Avatar,
+  Typography,
 } from "@mui/material";
-import { LocationOn } from "@mui/icons-material";
+import { LocationOn, Favorite, Download } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { Photo } from "../types/gallery.types";
+import { motion } from "framer-motion";
+import { format } from "date-fns";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
 const PLACEHOLDER_IMAGE = "/placeholder.jpg";
 
-const StyledImageListItem = styled(ImageListItem)(({ theme }) => ({
+const StyledImageListItemBase = styled(ImageListItem)(({ theme }) => ({
   cursor: "pointer",
   overflow: "hidden",
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: theme.palette.grey[900],
-  "& img": {
-    transition: "transform 0.3s ease-in-out",
-  },
-  "&:hover img": {
-    transform: "scale(1.05)",
+  backgroundColor: theme.palette.background.paper,
+  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+  transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+  position: "relative",
+  "&:hover": {
+    transform: "translateY(-4px)",
+    boxShadow: theme.shadows[8],
+    borderColor: alpha(theme.palette.primary.main, 0.3),
+    "& .image-overlay": {
+      opacity: 1,
+    },
+    "& .photo-info": {
+      transform: "translateY(0)",
+    },
   },
 }));
 
-const StyledImageListItemBar = styled(ImageListItemBar)(({ theme }) => ({
-  background:
-    "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)",
+const ImageOverlay = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  background: `linear-gradient(to top, 
+    ${alpha(theme.palette.background.default, 0.9)} 0%, 
+    ${alpha(theme.palette.background.default, 0.5)} 50%, 
+    transparent 100%)`,
   opacity: 0,
-  transition: "opacity 0.3s ease-in-out",
-  ".MuiImageListItemBar-title": {
-    color: theme.palette.common.white,
-  },
-  ".MuiImageListItemBar-subtitle": {
-    color: theme.palette.grey[300],
-  },
+  transition: "opacity 0.3s ease",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "flex-end",
+  padding: theme.spacing(2),
 }));
+
+ 
 
 export interface GalleryGridProps {
   photos: Photo[];
@@ -49,7 +68,7 @@ export interface GalleryGridProps {
   onPhotoClick: (photo: Photo) => void;
 }
 
-export const GalleryGrid: React.FC<GalleryGridProps> = ({
+const GalleryGrid: React.FC<GalleryGridProps> = ({
   photos,
   viewMode,
   onPhotoClick,
@@ -57,43 +76,48 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
-  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
 
   const getImageListCols = () => {
     if (viewMode === "list") return 1;
     if (isMobile) return 1;
     if (isTablet) return 2;
-    if (isDesktop) return 4;
     return 3;
   };
 
-  const getImageUrl = (photo: Photo): string => {
-    if (!photo?.url) return PLACEHOLDER_IMAGE;
-    
-    // Handle full URLs
-    if (photo.url.startsWith('http')) return photo.url;
-    
-    // Handle relative URLs
-    const cleanUrl = photo.url.startsWith('/') ? photo.url : `/${photo.url}`;
-    return `${BACKEND_URL}${cleanUrl}`;
-  };
-
-  const handleImageLoad = (photoId: string) => {
+  const handleImageLoad = useCallback((photoId: string) => {
     setLoadedImages((prev) => ({ ...prev, [photoId]: true }));
-    console.log("Image loaded successfully:", photoId);
-  };
+  }, []);
 
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement>,
-    photo: Photo
-  ) => {
-    console.error(`Failed to load image: ${photo.url}`);
-    const imgElement = e.currentTarget;
-    if (!loadedImages[photo.id]) {
-      console.log("Setting placeholder for:", photo.id);
-      imgElement.src = PLACEHOLDER_IMAGE;
+  const handleImageError = useCallback(
+    (e: React.SyntheticEvent<HTMLImageElement>, photo: Photo) => {
+      console.error(`Failed to load image: ${photo.url}`);
+      e.currentTarget.src = PLACEHOLDER_IMAGE;
       setLoadedImages((prev) => ({ ...prev, [photo.id]: true }));
+    },
+    []
+  );
+
+  const handleDownload = async (e: React.MouseEvent, photo: Photo) => {
+    e.stopPropagation(); // Prevent opening photo detail view
+    
+    try {
+      const response = await fetch(photo.url.startsWith("http") 
+        ? photo.url 
+        : `${BACKEND_URL}${photo.url}`
+      );
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `aurora-${photo.location}-${format(new Date(photo.createdAt), 'yyyy-MM-dd')}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Failed to download photo:', error);
     }
   };
 
@@ -104,59 +128,91 @@ export const GalleryGrid: React.FC<GalleryGridProps> = ({
       sx={{
         m: 0,
         ".MuiImageListItem-root": {
-          borderRadius: 2,
           overflow: "hidden",
-          border: "1px solid",
-          borderColor: "grey.700",
         },
       }}
-      variant={viewMode === "list" ? "quilted" : "standard"}
-      rowHeight={viewMode === "list" ? 200 : 340}
+      rowHeight={viewMode === "list" ? 300 : 400}
     >
       {photos.map((photo) => (
-        <StyledImageListItem key={photo.id} onClick={() => onPhotoClick(photo)}>
-          {!loadedImages[photo.id] && (
-            <Skeleton
-              variant="rectangular"
-              width="100%"
-              height={viewMode === "list" ? 200 : 340}
-              animation="wave"
+        <motion.div
+          key={photo.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <StyledImageListItemBase onClick={() => onPhotoClick(photo)}>
+            {!loadedImages[photo.id] && (
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={viewMode === "list" ? 300 : 400}
+                animation="wave"
+              />
+            )}
+            <img
+              src={
+                photo.url.startsWith("http")
+                  ? photo.url
+                  : `${BACKEND_URL}${photo.url}`
+              }
+              alt={`Aurora at ${photo.location}`}
+              loading="lazy"
+              onLoad={() => handleImageLoad(photo.id)}
+              onError={(e) => handleImageError(e, photo)}
+              style={{
+                height: "100%",
+                width: "100%",
+                objectFit: "cover",
+                display: loadedImages[photo.id] ? "block" : "none",
+              }}
             />
-          )}
-          <img
-            src={getImageUrl(photo)}
-            alt={`Aurora at ${photo.location}`}
-            loading="lazy"
-            onLoad={() => handleImageLoad(photo.id)}
-            onError={(e) => handleImageError(e, photo)}
-            style={{
-              height: "100%",
-              width: "100%",
-              objectFit: "cover",
-              display: loadedImages[photo.id] ? "block" : "none",
-            }}
-          />
-          <ImageListItemBar
-            title={photo.location}
-            subtitle={
+
+            <ImageOverlay className="image-overlay">
               <Box
-                component="span"
-                sx={{ display: "flex", justifyContent: "space-between" }}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
+                }}
               >
-                <span>{photo.userName}</span>
-                <span>{new Date(photo.createdAt).toLocaleDateString()}</span>
+                <Box>
+                  <Typography variant="h6" color="common.white" gutterBottom>
+                    {photo.location}
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    <Avatar
+                      sx={{ width: 32, height: 32 }}
+                      alt={photo.userName}
+                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
+                    />
+                    <Typography variant="body2" color="common.white">
+                      {photo.userName}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <IconButton 
+                    size="small" 
+                    sx={{ color: "common.white" }}
+                    onClick={(e) => handleDownload(e, photo)}
+                  >
+                    <Download />
+                  </IconButton>
+                </Box>
               </Box>
-            }
-            actionIcon={
-              <IconButton
-                sx={{ color: "rgba(255, 255, 255, 0.54)" }}
-                aria-label={`info about ${photo.location}`}
+
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, mt: 2 }}
               >
-                <LocationOn />
-              </IconButton>
-            }
-          />
-        </StyledImageListItem>
+                <LocationOn fontSize="small" sx={{ color: "common.white" }} />
+                <Typography variant="caption" color="common.white">
+                  {format(new Date(photo.createdAt), "MMMM dd, yyyy")}
+                </Typography>
+              </Box>
+            </ImageOverlay>
+          </StyledImageListItemBase>
+        </motion.div>
       ))}
     </ImageList>
   );
