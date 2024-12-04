@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   IconButton,
@@ -14,7 +14,8 @@ import {
   DialogTitle,
   DialogActions,
   TextField,
-  DialogContent as ConfirmDialogContent,
+  Tooltip,
+  // Fade,
 } from "@mui/material";
 import {
   Close,
@@ -32,15 +33,56 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
 import { deletePhoto } from "../store/gallerySlice";
 
+const dialogVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.95,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 25,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.95,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
+const contentVariants = {
+  hidden: { opacity: 0, x: 20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      delay: 0.2,
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    },
+  },
+  exit: {
+    opacity: 0,
+    x: -20,
+    transition: {
+      duration: 0.2,
+    },
+  },
+};
+
 interface PhotoDetailProps {
   photo: Photo | null;
   isOpen: boolean;
   onClose: () => void;
   onPhotoDeleted?: () => void;
-  onUpdatePhoto?: (
-    photoId: string,
-    updates: { location: string; description: string }
-  ) => void;
+  onUpdatePhoto?: (photoId: string, updates: { location: string }) => void;
 }
 
 const PhotoDetail: React.FC<PhotoDetailProps> = ({
@@ -55,7 +97,6 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedLocation, setEditedLocation] = useState("");
-  const [editedDescription, setEditedDescription] = useState("");
 
   if (!photo) return null;
 
@@ -99,285 +140,298 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
     }
   };
 
+  const handleEdit = () => {
+    setEditedLocation(photo?.location || "");
+    setIsEditing(true);
+  };
+
   const handleSave = () => {
     if (photo && onUpdatePhoto) {
       onUpdatePhoto(photo.id, {
         location: editedLocation,
-        description: editedDescription,
       });
     }
     setIsEditing(false);
   };
 
-  const handleEdit = () => {
-    setEditedLocation(photo?.location || "");
-    setEditedDescription(photo?.description || "");
-    setIsEditing(true);
-  };
-
   return (
-    <>
-      <Dialog
-        open={isOpen}
-        onClose={onClose}
-        maxWidth="lg"
-        PaperProps={{
-          sx: {
-            bgcolor: "background.paper",
-            borderRadius: 1,
-            overflow: "hidden",
-            maxHeight: "80vh",
-            m: 2,
-          },
-        }}
-      >
-        <DialogContent sx={{ p: 0, position: "relative" }}>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              maxHeight: "80vh",
+    <AnimatePresence mode="wait">
+      {isOpen && (
+        <>
+          <Dialog
+            open={isOpen}
+            onClose={onClose}
+            maxWidth="lg"
+            PaperProps={{
+              component: motion.div,
+              variants: dialogVariants,
+              initial: "hidden",
+              animate: "visible",
+              exit: "exit",
+              sx: {
+                bgcolor: "background.paper",
+                borderRadius: 2,
+                overflow: "hidden",
+                maxHeight: "90vh",
+                m: 2,
+              },
             }}
           >
-            {/* Image Container */}
-            <Box
-              sx={{
-                position: "relative",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                bgcolor: alpha(theme.palette.background.default, 0.95),
-                maxHeight: "60vh",
-                overflow: "hidden",
-              }}
-            >
-              <img
-                src={getImageUrl(photo.url)}
-                alt={`Aurora at ${photo.location}`}
-                style={{
-                  maxWidth: "100%",
-                  maxHeight: "60vh",
-                  objectFit: "contain",
-                }}
-              />
-              <IconButton
-                onClick={onClose}
-                sx={{
-                  position: "absolute",
-                  top: 8,
-                  right: 8,
-                  bgcolor: alpha(theme.palette.background.paper, 0.8),
-                  backdropFilter: "blur(4px)",
-                  "&:hover": {
-                    bgcolor: alpha(theme.palette.background.paper, 0.9),
-                  },
-                }}
-              >
-                <Close />
-              </IconButton>
-            </Box>
-
-            {/* Details Container */}
-            <Box
-              sx={{
-                p: 2,
-                bgcolor: "background.paper",
-              }}
-            >
-              {/* User Info and Date */}
+            <DialogContent sx={{ p: 0, position: "relative" }}>
               <Box
                 sx={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  mb: 1,
+                  flexDirection: { xs: "column", md: "row" },
+                  maxHeight: "90vh",
                 }}
               >
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <Avatar
-                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
-                    sx={{ width: 32, height: 32 }}
-                  >
-                    {photo.userName.charAt(0).toUpperCase()}
-                  </Avatar>
-                  <Typography variant="subtitle1">{photo.userName}</Typography>
-                </Box>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-                  <CalendarToday
-                    sx={{ fontSize: 14, color: "text.secondary" }}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3 }}
+                  style={{
+                    flex: "1 1 60%",
+                    position: "relative",
+                    backgroundColor: alpha(
+                      theme.palette.background.default,
+                      0.95
+                    ),
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: theme.spacing(2),
+                  }}
+                >
+                  <motion.img
+                    src={getImageUrl(photo.url)}
+                    alt={`Aurora at ${photo.location}`}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    style={{
+                      maxWidth: "100%",
+                      maxHeight: "70vh",
+                      objectFit: "contain",
+                      borderRadius: theme.shape.borderRadius,
+                    }}
                   />
-                  <Typography variant="caption" color="text.secondary">
-                    {format(new Date(photo.createdAt), "MMM dd, yyyy")}
-                  </Typography>
-                </Box>
-              </Box>
+                </motion.div>
 
-              {/* Location and Description Section */}
-              {isEditing ? (
-                <Box>
-                  <TextField
-                    fullWidth
-                    label="Location"
-                    value={editedLocation}
-                    onChange={(e) => setEditedLocation(e.target.value)}
-                    sx={{ mb: 2 }}
-                  />
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={3}
-                    label="Description"
-                    value={editedDescription}
-                    onChange={(e) => setEditedDescription(e.target.value)}
-                    sx={{ mb: 2 }}
-                  />
+                <motion.div
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  style={{
+                    flex: "1 1 40%",
+                    display: "flex",
+                    flexDirection: "column",
+                    borderLeft: `1px solid ${alpha(
+                      theme.palette.divider,
+                      0.1
+                    )}`,
+                    maxHeight: "90vh",
+                    overflow: "auto",
+                  }}
+                >
                   <Box
                     sx={{
+                      p: 2,
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
+                      justifyContent: "flex-end",
+                      gap: 1,
+                      borderBottom: `1px solid ${alpha(
+                        theme.palette.divider,
+                        0.1
+                      )}`,
                     }}
                   >
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Button
-                        startIcon={<Cancel />}
-                        onClick={() => setIsEditing(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        variant="contained"
-                        startIcon={<Save />}
-                        onClick={handleSave}
-                      >
-                        Save
-                      </Button>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 1 }}>
+                    <Tooltip title="Download">
+                      <IconButton onClick={handleDownload} size="small">
+                        <Download />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete">
                       <IconButton
                         onClick={() => setIsDeleteDialogOpen(true)}
                         size="small"
-                        sx={{
-                          bgcolor: alpha(theme.palette.error.main, 0.1),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.error.main, 0.2),
-                          },
-                          color: theme.palette.error.main,
-                        }}
+                        sx={{ color: "error.main" }}
                       >
-                        <Delete fontSize="small" />
+                        <Delete />
                       </IconButton>
-                      <IconButton
-                        onClick={handleDownload}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(theme.palette.background.paper, 0.8),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.background.paper, 0.9),
-                          },
-                        }}
-                      >
-                        <Download fontSize="small" />
-                      </IconButton>
-                    </Box>
-                  </Box>
-                </Box>
-              ) : (
-                <Box>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      mb: photo.description ? 1 : 0,
-                    }}
-                  >
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <LocationOn
-                        sx={{ fontSize: 18, color: "primary.main" }}
-                      />
-                      <Typography variant="body2">{photo.location}</Typography>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <IconButton
-                        size="small"
-                        onClick={handleEdit}
-                        sx={{
-                          bgcolor: alpha(theme.palette.primary.main, 0.1),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.primary.main, 0.2),
-                          },
-                        }}
-                      >
-                        <Edit fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={() => setIsDeleteDialogOpen(true)}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(theme.palette.error.main, 0.1),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.error.main, 0.2),
-                          },
-                          color: theme.palette.error.main,
-                        }}
-                      >
-                        <Delete fontSize="small" />
-                      </IconButton>
-                      <IconButton
-                        onClick={handleDownload}
-                        size="small"
-                        sx={{
-                          bgcolor: alpha(theme.palette.background.paper, 0.8),
-                          "&:hover": {
-                            bgcolor: alpha(theme.palette.background.paper, 0.9),
-                          },
-                        }}
-                      >
-                        <Download fontSize="small" />
-                      </IconButton>
-                    </Box>
+                    </Tooltip>
+                    <IconButton onClick={onClose} size="small">
+                      <Close />
+                    </IconButton>
                   </Box>
 
-                  {/* Description */}
-                  {photo.description && (
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{ mt: 1 }}
+                  <Box sx={{ p: 3 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 2,
+                        mb: 3,
+                      }}
                     >
-                      {photo.description}
-                    </Typography>
-                  )}
-                </Box>
-              )}
-            </Box>
-          </Box>
-        </DialogContent>
-      </Dialog>
+                      <Avatar
+                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
+                        sx={{ width: 48, height: 48 }}
+                      />
+                      <Box>
+                        <Typography variant="h6">{photo.userName}</Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 0.5,
+                          }}
+                        >
+                          <CalendarToday sx={{ fontSize: 14 }} />
+                          {format(new Date(photo.createdAt), "MMMM dd, yyyy")}
+                        </Typography>
+                      </Box>
+                    </Box>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle>Delete Photo</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete this photo? This action cannot be
-            undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </>
+                    <AnimatePresence mode="wait">
+                      {isEditing ? (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: 2,
+                            }}
+                          >
+                            <TextField
+                              fullWidth
+                              label="Location"
+                              value={editedLocation}
+                              onChange={(e) =>
+                                setEditedLocation(e.target.value)
+                              }
+                              InputProps={{
+                                startAdornment: (
+                                  <LocationOn
+                                    sx={{ color: "primary.main", mr: 1 }}
+                                  />
+                                ),
+                              }}
+                            />
+                            <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
+                              <Button
+                                startIcon={<Cancel />}
+                                onClick={() => setIsEditing(false)}
+                                variant="outlined"
+                                fullWidth
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                startIcon={<Save />}
+                                onClick={handleSave}
+                                variant="contained"
+                                fullWidth
+                              >
+                                Save Changes
+                              </Button>
+                            </Box>
+                          </Box>
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -20 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <Box>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                mb: 2,
+                              }}
+                            >
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  gap: 1,
+                                }}
+                              >
+                                <LocationOn sx={{ color: "primary.main" }} />
+                                <Typography variant="body1">
+                                  {photo.location}
+                                </Typography>
+                              </Box>
+                              <Button
+                                startIcon={<Edit />}
+                                onClick={handleEdit}
+                                variant="outlined"
+                                size="small"
+                              >
+                                Edit
+                              </Button>
+                            </Box>
+                          </Box>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </Box>
+                </motion.div>
+              </Box>
+            </DialogContent>
+          </Dialog>
+
+          <AnimatePresence>
+            {isDeleteDialogOpen && (
+              <ConfirmDialog
+                open={isDeleteDialogOpen}
+                onClose={() => setIsDeleteDialogOpen(false)}
+                maxWidth="xs"
+                fullWidth
+                PaperProps={{
+                  component: motion.div,
+                  initial: { opacity: 0, scale: 0.9 },
+                  animate: { opacity: 1, scale: 1 },
+                  exit: { opacity: 0, scale: 0.9 },
+                  transition: { duration: 0.2 },
+                }}
+              >
+                <DialogTitle>Delete Photo</DialogTitle>
+                <DialogContent>
+                  <Typography>
+                    Are you sure you want to delete this photo? This action
+                    cannot be undone.
+                  </Typography>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => setIsDeleteDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleDelete}
+                    color="error"
+                    variant="contained"
+                  >
+                    Delete
+                  </Button>
+                </DialogActions>
+              </ConfirmDialog>
+            )}
+          </AnimatePresence>
+        </>
+      )}
+    </AnimatePresence>
   );
 };
 
