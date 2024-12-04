@@ -105,18 +105,24 @@ export const updatePhoto = createAsyncThunk(
   }
 );
 
+// delete photo
 export const deletePhoto = createAsyncThunk(
   "gallery/deletePhoto",
-  async (photoId: string) => {
+  async ({ photoId, userName }: { photoId: string; userName: string }) => {
     const response = await fetch(
       `${BACKEND_URL}/api/gallery/photos/${photoId}`,
       {
         method: "DELETE",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ userName })
       }
     );
 
     if (!response.ok) {
-      throw new Error("Failed to delete photo");
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to delete photo');
     }
 
     return photoId;

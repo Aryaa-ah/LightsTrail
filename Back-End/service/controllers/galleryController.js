@@ -147,33 +147,36 @@ const galleryController = {
   deletePhoto: async (req, res) => {
     try {
       const photo = await Gallery.findById(req.params.photoId);
-
+      
       if (!photo) {
         return res.status(404).json({
           success: false,
-          error: "Photo not found",
+          error: "Photo not found"
         });
       }
-
-      // Delete file if it exists
-      const filePath = path.join(uploadsDir, photo.fileName);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+  
+      // Strict ownership check
+      if (photo.userName !== req.body.userName || !req.body.userName) {
+        return res.status(403).json({
+          success: false,
+          error: "Unauthorized: You can only delete your own photos"
+        });
       }
-
+  
+      // Proceed with deletion if authorized
       await Gallery.findByIdAndDelete(req.params.photoId);
-
+  
       res.status(200).json({
         success: true,
-        message: "Photo deleted successfully",
+        message: "Photo deleted successfully"
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        error: error.message,
+        error: error.message
       });
     }
-  },
+  }
 };
 
 export default galleryController;
