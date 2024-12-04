@@ -26,8 +26,6 @@ export const fetchPhotos = createAsyncThunk(
   async (params: FetchPhotosParams = {}) => {
     const queryParams = new URLSearchParams();
     if (params.userOnly) queryParams.append("userOnly", "true");
-    if (params.page) queryParams.append("page", params.page.toString());
-    if (params.limit) queryParams.append("limit", params.limit.toString());
 
     const response = await fetch(
       `http://localhost:3002/api/gallery/photos?${queryParams.toString()}`

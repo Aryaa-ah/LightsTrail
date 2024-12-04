@@ -22,7 +22,6 @@ import GoogleAuthCallback from "./components/GoogleAuthCallback";
 // Pages
 import Home from "./pages/Home";
 import GalleryPage from "./pages/GalleryPage";
-import UserGallery from "./pages/UserGallery";
 import ProfilePage from "./pages/ProfilePage";
 
 // Define interfaces
@@ -113,7 +112,10 @@ function App() {
             <Routes>
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
-              <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
+              <Route
+                path="/auth/google/callback"
+                element={<GoogleAuthCallback />}
+              />
               <Route path="/auth/success" element={<GoogleAuthCallback />} />
               <Route
                 path="/home"
@@ -155,7 +157,6 @@ function App() {
                         location={location}
                         setLocation={setLocation}
                       />
-                      <UserGallery userOnly={true} />
                     </>
                   </ProtectedRoute>
                 }

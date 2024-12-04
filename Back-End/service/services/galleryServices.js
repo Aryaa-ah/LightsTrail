@@ -39,32 +39,21 @@ class GalleryService {
   async getPhotos(page = 1, limit = 10) {
     try {
       await this.verifyConnection();
-      
+
       const skip = (page - 1) * limit;
       const [photos, total] = await Promise.all([
-        Gallery.find()
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit)
-          .lean(),
-        Gallery.countDocuments()
+        Gallery.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+        Gallery.countDocuments(),
       ]);
 
       return {
-        photos: photos.map(photo => ({
+        photos: photos.map((photo) => ({
           id: photo._id.toString(),
           url: `/uploads/${photo.fileName}`,
           userName: photo.userName,
           location: photo.location,
-          likes: photo.likes,
-          visibility: photo.visibility,
-          createdAt: photo.createdAt
+          createdAt: photo.createdAt,
         })),
-        pagination: {
-          currentPage: page,
-          totalPages: Math.ceil(total / limit),
-          totalPhotos: total
-        }
       };
     } catch (error) {
       throw new Error(`Error fetching photos: ${error.message}`);
@@ -157,12 +146,6 @@ class GalleryService {
 
       return {
         photos: formattedPhotos,
-        pagination: {
-          currentPage: page,
-          totalPages: Math.ceil(total / limit),
-          totalPhotos: total,
-          limit,
-        },
       };
     } catch (error) {
       throw new Error(`Error searching photos: ${error.message}`);

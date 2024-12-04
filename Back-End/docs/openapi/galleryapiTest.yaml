@@ -44,8 +44,6 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/GalleryPhoto"
-                  pagination:
-                    $ref: "#/components/schemas/Pagination"
 
     post:
       summary: Upload new aurora photo
@@ -188,35 +186,6 @@ components:
           type: string
           format: date-time
           example: "2024-03-15T22:30:00Z"
-
-    Pagination:
-      type: object
-      required:
-        - totalPhotos
-        - totalPages
-        - currentPage
-        - limit
-        - hasNextPage
-        - hasPrevPage
-      properties:
-        totalPhotos:
-          type: integer
-          example: 100
-        totalPages:
-          type: integer
-          example: 5
-        currentPage:
-          type: integer
-          example: 1
-        limit:
-          type: integer
-          example: 20
-        hasNextPage:
-          type: boolean
-          example: true
-        hasPrevPage:
-          type: boolean
-          example: false
 
   responses:
     BadRequest:

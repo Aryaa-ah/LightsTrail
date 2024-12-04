@@ -23,7 +23,7 @@ const galleryController = {
 
       // Ensure file was saved correctly
       const filePath = path.join(uploadsDir, req.file.filename);
-      
+
       // Copy file to uploads directory if it's not there
       if (!fs.existsSync(filePath) && req.file.path) {
         fs.copyFileSync(req.file.path, filePath);
@@ -33,7 +33,7 @@ const galleryController = {
         return res.status(400).json({ error: "File upload failed" });
       }
 
-      const serverUrl = `${req.protocol}://${req.get('host')}`;
+      const serverUrl = `${req.protocol}://${req.get("host")}`;
       const photo = new Gallery({
         fileName: req.file.filename,
         url: `/uploads/${req.file.filename}`, // Keep URL relative
@@ -50,8 +50,8 @@ const galleryController = {
         success: true,
         data: {
           ...savedPhoto.toObject(),
-          url: `${serverUrl}${savedPhoto.url}`
-        }
+          url: `${serverUrl}${savedPhoto.url}`,
+        },
       });
     } catch (error) {
       console.error("Upload error:", error);
@@ -60,16 +60,7 @@ const galleryController = {
   },
   getPhotos: async (req, res) => {
     try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const skip = (page - 1) * limit;
-
-      const photos = await Gallery.find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
-
-      const total = await Gallery.countDocuments();
+      const photos = await Gallery.find().sort({ createdAt: -1 });
 
       const transformedPhotos = photos.map((photo) => {
         const filePath = path.join(uploadsDir, photo.fileName);
@@ -85,27 +76,13 @@ const galleryController = {
           userName: photo.userName,
           location: photo.location,
           createdAt: photo.createdAt,
-          visibility: photo.visibility,
-          likes: photo.likes,
           fileExists,
         };
       });
 
-      res.status(200).json({
-        success: true,
-        data: transformedPhotos,
-        pagination: {
-          currentPage: page,
-          totalPages: Math.ceil(total / limit),
-          totalPhotos: total,
-        },
-      });
+      res.status(200).json({ success: true, data: transformedPhotos });
     } catch (error) {
-      console.error("Get photos error:", error);
-      res.status(400).json({
-        success: false,
-        error: error.message,
-      });
+      res.status(500).json({ success: false, error: error.message });
     }
   },
 
@@ -170,11 +147,11 @@ const galleryController = {
   deletePhoto: async (req, res) => {
     try {
       const photo = await Gallery.findById(req.params.photoId);
-      
+
       if (!photo) {
         return res.status(404).json({
           success: false,
-          error: "Photo not found"
+          error: "Photo not found",
         });
       }
 
@@ -188,12 +165,12 @@ const galleryController = {
 
       res.status(200).json({
         success: true,
-        message: "Photo deleted successfully"
+        message: "Photo deleted successfully",
       });
     } catch (error) {
       res.status(400).json({
         success: false,
-        error: error.message
+        error: error.message,
       });
     }
   },

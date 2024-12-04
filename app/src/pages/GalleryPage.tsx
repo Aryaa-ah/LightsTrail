@@ -19,13 +19,7 @@ import {
   DialogTitle,
   Fade,
 } from "@mui/material";
-import {
-  Search,
-  Camera,
-  Filter,
-  GridView,
-  LocationOn,
-} from "@mui/icons-material";
+import { Search, Camera, GridView, LocationOn } from "@mui/icons-material";
 import { List as ListIcon } from "lucide-react";
 import { debounce } from "lodash";
 import { useDispatch, useSelector } from "react-redux";
@@ -129,7 +123,6 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
   // Local state
   const [displayPhotos, setDisplayPhotos] = useState<Photo[]>([]);
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
-  const [isFilterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedPhoto, setSelectedPhotoState] = useState<GalleryPhoto | null>(
     null
@@ -329,22 +322,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  variant="outlined"
-                  startIcon={<Filter />}
-                  onClick={() => setFilterDrawerOpen(true)}
-                  sx={{
-                    borderColor: alpha(theme.palette.primary.main, 0.5),
-                    "&:hover": {
-                      borderColor: theme.palette.primary.main,
-                      bgcolor: alpha(theme.palette.primary.main, 0.1),
-                    },
-                  }}
-                >
-                  Filters
-                </Button>
-              </motion.div>
+              ></motion.div>
 
               <motion.div
                 whileHover={{ scale: 1.05 }}

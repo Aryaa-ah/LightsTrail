@@ -138,9 +138,10 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
   return (
     <ImageList
       cols={getImageListCols()}
-      gap={24}
+      gap={15}
       sx={{
         m: 0,
+        mt: 2, // Add top margin here
         "& .MuiImageListItem-root": {
           overflow: "hidden",
         },
@@ -205,10 +206,6 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
 
               <ImageOverlay className="image-overlay">
                 <Box sx={{ mb: 1 }}>
-                  {/* <Typography variant="h6" color="common.white" gutterBottom>
-                    {photo.location}
-                  </Typography> */}
-
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Avatar
                       src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
