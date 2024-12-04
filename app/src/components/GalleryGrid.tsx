@@ -46,6 +46,25 @@ const StyledImageListItem = styled(ImageListItem)(({ theme }) => ({
   },
 }));
 
+const LocationLabel = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  bottom: theme.spacing(2),
+  left: theme.spacing(2),
+  padding: theme.spacing(0.5, 1.5),
+  background: "transparent",
+  transition: "opacity 0.3s ease",
+  zIndex: 1,
+  display: "flex",
+  alignItems: "center",
+  gap: theme.spacing(0.5),
+  borderRadius: theme.shape.borderRadius,
+  color: theme.palette.common.white,
+  textShadow: `1px 1px 3px ${alpha(theme.palette.common.black, 0.8)}`,
+  "& .MuiSvgIcon-root": {
+    filter: "drop-shadow(1px 1px 3px rgba(0,0,0,0.8))",
+  },
+}));
+
 const ImageOverlay = styled(Box)(({ theme }) => ({
   position: "absolute",
   top: 0,
@@ -62,6 +81,12 @@ const ImageOverlay = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "flex-end",
   padding: theme.spacing(2),
+  "&:hover": {
+    opacity: 1,
+    "& + .location-label": {
+      opacity: 0,
+    },
+  },
 }));
 
 const ActionButtons = styled(Box)(({ theme }) => ({
@@ -204,11 +229,14 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
                 </Tooltip>
               </ActionButtons>
 
-              <ImageOverlay className="image-overlay">
+              <ImageOverlay className="image-overlay hover-overlay">
                 <Box sx={{ mb: 1 }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <Avatar
-                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
+                      src={`https://api.dicebear.com/9.x/identicon/svg?seed=${
+                        photo.userName ||
+                        Math.random().toString(36).substring(7)
+                      }c0aede,d1d4f9&scale=80&size=32&radius=50`}
                       sx={{
                         width: 32,
                         height: 32,
@@ -248,6 +276,15 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
                   </Box>
                 </Box>
               </ImageOverlay>
+
+              <LocationLabel className="location-label">
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <LocationOn sx={{ fontSize: 30, color: "white" }} />
+                  <Typography variant="body2" color="common.white">
+                    {photo.location}
+                  </Typography>
+                </Box>
+              </LocationLabel>
             </StyledImageListItem>
           </motion.div>
         ))}

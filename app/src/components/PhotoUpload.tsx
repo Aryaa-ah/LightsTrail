@@ -25,7 +25,6 @@ import {
   CloudUpload as UploadIcon,
   Image as ImageIcon,
   LocationOn,
-  Description,
 } from "@mui/icons-material";
 import { Photo } from "../types/gallery.types";
 import { useDispatch } from "react-redux";

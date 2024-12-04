@@ -17,7 +17,7 @@ import AdbIcon from "@mui/icons-material/Adb";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LocationDialogPopUp from "./../components/LocationPopUp";
 import auroraIcon from "../images/logo.png";
-import { useAuth } from "../hooks/useAuth"; 
+import { useAuth } from "../hooks/useAuth";
 import { authService } from "../services/auth";
 
 interface Location {
@@ -238,7 +238,18 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar alt="User Avatar" src="/static/images/avatar/2.jpg" />
+                  <Avatar
+                    alt={user?.firstName || "User Avatar"}
+                    src={`https://api.dicebear.com/9.x/identicon/svg?seed=${
+                      Math.random().toString(36).substring(7)
+                    }&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80&size=40&radius=50`}
+                    sx={{
+                      width: 40,
+                      height: 40,
+                      border: "2px solid rgba(255,255,255,0.2)",
+                      backgroundColor: "transparent",
+                    }}
+                  />
                 </IconButton>
               </Tooltip>
               <Menu
