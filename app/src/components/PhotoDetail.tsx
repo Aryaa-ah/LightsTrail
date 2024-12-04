@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { authService } from "../services/auth";
 import {
   Dialog,
   IconButton,
@@ -97,16 +99,19 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedLocation, setEditedLocation] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   if (!photo) return null;
 
   const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
 
+  // gets the image URL from the photo object
   const getImageUrl = (photoUrl: string): string => {
     if (photoUrl.startsWith("http")) return photoUrl;
     return `${BACKEND_URL}${photoUrl}`;
   };
 
+  // handles the download of the photo when the download button is clicked
   const handleDownload = async () => {
     try {
       const response = await fetch(getImageUrl(photo.url));
@@ -126,25 +131,49 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
       console.error("Failed to download photo:", error);
     }
   };
-
+  // handles the deletion of the photo when the delete button is clicked
   const handleDelete = async () => {
     try {
-      await dispatch(deletePhoto(photo.id)).unwrap();
+      const currentUser = authService.getCurrentUser();
+      const userName = currentUser
+        ? `${currentUser.firstName} ${currentUser.lastName}`
+        : null;
+
+      if (!userName) {
+        setError("You must be logged in to delete photos");
+        return;
+      }
+
+      // Compares the photo owner with current user before attempting deletion
+      if (photo.userName !== userName) {
+        setError("You can only delete your own photos");
+        return;
+      }
+
+      await dispatch(
+        deletePhoto({
+          photoId: photo.id,
+          userName,
+        })
+      ).unwrap();
+
       setIsDeleteDialogOpen(false);
       onClose();
       if (onPhotoDeleted) {
         onPhotoDeleted();
       }
     } catch (error) {
-      console.error("Failed to delete photo:", error);
+      setError(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
     }
   };
-
+  // handles the editing of the photo location when the edit button is clicked
   const handleEdit = () => {
     setEditedLocation(photo?.location || "");
     setIsEditing(true);
   };
-
+  // saving the edited location
   const handleSave = () => {
     if (photo && onUpdatePhoto) {
       onUpdatePhoto(photo.id, {
