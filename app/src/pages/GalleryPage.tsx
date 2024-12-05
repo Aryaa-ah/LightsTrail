@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useEffect, useCallback } from "react";
-import { Photo } from "../types/gallery.types";
-
-import { useDispatch, useSelector } from "react-redux";
-// import { useInView } from "react-intersection-observer";
-import { Grid as GridIcon, List as ListIcon } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
-import { debounce } from "lodash";
-
-// Material UI Components
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Box,
   Container,
@@ -25,42 +17,85 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Fade,
 } from "@mui/material";
-import {
-  Search,
-  Camera,
-  Filter,
-  GridView,
-  // ViewList,
-  LocationOn,
-} from "@mui/icons-material";
+import { Search, Camera, GridView, LocationOn } from "@mui/icons-material";
+import { List as ListIcon } from "lucide-react";
+import { debounce } from "lodash";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../store/index";
+import type { Photo as GalleryPhoto } from "../types/gallery.types";
+import { AppDispatch } from "../store";
+
 // Custom Components
 import GalleryGrid from "../components/GalleryGrid";
 import PhotoUpload from "../components/PhotoUpload";
 import ErrorState from "../../../app/src/components/errorState";
 import PhotoDetail from "../components/PhotoDetail";
-// import GalleryFilters from "../components/GalleryFilters";
 import EmptyState from "../../../app/src/components/EmptyState";
-import { updatePhoto, getPhotoById } from "../store/gallerySlice";
-// State and Types
+import { Photo } from "../types/gallery.types";
+
+// Redux Actions
 import {
   fetchPhotos,
   setSelectedPhoto,
   updateFilters,
   uploadPhoto,
+  updatePhoto,
+  getPhotoById,
 } from "../store/gallerySlice";
-import type { RootState } from "../store/index";
-import type { Photo as GalleryPhoto } from "../types/gallery.types";
-import { AppDispatch } from "../store";
 
-import { motion } from "framer-motion";
+// Animation Variants
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.5,
+      staggerChildren: 0.1,
+    },
+  },
+  exit: { opacity: 0 },
+};
+
+const contentVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+    },
+  },
+};
+
+const controlsVariants = {
+  initial: { opacity: 0, x: -20 },
+  animate: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 30,
+      delay: 0.2,
+    },
+  },
+};
+
 interface EditPhotoData {
   location?: string;
   description?: string;
 }
-const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
-  userOnly = false,
-}) => {
+
+interface GalleryPageProps {
+  userOnly?: boolean;
+}
+
+const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const {
@@ -88,7 +123,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   // Local state
   const [displayPhotos, setDisplayPhotos] = useState<Photo[]>([]);
   const [isUploadModalOpen, setUploadModalOpen] = useState(false);
-  const [isFilterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedPhoto, setSelectedPhotoState] = useState<GalleryPhoto | null>(
     null
@@ -96,6 +130,7 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
   const [searchQuery, setSearchQuery] = useState("");
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
 
+  // Load initial photos
   useEffect(() => {
     const loadInitialPhotos = async () => {
       try {
@@ -116,7 +151,6 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     }
   }, [photos, dummyPhoto]);
 
-  // Handle search input
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const query = e.target.value;
@@ -150,26 +184,12 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
     dispatch(setSelectedPhoto(photo));
   };
 
-  // Handle upload success
-  // const handleUploadSuccess = async () => {
-  //   try {
-  //     setUploadModalOpen(false);
-  //     console.log("Refreshing photos after upload");
-  //     await dispatch(fetchPhotos({ page: 1, limit: 12, userOnly }));
-
-  //     // Log the current state to verify update
-  //     console.log("Photos updated:", photos);
-  //     console.log("Display photos:", displayPhotos);
-  //   } catch (error) {
-  //     console.error("Error refreshing photos:", error);
-  //   }
-  // };
-
   const handleUpdatePhoto = async (photoId: string, updates: EditPhotoData) => {
     try {
       await dispatch(updatePhoto({ photoId, updates })).unwrap();
-      // Refresh photos after update
       await dispatch(fetchPhotos({ userOnly }));
+      const updatedPhoto = await dispatch(getPhotoById(photoId)).unwrap();
+      setSelectedPhotoState(updatedPhoto);
       setEditingPhoto(null);
     } catch (error) {
       console.error("Error updating photo:", error);
@@ -178,9 +198,10 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      variants={pageVariants}
+      initial="initial"
+      animate="animate"
+      exit="exit"
     >
       <Container
         maxWidth="xl"
@@ -192,161 +213,222 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
           bgcolor: "transparent",
         }}
       >
-        {/* Enhanced Header Section */}
-        <Box sx={{ mb: 6 }}>
-          <Typography
-            variant="h3"
-            sx={{
-              fontWeight: 800,
-              background:
-                theme.palette.mode === "dark"
-                  ? "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)"
-                  : "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-              mb: 2,
-            }}
-          >
-            {userOnly ? "My Gallery" : "Aurora Gallery"}
-          </Typography>
-          <Typography variant="h6" color="text.secondary">
-            {userOnly
-              ? "Manage and showcase your aurora captures"
-              : "Discover and share stunning aurora captures"}
-          </Typography>
-        </Box>
+        {/* Header Section */}
+        <motion.div variants={contentVariants}>
+          <Box sx={{ mb: 6 }}>
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 800,
+                background:
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)"
+                    : "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                mb: 2,
+              }}
+            >
+              {userOnly ? "My Gallery" : "Aurora Gallery"}
+            </Typography>
+            <Typography variant="h6" color="text.secondary">
+              {userOnly
+                ? "Manage and showcase your aurora captures"
+                : "Discover and share stunning aurora captures"}
+            </Typography>
+          </Box>
+        </motion.div>
 
-        {/* Enhanced Controls Section */}
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", md: "row" },
-            gap: 2,
-            mb: 4,
-            alignItems: "center",
-          }}
-        >
-          <TextField
-            fullWidth
-            size="medium"
-            placeholder="Search photos..."
-            value={searchQuery}
-            onChange={handleSearchChange}
-            sx={{
-              maxWidth: { md: 400 },
-              bgcolor: alpha(theme.palette.background.paper, 0.8),
-              backdropFilter: "blur(8px)",
-              borderRadius: 2,
-              "& .MuiOutlinedInput-root": {
-                "&:hover .MuiOutlinedInput-notchedOutline": {
-                  borderColor: theme.palette.primary.main,
-                },
-              },
-            }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search color="primary" />
-                </InputAdornment>
-              ),
-            }}
-          />
-
+        {/* Controls Section */}
+        <motion.div variants={controlsVariants}>
           <Box
             sx={{
               display: "flex",
+              flexDirection: { xs: "column", md: "row" },
               gap: 2,
-              ml: { md: "auto" },
+              mb: 4,
               alignItems: "center",
             }}
           >
-            {/* View Toggle */}
+            <TextField
+              fullWidth
+              size="medium"
+              placeholder="Search photos..."
+              value={searchQuery}
+              onChange={handleSearchChange}
+              sx={{
+                maxWidth: { md: 400 },
+                bgcolor: alpha(theme.palette.background.paper, 0.8),
+                backdropFilter: "blur(8px)",
+                borderRadius: 2,
+                "& .MuiOutlinedInput-root": {
+                  "&:hover .MuiOutlinedInput-notchedOutline": {
+                    borderColor: theme.palette.primary.main,
+                  },
+                },
+              }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search color="primary" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+
             <Box
               sx={{
                 display: "flex",
-                bgcolor: alpha(theme.palette.background.paper, 0.8),
-                borderRadius: 2,
-                p: 0.5,
-                border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                gap: 2,
+                ml: { md: "auto" },
+                alignItems: "center",
               }}
             >
-              <IconButton
-                onClick={() => setViewMode("grid")}
-                color={viewMode === "grid" ? "primary" : "default"}
+              {/* View Toggle */}
+              <Box
+                sx={{
+                  display: "flex",
+                  bgcolor: alpha(theme.palette.background.paper, 0.8),
+                  borderRadius: 2,
+                  p: 0.5,
+                  border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+                }}
               >
-                <GridView />
-              </IconButton>
-              <IconButton
-                onClick={() => setViewMode("list")}
-                color={viewMode === "list" ? "primary" : "default"}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <IconButton
+                    onClick={() => setViewMode("grid")}
+                    color={viewMode === "grid" ? "primary" : "default"}
+                  >
+                    <GridView />
+                  </IconButton>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <IconButton
+                    onClick={() => setViewMode("list")}
+                    color={viewMode === "list" ? "primary" : "default"}
+                  >
+                    <ListIcon />
+                  </IconButton>
+                </motion.div>
+              </Box>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              ></motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <ListIcon />
-              </IconButton>
+                <Button
+                  variant="contained"
+                  startIcon={<Camera />}
+                  onClick={() => setUploadModalOpen(true)}
+                  sx={{
+                    fontSize: 18,
+                    background:
+                      "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)",
+                    boxShadow: theme.shadows[4],
+                    "&:hover": {
+                      background:
+                        "linear-gradient(45deg, #84fab0 20%, #8fd3f4 100%)",
+                    },
+                  }}
+                >
+                  Upload
+                </Button>
+              </motion.div>
             </Box>
-
-            <Button
-              variant="outlined"
-              startIcon={<Filter />}
-              onClick={() => setFilterDrawerOpen(true)}
-              sx={{
-                borderColor: alpha(theme.palette.primary.main, 0.5),
-                "&:hover": {
-                  borderColor: theme.palette.primary.main,
-                  bgcolor: alpha(theme.palette.primary.main, 0.1),
-                },
-              }}
-            >
-              Filters
-            </Button>
-
-            <Button
-              variant="contained"
-              startIcon={<Camera />}
-              onClick={() => setUploadModalOpen(true)}
-              sx={{
-                fontSize: 18,
-                background: "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)",
-                boxShadow: theme.shadows[4],
-                "&:hover": {
-                  background:
-                    "linear-gradient(45deg, #84fab0 20%, #8fd3f4 100%)",
-                },
-              }}
-            >
-              Upload
-            </Button>
           </Box>
-        </Box>
+        </motion.div>
 
         {/* Active Filters */}
-        {(filters.location || filters.dateRange) && (
-          <Box sx={{ display: "flex", gap: 1, mb: 3, flexWrap: "wrap" }}>
-            {filters.location && (
-              <Chip
-                icon={<LocationOn sx={{ fontSize: 18 }} />}
-                label={filters.location}
-                onDelete={() => {
-                  dispatch(updateFilters({ location: undefined }));
-                  dispatch(fetchPhotos({ userOnly }));
-                }}
-                sx={{
-                  bgcolor: alpha(theme.palette.primary.main, 0.1),
-                  borderColor: alpha(theme.palette.primary.main, 0.3),
-                  "& .MuiChip-deleteIcon": {
-                    color: theme.palette.primary.main,
-                  },
-                }}
+        <AnimatePresence>
+          {(filters.location || filters.dateRange) && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+            >
+              <Box sx={{ display: "flex", gap: 1, mb: 3, flexWrap: "wrap" }}>
+                {filters.location && (
+                  <Chip
+                    icon={<LocationOn sx={{ fontSize: 18 }} />}
+                    label={filters.location}
+                    onDelete={() => {
+                      dispatch(updateFilters({ location: undefined }));
+                      dispatch(fetchPhotos({ userOnly }));
+                    }}
+                    sx={{
+                      bgcolor: alpha(theme.palette.primary.main, 0.1),
+                      borderColor: alpha(theme.palette.primary.main, 0.3),
+                      "& .MuiChip-deleteIcon": {
+                        color: theme.palette.primary.main,
+                      },
+                    }}
+                  />
+                )}
+              </Box>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Gallery Content */}
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
+              <CircularProgress size={40} />
+            </Box>
+          ) : error ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <ErrorState
+                error={error}
+                onRetry={() => dispatch(fetchPhotos({ userOnly }))}
               />
-            )}
-          </Box>
-        )}
+            </motion.div>
+          ) : !photos.length ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <EmptyState onUpload={() => setUploadModalOpen(true)} />
+            </motion.div>
+          ) : (
+            <motion.div
+              variants={contentVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <GalleryGrid
+                photos={photos}
+                viewMode={viewMode}
+                onPhotoClick={handlePhotoClick}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Edit Photo Dialog */}
         <Dialog
           open={!!editingPhoto}
           onClose={() => setEditingPhoto(null)}
           maxWidth="sm"
           fullWidth
+          TransitionComponent={Fade}
         >
           <DialogTitle>Edit Photo</DialogTitle>
           <DialogContent>
@@ -384,74 +466,64 @@ const GalleryPage: React.FC<{ userOnly?: boolean }> = ({
             </Box>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setEditingPhoto(null)}>Cancel</Button>
-            <Button
-              onClick={() => {
-                if (editingPhoto) {
-                  handleUpdatePhoto(editingPhoto.id, {
-                    location: editingPhoto.location,
-                    description: editingPhoto.description,
-                  });
-                }
-              }}
-              variant="contained"
-            >
-              Save Changes
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button onClick={() => setEditingPhoto(null)}>Cancel</Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                onClick={() => {
+                  if (editingPhoto) {
+                    handleUpdatePhoto(editingPhoto.id, {
+                      location: editingPhoto.location,
+                      description: editingPhoto.description,
+                    });
+                  }
+                }}
+                variant="contained"
+              >
+                Save Changes
+              </Button>
+            </motion.div>
           </DialogActions>
         </Dialog>
-        {/* Gallery Content */}
-        <AnimatePresence mode="wait">
-          {loading ? (
-            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-              <CircularProgress size={40} />
-            </Box>
-          ) : error ? (
-            <ErrorState
-              error={error}
-              onRetry={() => dispatch(fetchPhotos({ userOnly }))}
-            />
-          ) : !photos.length ? (
-            <EmptyState onUpload={() => setUploadModalOpen(true)} />
-          ) : (
-            <GalleryGrid
-              photos={photos}
-              viewMode={viewMode}
-              onPhotoClick={handlePhotoClick}
+
+        {/* Modals */}
+        <AnimatePresence>
+          <PhotoUpload
+            isOpen={isUploadModalOpen}
+            onClose={() => setUploadModalOpen(false)}
+            onUpload={handlePhotoUpload}
+            onUploadSuccess={() => {
+              setUploadModalOpen(false);
+              dispatch(fetchPhotos({ userOnly }));
+            }}
+          />
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {selectedPhoto && (
+            <PhotoDetail
+              photo={selectedPhoto}
+              isOpen={!!selectedPhoto}
+              onClose={() => setSelectedPhotoState(null)}
+              onPhotoDeleted={() => {
+                dispatch(fetchPhotos({ userOnly }));
+              }}
+              onUpdatePhoto={async (photoId, updates) => {
+                try {
+                  await dispatch(updatePhoto({ photoId, updates })).unwrap();
+                  await dispatch(fetchPhotos({ userOnly }));
+                  const updatedPhoto = await dispatch(
+                    getPhotoById(photoId)
+                  ).unwrap();
+                  setSelectedPhotoState(updatedPhoto);
+                } catch (error) {
+                  console.error("Error updating photo:", error);
+                }
+              }}
             />
           )}
         </AnimatePresence>
-
-        {/* Modals */}
-        <PhotoUpload
-          isOpen={isUploadModalOpen}
-          onClose={() => setUploadModalOpen(false)}
-          onUpload={handlePhotoUpload}
-          onUploadSuccess={() => {
-            setUploadModalOpen(false);
-            dispatch(fetchPhotos({ userOnly }));
-          }}
-        />
-        <PhotoDetail
-          photo={selectedPhoto}
-          isOpen={!!selectedPhoto}
-          onClose={() => setSelectedPhotoState(null)}
-          onPhotoDeleted={() => {
-            dispatch(fetchPhotos({ userOnly }));
-          }}
-          onUpdatePhoto={async (photoId, updates) => {
-            try {
-              await dispatch(updatePhoto({ photoId, updates })).unwrap();
-              await dispatch(fetchPhotos({ userOnly }));
-              const updatedPhoto = await dispatch(
-                getPhotoById(photoId)
-              ).unwrap();
-              setSelectedPhotoState(updatedPhoto);
-            } catch (error) {
-              console.error("Error updating photo:", error);
-            }
-          }}
-        />
       </Container>
     </motion.div>
   );

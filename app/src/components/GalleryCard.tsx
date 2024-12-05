@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
   Card,
-  CardContent,
   Typography,
   IconButton,
   Menu,
@@ -11,8 +10,6 @@ import {
   Avatar,
   Box,
   Tooltip,
-  Chip,
-  // styled,
   useTheme,
   alpha,
 } from "@mui/material";
@@ -22,15 +19,12 @@ import {
   Delete,
   Edit,
   Share,
-  Lock,
   MoreVert,
-  LocationOn,
-  Visibility,
-  VisibilityOff,
+  Download,
+  CalendarToday,
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { Photo } from "../types/gallery.types";
-// import { useAuth } from "../hooks/useAuth";
 import { motion } from "framer-motion";
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -48,18 +42,24 @@ const StyledCard = styled(Card)(({ theme }) => ({
   "&:hover": {
     transform: "translateY(-8px)",
     boxShadow: `0 12px 24px ${alpha(theme.palette.common.black, 0.2)}`,
-    borderColor: theme.palette.primary.main,
     "& .image-overlay": {
       opacity: 1,
+    },
+    "& .card-actions": {
+      transform: "translateY(0)",
+      opacity: 1,
+    },
+    "& img": {
+      transform: "scale(1.05)",
     },
   },
 }));
 
-const ImageContainer = styled(Box)(() => ({
+const ImageContainer = styled(Box)({
   position: "relative",
-  paddingTop: "75%", // 4:3 aspect ratio
+  paddingTop: "75%",
   overflow: "hidden",
-}));
+});
 
 const StyledImage = styled("img")({
   position: "absolute",
@@ -78,15 +78,27 @@ const ImageOverlay = styled(Box)(({ theme }) => ({
   right: 0,
   bottom: 0,
   background: `linear-gradient(to top,
-    ${alpha(theme.palette.background.default, 0.9)} 0%,
-    ${alpha(theme.palette.background.default, 0.5)} 50%,
-    ${alpha(theme.palette.background.default, 0.2)} 100%)`,
+    ${alpha(theme.palette.background.default, 0.95)} 0%,
+    ${alpha(theme.palette.background.default, 0.6)} 50%,
+    ${alpha(theme.palette.background.default, 0.3)} 100%)`,
   opacity: 0,
   transition: "opacity 0.3s ease",
   display: "flex",
   flexDirection: "column",
   justifyContent: "flex-end",
   padding: theme.spacing(2),
+}));
+
+const CardActions = styled(Box)(({ theme }) => ({
+  position: "absolute",
+  top: theme.spacing(2),
+  right: theme.spacing(2),
+  display: "flex",
+  gap: theme.spacing(1),
+  transform: "translateY(-10px)",
+  opacity: 0,
+  transition: "all 0.3s ease",
+  zIndex: 2,
 }));
 
 interface GalleryCardProps {
@@ -97,6 +109,7 @@ interface GalleryCardProps {
   onPhotoClick?: (photo: Photo) => void;
   showActions?: boolean;
 }
+
 const GalleryCard: React.FC<GalleryCardProps> = ({
   photo,
   onDelete,
@@ -150,111 +163,115 @@ const GalleryCard: React.FC<GalleryCardProps> = ({
             alt={`Aurora at ${photo.location}`}
             loading="lazy"
           />
-          <ImageOverlay className="image-overlay">
-            <Box
-              sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}
-            >
-              <Typography variant="h6" color="common.white">
-                {photo.location}
-              </Typography>
-              {showActions && (
-                <Box sx={{ display: "flex", gap: 1 }}>
-                  <Tooltip title={isLiked ? "Unlike" : "Like"}>
-                    <IconButton
-                      size="small"
-                      onClick={handleLike}
-                      sx={{
-                        color: isLiked ? "error.main" : "common.white",
-                        "&:hover": { color: "error.main" },
-                      }}
-                    >
-                      {isLiked ? <Favorite /> : <FavoriteBorder />}
-                    </IconButton>
-                  </Tooltip>
-                  {typeof navigator.share === "function" && (
-                    <Tooltip title="Share">
-                      <IconButton
-                        size="small"
-                        onClick={handleShare}
-                        sx={{ color: "common.white" }}
-                      >
-                        <Share />
-                      </IconButton>
-                    </Tooltip>
-                  )}
+
+          <CardActions className="card-actions">
+            {showActions && (
+              <>
+                <Tooltip title={isLiked ? "Unlike" : "Like"}>
                   <IconButton
                     size="small"
-                    onClick={handleMenuOpen}
-                    sx={{ color: "common.white" }}
+                    onClick={handleLike}
+                    sx={{
+                      bgcolor: alpha(theme.palette.background.paper, 0.8),
+                      backdropFilter: "blur(4px)",
+                      "&:hover": {
+                        bgcolor: alpha(theme.palette.background.paper, 0.9),
+                      },
+                      color: isLiked ? "error.main" : "inherit",
+                    }}
                   >
-                    <MoreVert />
+                    {isLiked ? <Favorite /> : <FavoriteBorder />}
                   </IconButton>
+                </Tooltip>
+
+                <Tooltip title="Download">
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // Add download logic here
+                    }}
+                    sx={{
+                      bgcolor: alpha(theme.palette.background.paper, 0.8),
+                      backdropFilter: "blur(4px)",
+                      "&:hover": {
+                        bgcolor: alpha(theme.palette.background.paper, 0.9),
+                      },
+                    }}
+                  >
+                    <Download />
+                  </IconButton>
+                </Tooltip>
+
+                {typeof navigator.share === "function" && (
+                  <Tooltip title="Share">
+                    <IconButton
+                      size="small"
+                      onClick={handleShare}
+                      sx={{
+                        bgcolor: alpha(theme.palette.background.paper, 0.8),
+                        backdropFilter: "blur(4px)",
+                        "&:hover": {
+                          bgcolor: alpha(theme.palette.background.paper, 0.9),
+                        },
+                      }}
+                    >
+                      <Share />
+                    </IconButton>
+                  </Tooltip>
+                )}
+
+                <IconButton
+                  size="small"
+                  onClick={handleMenuOpen}
+                  sx={{
+                    bgcolor: alpha(theme.palette.background.paper, 0.8),
+                    backdropFilter: "blur(4px)",
+                    "&:hover": {
+                      bgcolor: alpha(theme.palette.background.paper, 0.9),
+                    },
+                  }}
+                >
+                  <MoreVert />
+                </IconButton>
+              </>
+            )}
+          </CardActions>
+
+          <ImageOverlay className="image-overlay">
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="h6" color="common.white" gutterBottom>
+                {photo.location}
+              </Typography>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Avatar
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${photo.userName}&backgroundColor=random`}
+                  sx={{
+                    width: 32,
+                    height: 32,
+                    border: `2px solid ${alpha(
+                      theme.palette.common.white,
+                      0.8
+                    )}`,
+                  }}
+                />
+                <Box>
+                  <Typography variant="body2" color="common.white">
+                    {photo.userName}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color={alpha(theme.palette.common.white, 0.7)}
+                    sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                  >
+                    <CalendarToday sx={{ fontSize: 12 }} />
+                    {format(new Date(photo.createdAt), "MMM dd, yyyy")}
+                  </Typography>
                 </Box>
-              )}
+              </Box>
             </Box>
           </ImageOverlay>
-
-          {photo.visibility === "private" && (
-            <Chip
-              icon={<Lock sx={{ fontSize: 16 }} />}
-              label="Private"
-              size="small"
-              sx={{
-                position: "absolute",
-                top: theme.spacing(2),
-                right: theme.spacing(2),
-                bgcolor: alpha(theme.palette.background.paper, 0.9),
-                backdropFilter: "blur(4px)",
-              }}
-            />
-          )}
         </ImageContainer>
-
-        <CardContent>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-            <Avatar
-              sx={{
-                width: 40,
-                height: 40,
-                bgcolor: theme.palette.primary.main,
-              }}
-              src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
-            >
-              {photo.userName.charAt(0).toUpperCase()}
-            </Avatar>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="subtitle1" noWrap>
-                {photo.userName}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {format(new Date(photo.createdAt), "MMMM dd, yyyy")}
-              </Typography>
-            </Box>
-          </Box>
-
-          {photo.description && (
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
-                mb: 2,
-              }}
-            >
-              {photo.description}
-            </Typography>
-          )}
-
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <LocationOn sx={{ color: "primary.main", fontSize: 20 }} />
-            <Typography variant="body2" color="text.secondary">
-              {photo.location}
-            </Typography>
-          </Box>
-        </CardContent>
 
         <Menu
           anchorEl={anchorEl}
@@ -286,19 +303,7 @@ const GalleryCard: React.FC<GalleryCardProps> = ({
             <Delete sx={{ mr: 1, fontSize: 20 }} />
             Delete
           </MenuItem>
-          <MenuItem onClick={handleMenuClose}>
-            {photo.visibility === "private" ? (
-              <>
-                <Visibility sx={{ mr: 1, fontSize: 20 }} />
-                Make Public
-              </>
-            ) : (
-              <>
-                <VisibilityOff sx={{ mr: 1, fontSize: 20 }} />
-                Make Private
-              </>
-            )}
-          </MenuItem>
+          <MenuItem onClick={handleMenuClose}></MenuItem>
         </Menu>
       </StyledCard>
     </motion.div>

@@ -1,169 +1,266 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
-  Card,
   Container,
   Typography,
-  Avatar,
   TextField,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
+  CircularProgress,
+  Avatar,
+  useTheme,
+  alpha,
 } from "@mui/material";
+import { DeleteOutline, EmailOutlined, PersonOutline } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 import { authService } from "../services/auth";
-import type { User } from "../types/auth";
 
 const ProfilePage = () => {
+  const theme = useTheme();
+  const navigate = useNavigate();
   const user = authService.getCurrentUser();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!user) {
-    return (
-      <Box sx={{ paddingTop: "74px" }}>
-        <Container maxWidth="md" sx={{ py: 8 }}>
-          <Typography>No user data available</Typography>
-        </Container>
-      </Box>
-    );
-  }
+  const handleDeleteAccount = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      await authService.deleteAccount();
+      navigate('/login', { replace: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete account');
+    } finally {
+      setLoading(false);
+      setOpenDialog(false);
+    }
+  };
 
   return (
-    <Box sx={{ paddingTop: "74px" }}>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        {/* Page Title */}
-        <Typography variant="h5" sx={{ mb: 4, color: "white" }}>
-          User Profile
-        </Typography>
-
-        <Box sx={{ display: "flex", gap: 4 }}>
-          {/* Left Column - Profile Picture */}
-          <Card
+    <Box sx={{ minHeight: '100vh', pt: "100px" }}>
+      <Container maxWidth="md">
+        <Box
+          sx={{
+            background: `linear-gradient(145deg, 
+              ${alpha('#1a237e', 0.4)} 0%, 
+              ${alpha('#0d47a1', 0.4)} 50%,
+              ${alpha('#311b92', 0.4)} 100%)`,
+            borderRadius: '24px',
+            backdropFilter: 'blur(10px)',
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          {/* Header Section */}
+          <Box
             sx={{
-              width: 280,
-              height: "fit-content",
-              bgcolor: "rgba(17, 25, 40, 0.75)",
-              p: 3,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 2,
+              p: 4,
+              pb: 8,
+              background: `linear-gradient(to bottom, 
+                ${alpha(theme.palette.primary.dark, 0.3)}, 
+                transparent)`,
+              textAlign: 'center',
+              position: 'relative',
             }}
           >
             <Avatar
               sx={{
                 width: 120,
                 height: 120,
-                bgcolor: "#2196F3",
-                fontSize: "2.5rem",
+                bgcolor: theme.palette.primary.main,
+                fontSize: '3rem',
+                margin: '0 auto',
+                border: `4px solid ${alpha(theme.palette.primary.light, 0.3)}`,
+                boxShadow: `0 0 20px ${alpha(theme.palette.primary.main, 0.5)}`,
               }}
-              src={user.avatar}
             >
-              {user.firstName?.[0]?.toUpperCase()}
+              {user?.firstName?.[0]?.toUpperCase()}
             </Avatar>
-            <Typography variant="h6" sx={{ color: "white", mt: 2 }}>
-              {user.firstName} {user.lastName}
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                mt: 3,
+                mb: 1,
+                background: 'linear-gradient(45deg, #e3f2fd 30%, #90caf9 90%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: 'bold'
+              }}
+            >
+              {user?.firstName} {user?.lastName}
             </Typography>
-          </Card>
+            <Typography 
+              color="text.secondary"
+              sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1
+              }}
+            >
+              <EmailOutlined fontSize="small" />
+              {user?.email}
+            </Typography>
+          </Box>
 
-          {/* Right Column - User Details */}
-          <Card
-            sx={{
-              flex: 1,
-              bgcolor: "rgba(17, 25, 40, 0.75)",
-              p: 4,
-            }}
-          >
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <Box
-                sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}
-              >
-                {/* First Name */}
-                <Box>
-                  <Typography sx={{ mb: 1, color: "rgba(255,255,255,0.7)" }}>
-                    First Name
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    value={user.firstName}
-                    disabled
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        bgcolor: "rgba(0,0,0,0.2)",
-                        "& fieldset": {
-                          borderColor: "rgba(255,255,255,0.1)",
-                        },
-                      },
-                      "& .MuiInputBase-input.Mui-disabled": {
-                        color: "white",
-                        WebkitTextFillColor: "white",
-                      },
-                    }}
-                  />
-                </Box>
-
-                {/* Last Name */}
-                <Box>
-                  <Typography sx={{ mb: 1, color: "rgba(255,255,255,0.7)" }}>
-                    Last Name
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    value={user.lastName}
-                    disabled
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        bgcolor: "rgba(0,0,0,0.2)",
-                        "& fieldset": {
-                          borderColor: "rgba(255,255,255,0.1)",
-                        },
-                      },
-                      "& .MuiInputBase-input.Mui-disabled": {
-                        color: "white",
-                        WebkitTextFillColor: "white",
-                      },
-                    }}
-                  />
-                </Box>
-
-                {/* Email */}
-                <Box sx={{ gridColumn: "1 / -1" }}>
-                  <Typography sx={{ mb: 1, color: "rgba(255,255,255,0.7)" }}>
-                    Email
-                  </Typography>
-                  <TextField
-                    fullWidth
-                    value={user.email}
-                    disabled
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        bgcolor: "rgba(0,0,0,0.2)",
-                        "& fieldset": {
-                          borderColor: "rgba(255,255,255,0.1)",
-                        },
-                      },
-                      "& .MuiInputBase-input.Mui-disabled": {
-                        color: "white",
-                        WebkitTextFillColor: "white",
-                      },
-                    }}
-                  />
-                </Box>
-              </Box>
-
-              {/* Save Button
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                <Button 
-                  variant="contained" 
+          {/* Form Fields */}
+          <Box sx={{ px: 4, pb: 4 }}>
+            <Box sx={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(2, 1fr)', 
+              gap: 3,
+              mb: 4 
+            }}>
+              <Box>
+                <Typography 
+                  variant="subtitle2" 
                   sx={{ 
-                    bgcolor: '#2196F3',
-                    '&:hover': {
-                      bgcolor: '#1976D2'
-                    }
+                    mb: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    color: alpha(theme.palette.common.white, 0.7)
                   }}
                 >
-                  Save Changes
-                </Button>
-              </Box> */}
+                  <PersonOutline fontSize="small" />
+                  First Name
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={user?.firstName}
+                  disabled
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: alpha(theme.palette.common.black, 0.2),
+                      '& fieldset': {
+                        borderColor: alpha(theme.palette.primary.main, 0.2),
+                      },
+                    },
+                  }}
+                />
+              </Box>
+
+              <Box>
+                <Typography 
+                  variant="subtitle2" 
+                  sx={{ 
+                    mb: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    color: alpha(theme.palette.common.white, 0.7)
+                  }}
+                >
+                  <PersonOutline fontSize="small" />
+                  Last Name
+                </Typography>
+                <TextField
+                  fullWidth
+                  value={user?.lastName}
+                  disabled
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      bgcolor: alpha(theme.palette.common.black, 0.2),
+                      '& fieldset': {
+                        borderColor: alpha(theme.palette.primary.main, 0.2),
+                      },
+                    },
+                  }}
+                />
+              </Box>
             </Box>
-          </Card>
+
+            {/* Delete Account Button */}
+            <Box sx={{ 
+              display: 'flex', 
+              justifyContent: 'flex-end',
+              mt: 6
+            }}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={() => setOpenDialog(true)}
+                startIcon={<DeleteOutline />}
+                sx={{
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                  px: 3,
+                  py: 1,
+                  background: 'linear-gradient(45deg, #f44336 30%, #d32f2f 90%)',
+                  '&:hover': {
+                    background: 'linear-gradient(45deg, #d32f2f 30%, #b71c1c 90%)',
+                  }
+                }}
+              >
+                Delete Account
+              </Button>
+            </Box>
+          </Box>
         </Box>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog
+          open={openDialog}
+          onClose={() => !loading && setOpenDialog(false)}
+          PaperProps={{
+            sx: {
+              bgcolor: alpha(theme.palette.background.paper, 0.95),
+              backdropFilter: 'blur(20px)',
+              borderRadius: '16px',
+            }
+          }}
+        >
+          <DialogTitle>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <DeleteOutline color="error" />
+              <Typography variant="h6">Delete Account</Typography>
+            </Box>
+          </DialogTitle>
+          <DialogContent>
+            <Typography>
+              Are you sure you want to delete your account? This action cannot be undone 
+              and will permanently delete all your data.
+            </Typography>
+            {error && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {error}
+              </Alert>
+            )}
+          </DialogContent>
+          <DialogActions sx={{ p: 2, pt: 0 }}>
+            <Button 
+              onClick={() => setOpenDialog(false)} 
+              disabled={loading}
+              sx={{ borderRadius: '8px' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteAccount}
+              color="error"
+              variant="contained"
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} /> : <DeleteOutline />}
+              sx={{
+                borderRadius: '8px',
+                background: 'linear-gradient(45deg, #f44336 30%, #d32f2f 90%)',
+                '&:hover': {
+                  background: 'linear-gradient(45deg, #d32f2f 30%, #b71c1c 90%)',
+                }
+              }}
+            >
+              {loading ? "Deleting..." : "Delete Account"}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Container>
     </Box>
   );

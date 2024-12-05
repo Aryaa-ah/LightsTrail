@@ -25,20 +25,20 @@ import {
   CloudUpload as UploadIcon,
   Image as ImageIcon,
   LocationOn,
-  Description,
 } from "@mui/icons-material";
 import { Photo } from "../types/gallery.types";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../../src/store";
 import { uploadPhoto, fetchPhotos } from "../store/gallerySlice";
+import { authService } from "../services/auth";
 // Styled Components
 
-const PreviewImage = styled('img')({
-  width: '100%',
-  height: 'auto',
-  maxHeight: '300px',
-  objectFit: 'contain',
-  borderRadius: '4px',
+const PreviewImage = styled("img")({
+  width: "100%",
+  height: "auto",
+  maxHeight: "300px",
+  objectFit: "contain",
+  borderRadius: "4px",
 });
 
 const DropZone = styled(Box, {
@@ -90,6 +90,11 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  const currentUser = authService.getCurrentUser();
+  const userName = currentUser
+    ? `${currentUser.firstName} ${currentUser.lastName}`
+    : "Anonymous";
+
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
@@ -110,6 +115,8 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
     maxSize: 5242880, // 5MB
     multiple: false,
   });
+
+  // Simulate progress for the upload
   const simulateProgress = () => {
     let progress = 0;
     const interval = setInterval(() => {
@@ -134,6 +141,7 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
       formData.append("image", selectedFile);
       formData.append("location", location);
       formData.append("description", description);
+      formData.append("userName", userName); // this adds the userName to the form data
 
       await dispatch(uploadPhoto(formData)).unwrap();
       setUploadProgress(100);
@@ -298,22 +306,6 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
               ),
             }}
           />
-
-          <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Add a description of your aurora capture..."
-            disabled={uploading}
-            InputProps={{
-              startAdornment: (
-                <Description sx={{ color: "text.secondary", mr: 1, mt: 1 }} />
-              ),
-            }}
-          />
         </Box>
       </DialogContent>
 
@@ -343,15 +335,10 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
           disabled={uploading || !selectedFile || !location}
           sx={{
             position: "relative",
-            background:
-              theme.palette.mode === "dark"
-                ? "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)"
-                : theme.palette.primary.main,
+            background: "linear-gradient(45deg, #84fab0 30%, #8fd3f4 90%)",
+            color: "black", // Explicitly set text color to black
             "&:hover": {
-              background:
-                theme.palette.mode === "dark"
-                  ? "linear-gradient(45deg, #84fab0 20%, #8fd3f4 100%)"
-                  : theme.palette.primary.dark,
+              background: "linear-gradient(45deg, #84fab0 40%, #8fd3f4 100%)",
             },
           }}
         >
@@ -360,13 +347,13 @@ const PhotoUpload: React.FC<PhotoUploadProps> = ({
               <CircularProgress
                 size={24}
                 sx={{
-                  color: "common.white",
+                  color: "black", // Match progress indicator to text
                   position: "absolute",
                   left: "50%",
                   marginLeft: "-12px",
                 }}
               />
-              <Box sx={{ opacity: 0 }}>Uploading...</Box>
+              <Box sx={{ opacity: 0, color: "black" }}>Uploading...</Box>
             </>
           ) : (
             "Upload Photo"
