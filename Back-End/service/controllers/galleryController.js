@@ -176,7 +176,83 @@ const galleryController = {
         error: error.message
       });
     }
+  },
+  
+  // searchPhotos: async (req, res) => {
+  //   try {
+  //     const { location } = req.query;
+  //     const page = parseInt(req.query.page) || 1;
+  //     const limit = parseInt(req.query.limit) || 12;
+  
+  //     let query = {};
+  //     if (location) {
+  //       query.location = { $regex: new RegExp(location, 'i') };
+  //     }
+  
+  //     const photos = await Gallery.find(query)
+  //       .sort({ createdAt: -1 })
+  //       .skip((page - 1) * limit)
+  //       .limit(limit);
+  
+  //     const transformedPhotos = photos.map(photo => ({
+  //       id: photo._id,
+  //       url: `/uploads/${photo.fileName}`,
+  //       userName: photo.userName,
+  //       location: photo.location,
+  //       createdAt: photo.createdAt,
+  //     }));
+  
+  //     res.status(200).json({
+  //       success: true,
+  //       data: transformedPhotos
+  //     });
+  //   } catch (error) {
+  //     console.error('Search error:', error);
+  //     res.status(400).json({
+  //       success: false,
+  //       error: error.message || 'Failed to search photos'
+  //     });
+  //   }
+  // }
+
+  searchPhotos: async (req, res) => {
+    try {
+      const { location } = req.query;
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 12;
+  
+      // If no location query or empty string, return all photos
+      const query = location?.trim() 
+        ? { location: { $regex: new RegExp(`^${location}`, 'i') } }
+        : {};
+  
+      const photos = await Gallery.find(query)
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * limit)
+        .limit(limit);
+  
+      const transformedPhotos = photos.map(photo => ({
+        id: photo._id,
+        url: `/uploads/${photo.fileName}`,
+        userName: photo.userName,
+        location: photo.location,
+        createdAt: photo.createdAt,
+      }));
+  
+      res.status(200).json({
+        success: true,
+        data: transformedPhotos
+      });
+    } catch (error) {
+      console.error('Search error:', error);
+      res.status(400).json({
+        success: false,
+        error: error.message || 'Failed to search photos'
+      });
+    }
   }
+    
 };
+
 
 export default galleryController;

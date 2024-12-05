@@ -117,6 +117,41 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
   const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
 
+
+  // Handle no results case first
+  if (!photos.length) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: "300px",
+            textAlign: "center",
+            p: 3,
+          }}
+        >
+          <Typography variant="h6" sx={{ color: "text.secondary", mb: 1 }}>
+            No photos found
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{ color: "text.secondary", maxWidth: "500px" }}
+          >
+            Try adjusting your search or explore other locations
+          </Typography>
+        </Box>
+      </motion.div>
+    );
+  }
+
+  
   const getImageListCols = () => {
     if (viewMode === "list") return 1;
     if (isMobile) return 1;
@@ -194,7 +229,7 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
 
               <img
                 src={
-                  photo.url.startsWith("http")
+                  photo.url.startsWith("http") 
                     ? photo.url
                     : `${BACKEND_URL}${photo.url}`
                 }
