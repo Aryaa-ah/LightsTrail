@@ -5,17 +5,17 @@ meta {
 }
 
 put {
-  url: http://localhost:3002/api/gallery/photos/:photoId
+  url: {{baseUrl}}/gallery/photos/:photoId
   body: json
   auth: none
 }
 
 params:path {
-  photoId: 673cf5c3b33e23fd538c43c2
+  photoId: 
 }
 
 body:json {
   {
-    "location": "BostoN"
+    "location": ""
   }
 }

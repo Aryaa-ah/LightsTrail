@@ -21,6 +21,30 @@ const initialState: GalleryState = {
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
 
+export const searchPhotosByLocation = createAsyncThunk(
+  'gallery/searchPhotosByLocation',
+  async (location: string) => {
+    // If empty search, use the fetchPhotos endpoint instead
+    if (!location.trim()) {
+      const response = await fetch(`${BACKEND_URL}/api/gallery/photos`);
+      const data = await response.json();
+      return data.data;
+    }
+
+    const response = await fetch(
+      `${BACKEND_URL}/api/gallery/photos/search?location=${encodeURIComponent(location)}`
+    );
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to search photos');
+    }
+
+    const data = await response.json();
+    return data.data;
+  }
+);
+
 export const fetchPhotos = createAsyncThunk(
   "gallery/fetchPhotos",
   async (params: FetchPhotosParams = {}) => {
@@ -58,23 +82,6 @@ export const uploadPhoto = createAsyncThunk(
   }
 );
 
-export const searchPhotosByLocation = createAsyncThunk(
-  "gallery/searchPhotosByLocation",
-  async (location: string) => {
-    const response = await fetch(
-      `${BACKEND_URL}/api/gallery/photos?location=${encodeURIComponent(
-        location
-      )}`
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to search photos");
-    }
-
-    const data = await response.json();
-    return data.data;
-  }
-);
 
 export const updatePhoto = createAsyncThunk(
   "gallery/updatePhoto",
@@ -196,8 +203,18 @@ const gallerySlice = createSlice({
         state.loading = false;
         state.error = action.error.message || "Upload failed";
       })
+      .addCase(searchPhotosByLocation.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(searchPhotosByLocation.fulfilled, (state, action) => {
+        state.loading = false;
         state.photos = action.payload;
+        state.error = null;
+      })
+      .addCase(searchPhotosByLocation.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Search failed';
       })
       .addCase(updatePhoto.fulfilled, (state, action) => {
         // Update photo in state
