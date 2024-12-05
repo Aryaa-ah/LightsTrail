@@ -245,7 +245,7 @@ const GalleryCard: React.FC<GalleryCardProps> = ({
               </Typography>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <Avatar
-                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
+                  src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${photo.userName}&backgroundColor=random`}
                   sx={{
                     width: 32,
                     height: 32,

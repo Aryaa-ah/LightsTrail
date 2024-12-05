@@ -17,6 +17,8 @@ import {
   DialogActions,
   TextField,
   Tooltip,
+  Snackbar,
+  Alert,
   // Fade,
 } from "@mui/material";
 import {
@@ -100,6 +102,7 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editedLocation, setEditedLocation] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   if (!photo) return null;
 
@@ -141,12 +144,14 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
 
       if (!userName) {
         setError("You must be logged in to delete photos");
+        setShowErrorAlert(true); // show the error alert
         return;
       }
 
       // Compares the photo owner with current user before attempting deletion
       if (photo.userName !== userName) {
         setError("You can only delete your own photos");
+        setShowErrorAlert(true); // show the error alert
         return;
       }
 
@@ -166,6 +171,7 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
       setError(
         error instanceof Error ? error.message : "An unknown error occurred"
       );
+      setShowErrorAlert(true);
     }
   };
   // handles the editing of the photo location when the edit button is clicked
@@ -304,8 +310,18 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
                       }}
                     >
                       <Avatar
-                        src={`https://api.dicebear.com/7.x/initials/svg?seed=${photo.userName}`}
-                        sx={{ width: 48, height: 48 }}
+                        src={`https://api.dicebear.com/9.x/identicon/svg?seed=${
+                          photo.userName ||
+                          Math.random().toString(36).substring(7)
+                        }c0aede,d1d4f9&scale=80&size=32&radius=50`}
+                        sx={{
+                          width: 32,
+                          height: 32,
+                          border: `2px solid ${alpha(
+                            theme.palette.common.white,
+                            0.8
+                          )}`,
+                        }}
                       />
                       <Box>
                         <Typography variant="h6">{photo.userName}</Typography>
@@ -458,6 +474,28 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
               </ConfirmDialog>
             )}
           </AnimatePresence>
+
+          <Snackbar
+            open={showErrorAlert}
+            autoHideDuration={6000}
+            onClose={() => setShowErrorAlert(false)}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+          >
+            <Alert
+              onClose={() => setShowErrorAlert(false)}
+              severity="error"
+              sx={{
+                width: "100%",
+                bgcolor: alpha(theme.palette.error.main, 0.1),
+                color: "error.main",
+                "& .MuiAlert-icon": {
+                  color: "error.main",
+                },
+              }}
+            >
+              {error}
+            </Alert>
+          </Snackbar>
         </>
       )}
     </AnimatePresence>
