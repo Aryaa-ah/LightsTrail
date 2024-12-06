@@ -1,45 +1,54 @@
 import AuroraForecast from "./../models/auroraForecast.js";
 import axios from 'axios';
 const calculateAuroraPrediction = (data) => {
-    // Extract values from the data object
-    const kp = parseFloat(data.kpIndex);
-    const bz = parseFloat(data.bz);
-    const speed = parseFloat(data.speed);
-    const temperature = parseFloat(data.temperature);
-    const precipitation = parseFloat(data.precipitation);
-    const windSpeed = parseFloat(data.windSpeed);
-    const uvIndex = parseFloat(data.uvIndex);
-    const cloudCover = parseFloat(data.cloudCover);
-  
-    // Initialize probability variable
-    let probability = 0;
-  
-    // Apply logic to calculate probability based on the input parameters
-    if (kp >= 5 && bz < 0) {
-      probability += 40; // High KP and negative Bz increase the probability of auroras
-    }
-  
-    if (speed > 400 && temperature < -10) {
-      probability += 30; // High speed and low temperature are favorable conditions for auroras
-    }
-  
-    if (precipitation < 10 && windSpeed > 10) {
-      probability += 20; // Low precipitation and high wind speed might indicate clear skies, increasing aurora chances
-    }
-  
-    if (uvIndex > 6) {
-      probability += 10; // High UV index could indicate increased solar activity
-    }
-  
-    if (cloudCover > 50) {
-      probability -= 20; // High cloud cover reduces visibility of auroras
-    }
-  
-    // Ensure probability is within the range of 0 to 100
-    probability = Math.max(0, Math.min(100, probability));
-  
-    return probability;
-  };
+  // Extract values from the data object
+  const kp = parseFloat(data.kpIndex);
+  const bz = parseFloat(data.bz);
+  const speed = parseFloat(data.speed);
+  const temperature = parseFloat(data.temperature);
+  const precipitation = parseFloat(data.precipitation);
+  const windSpeed = parseFloat(data.windSpeed);
+  const uvIndex = parseFloat(data.uvIndex);
+  const cloudCover = parseFloat(data.cloudCover);
+  const isDay = data.isDay; // "Day" or "Night"
+
+  // Initialize probability variable
+  let probability = 0;
+
+  // Apply logic to calculate probability based on the input parameters
+  if (kp >= 5 && bz < 0) {
+    probability += 40; // High KP and negative Bz increase the probability of auroras
+  }
+
+  if (speed > 400 && temperature < -10) {
+    probability += 30; // High speed and low temperature are favorable conditions for auroras
+  }
+
+  if (precipitation < 10 && windSpeed > 10) {
+    probability += 20; // Low precipitation and high wind speed might indicate clear skies
+  }
+
+  if (uvIndex > 6) {
+    probability += 10; // High UV index could indicate increased solar activity
+  }
+
+  if (cloudCover > 50) {
+    probability -= 20; // High cloud cover reduces visibility of auroras
+  }
+
+  // Adjust for time of day
+  if (isDay === "Day") {
+    probability = 0; // Auroras are not visible during the day
+  } else if (isDay === "Night") {
+    probability += 10; // Nighttime slightly increases visibility chances
+  }
+
+  // Ensure probability is within the range of 0 to 100
+  probability = Math.max(0, Math.min(100, probability));
+
+  return probability;
+};
+
 
 export const call = async (forecastData) => {
     const { latitude, longitude } = forecastData;
