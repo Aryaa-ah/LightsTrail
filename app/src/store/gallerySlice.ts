@@ -27,8 +27,8 @@ export const searchPhotosByLocation = createAsyncThunk(
     // If empty search, use the fetchPhotos endpoint instead
     if (!location.trim()) {
       const response = await fetch(`${BACKEND_URL}/api/gallery/photos`);
-      const data = await response.json();
-      return data.data;
+      const data: { data: Photo[] } = await response.json() as any;
+      return (data as unknown as { data: Photo }).data;
     }
 
     const response = await fetch(
@@ -36,11 +36,11 @@ export const searchPhotosByLocation = createAsyncThunk(
     );
     
     if (!response.ok) {
-      const errorData = await response.json();
+      const errorData = await response.json() as { error: string };
       throw new Error(errorData.error || 'Failed to search photos');
     }
 
-    const data = await response.json();
+    const data = await response.json() as { data: Photo };
     return data.data;
   }
 );
@@ -59,7 +59,7 @@ export const fetchPhotos = createAsyncThunk(
       throw new Error("Failed to fetch photos");
     }
 
-    const data = await response.json();
+    const data = await response.json() as { data: Photo };
     return data.data;
   }
 );
@@ -74,10 +74,11 @@ export const uploadPhoto = createAsyncThunk(
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.message || "Upload failed");
+      const errorMessage = (error as { message: string }).message || "Upload failed";
+      throw new Error(errorMessage);
     }
 
-    const result = await response.json();
+    const result = await response.json() as { data: Photo };
     return result.data;
   }
 );
@@ -107,7 +108,7 @@ export const updatePhoto = createAsyncThunk(
       throw new Error("Failed to update photo");
     }
 
-    const data = await response.json();
+    const data = await response.json() as { data: Photo };
     return data.data;
   }
 );
@@ -129,7 +130,8 @@ export const deletePhoto = createAsyncThunk(
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to delete photo');
+      const errorData = error as { error: string };
+      throw new Error(errorData.error || 'Failed to delete photo');
     }
 
     return photoId;
@@ -147,7 +149,7 @@ export const getPhotoById = createAsyncThunk(
       throw new Error("Failed to fetch photo");
     }
 
-    const data = await response.json();
+    const data = await response.json() as { data: Photo };
     return data.data;
   }
 );
@@ -184,7 +186,7 @@ const gallerySlice = createSlice({
       })
       .addCase(fetchPhotos.fulfilled, (state, action) => {
         state.loading = false;
-        state.photos = action.payload;
+        state.photos = Array.isArray(action.payload) ? action.payload : [action.payload];
         state.error = null;
       })
       .addCase(fetchPhotos.rejected, (state, action) => {
@@ -209,7 +211,7 @@ const gallerySlice = createSlice({
       })
       .addCase(searchPhotosByLocation.fulfilled, (state, action) => {
         state.loading = false;
-        state.photos = action.payload;
+        state.photos = Array.isArray(action.payload) ? action.payload : [action.payload];
         state.error = null;
       })
       .addCase(searchPhotosByLocation.rejected, (state, action) => {
