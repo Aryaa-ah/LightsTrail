@@ -127,7 +127,7 @@ class AuthService {
             },
             credentials: 'include'
         }).finally(() => {
-            window.location.href = '/login';
+            window.location.href = 'auth/login';
         });
     }
 

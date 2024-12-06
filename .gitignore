@@ -259,3 +259,4 @@ node_modules/
 /Back-End/service/uploads
 
 /Back-End/uploads
+app/package-lock.json
