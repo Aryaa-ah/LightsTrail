@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Box, Card, CardContent, Button, Typography, LinearProgress } from '@mui/material';
 
 // Define the shape of each image object
