@@ -23,7 +23,7 @@
     "outDir": "./dist"
     // "noUncheckedSideEffectImports": true
   },
-  "include": ["vite.config.ts", "src/**/*"],
+  "include": ["vite.config.ts", "src/**/*", "src/store/**/*.ts"],
   "references": [],
   "exclude": ["node_modules", "dist"]
 }

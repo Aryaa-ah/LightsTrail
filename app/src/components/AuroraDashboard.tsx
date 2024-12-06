@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Card, CardContent, Typography, Grid, Skeleton } from '@mui/material';
 import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat';
 import AirIcon from '@mui/icons-material/Air';
@@ -6,42 +7,31 @@ import PublicIcon from '@mui/icons-material/Public';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 
-interface AuroraDashboardProps{
-  latitude: number,
-  longitude: number
+import { RootState, AppDispatch } from '../store/index';
+import { fetchAuroraData } from '../store/AuroraDashboardSlice';
+
+interface AuroraDashboardProps {
+  latitude: number;
+  longitude: number;
 }
+
 const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
-  const [data, setData] = useState({
-    kpIndex: "-",
-    bz: "-",
-    speed: "-",
-    temperature: "-",
-    precipitation: "-",
-    windSpeed: "-",
-    uvIndex: "-"
-  });
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const { data, loading, error } = useSelector((state: RootState) => state.auroraDashboard);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); 
-      try {
-        const response = await fetch(
-          "http://localhost:3002/auroraforecast?longitude="+longitude+"&latitude="+latitude
-        );
-        const result = await response.json();
-        setLoading(false);
-        setData(result);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-      finally{
-        setLoading(false); 
-      }
-    };
+    dispatch(fetchAuroraData({ latitude, longitude }));
+  }, [dispatch, latitude, longitude]);
 
-    fetchData();
-  }, [latitude, longitude]);
+  if (error) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography color="error">Error: {error}</Typography>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card sx={{
@@ -51,8 +41,6 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
       bgcolor: 'grey.800',
       color: "white",
       opacity: "0.7",
-      
-      
     }}>
       <CardContent>
         <Grid container spacing={2} sx={{opacity:'1'}}>
