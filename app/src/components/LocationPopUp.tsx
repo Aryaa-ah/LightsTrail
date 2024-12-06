@@ -4,7 +4,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import CircularProgress from '@mui/material/CircularProgress';
+
 import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
@@ -39,7 +39,7 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
     setSuggestions([]);
     setError(null);
 
-    if (value.trim() === '') {
+    if (value.trim() === '' || value === 'Current Location') {
       return;
     }
 
@@ -75,7 +75,6 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
     if (value) {
       onLocationSelect?.(value);
       setLocation(value);
-
     }
   };
 
@@ -92,11 +91,7 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
           };
           setSelectedLocation(currentLocation);
           onLocationSelect?.(currentLocation);
-          setLocation({
-            city_country: "Current Location", 
-            latitude: 0,
-            longitude: 0,
-          });
+          setLocation(currentLocation);
         },
         (error) => {
           console.error('Geolocation error:', error);
@@ -123,7 +118,7 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
             onChange={handleLocationSelect}
             renderInput={(params) => (
               <TextField
-              sx={{marginTop:'20px'}}
+                sx={{ marginTop: '20px' }}
                 {...params}
                 label="Search for a location"
                 variant="outlined"
