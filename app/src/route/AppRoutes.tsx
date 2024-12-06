@@ -15,6 +15,7 @@ import ProfilePage from "../pages/ProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import Glossary from "../pages/glossary";
 import Data from "../pages/DataPage";
+import WebCamPage from "../pages/WebCamPage";
 
 // Types
 interface Location {
@@ -155,7 +156,7 @@ export const AppRoutes = ({
         }
       />
 
-<Route
+      <Route
         path="/data"
         element={
           <ProtectedRoute>
@@ -165,6 +166,21 @@ export const AppRoutes = ({
                 setLocation={setLocation}
               />
               <Data />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
+        <Route
+        path="/webcam"
+        element={
+          <ProtectedRoute>
+            <>
+              <ResponsiveAppBar
+                location={location}
+                setLocation={setLocation}
+              />
+              <WebCamPage/>
             </>
           </ProtectedRoute>
         }

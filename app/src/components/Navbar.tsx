@@ -39,8 +39,8 @@ interface NavbarProps {
   location: Location;
   setLocation: (location: Location) => void;
 }
-
-const pages = ["Gallery", "Glossary", "Data"];
+declare var window: any;
+const pages = ["Gallery", "Glossary", "Data", "WebCam"];
 const languages = [
   { code: "en", name: "English" },
   { code: "hi", name: "हिंदी" },
