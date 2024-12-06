@@ -18,6 +18,7 @@ import {
   DialogContent,
   DialogTitle,
   Fade,
+  
 } from "@mui/material";
 import { Search, Camera, GridView, LocationOn } from "@mui/icons-material";
 import { List as ListIcon } from "lucide-react";
@@ -43,6 +44,7 @@ import {
   uploadPhoto,
   updatePhoto,
   getPhotoById,
+  searchPhotosByLocation,
 } from "../store/gallerySlice";
 
 // Animation Variants
@@ -86,6 +88,7 @@ const controlsVariants = {
   },
 };
 
+
 interface EditPhotoData {
   location?: string;
   description?: string;
@@ -94,6 +97,13 @@ interface EditPhotoData {
 interface GalleryPageProps {
   userOnly?: boolean;
 }
+
+
+interface SearchResult {
+  success: boolean;
+  data: Photo[];
+}
+
 
 const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
   const theme = useTheme();
@@ -104,6 +114,83 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
     error,
     filters,
   } = useSelector((state: RootState) => state.gallery);
+
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const [isSearching, setIsSearching] = useState(false);
+
+  const debouncedSearch = useCallback(
+    debounce(async (query: string) => {
+      try {
+        setIsSearching(true);
+        if (!query.trim()) {
+          await dispatch(fetchPhotos({ userOnly })).unwrap();
+        } else {
+          await dispatch(searchPhotosByLocation(query)).unwrap();
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 500),
+    [dispatch, userOnly]
+  );
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      // Fetch all photos when search is cleared
+      dispatch(fetchPhotos({ userOnly }));
+    }
+  }, [searchQuery, dispatch, userOnly]);
+
+  // Add cleanup
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+  // Loading state effect
+  useEffect(() => {
+    if (loading) {
+      setIsSearching(true);
+    } else {
+      setIsSearching(false);
+    }
+  }, [loading]);
+
+  // const handleSearchChange = useCallback(
+  //   (e: React.ChangeEvent<HTMLInputElement>) => {
+  //     const query = e.target.value;
+  //     setSearchQuery(query);
+
+  //     try {
+  //       if (!query.trim()) {
+  //         // Immediately clear search and show all photos
+  //         dispatch(fetchPhotos({ userOnly }));
+  //       } else {
+  //         debouncedSearch(query);
+  //       }
+  //     } catch (error) {
+  //       console.error("Search error:", error);
+  //     }
+  //   },
+  //   [debouncedSearch, dispatch, userOnly]
+  // );
+
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const query = e.target.value;
+      setSearchQuery(query);
+      
+      try {
+        // Always use debouncedSearch - it will handle empty queries correctly
+        debouncedSearch(query);
+      } catch (error) {
+        console.error("Search error:", error);
+      }
+    },
+    [debouncedSearch]
+  );
 
   const dummyPhoto = React.useMemo(
     () => ({
@@ -127,7 +214,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
   const [selectedPhoto, setSelectedPhotoState] = useState<GalleryPhoto | null>(
     null
   );
-  const [searchQuery, setSearchQuery] = useState("");
+  
   const [editingPhoto, setEditingPhoto] = useState<Photo | null>(null);
 
   // Load initial photos
@@ -151,18 +238,6 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
     }
   }, [photos, dummyPhoto]);
 
-  const handleSearchChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const query = e.target.value;
-      setSearchQuery(query);
-
-      debounce(() => {
-        dispatch(updateFilters({ searchQuery: query }));
-        dispatch(fetchPhotos({ userOnly }));
-      }, 500)();
-    },
-    [dispatch, userOnly]
-  );
 
   const handlePhotoUpload = async (photo: Photo) => {
     try {
@@ -252,30 +327,30 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
             }}
           >
             <TextField
-              fullWidth
-              size="medium"
-              placeholder="Search photos..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              sx={{
-                maxWidth: { md: 400 },
-                bgcolor: alpha(theme.palette.background.paper, 0.8),
-                backdropFilter: "blur(8px)",
-                borderRadius: 2,
-                "& .MuiOutlinedInput-root": {
-                  "&:hover .MuiOutlinedInput-notchedOutline": {
-                    borderColor: theme.palette.primary.main,
-                  },
-                },
-              }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search color="primary" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+                fullWidth
+                size="medium"
+                placeholder="Search photos by location..."
+                value={searchQuery}
+                onChange={handleSearchChange}
+                sx={{
+                  maxWidth: { md: 400 },
+                  bgcolor: alpha(theme.palette.background.paper, 0.8),
+                  backdropFilter: "blur(8px)",
+                  borderRadius: 2,
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search color="primary" />
+                    </InputAdornment>
+                  ),
+                  endAdornment: isSearching ? (
+                    <InputAdornment position="end">
+                      <CircularProgress size={20} />
+                    </InputAdornment>
+                  ) : null,
+                }}
+              />
 
             <Box
               sx={{

@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: http://localhost:3002/api/gallery/photos
+  url: {{baseUrl}}/gallery/photos
   body: multipartForm
   auth: none
 }
 
 body:multipart-form {
-  image: @file(test-files/Aurora.jpg)
-  location: NYC
-  userName: Samarth
+  image: 
+  location: 
+  userName: 
 }
