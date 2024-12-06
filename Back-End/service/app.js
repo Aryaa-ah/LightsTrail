@@ -10,6 +10,9 @@ import initializeRouter from "./routers/index.js";
 import fs from "fs";
 import passport from './middleware/passport-config.js';
 import auroraPredictionRouter from "./routers/auroraPredictionRouter.js";
+import glossaryRoutes from "./routers/glossaryRouter.js";
+
+
 
 // ES module fixes for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -54,7 +57,7 @@ app.use("/uploads", (req, res, next) => {
     });
   }
 });
-
+app.use("/api/glossary", glossaryRoutes);
 app.use(passport.initialize());
 // Initialize routes
 initializeRouter(app);

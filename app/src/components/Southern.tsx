@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Card, CardContent, Button, Typography, LinearProgress } from '@mui/material';
+import { Box, Card, CardContent, Button, Typography, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip } from '@mui/material';
 
 // Define the shape of each image object
 interface ImageData {
@@ -12,6 +12,7 @@ const SouthernHemisphere = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [progressBarValue, setProgressBarValue] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -68,6 +69,14 @@ const SouthernHemisphere = () => {
     setIsPlaying((prev) => !prev);
   };
 
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   if (!isLoaded) {
     return <Typography>Loading...</Typography>;
   }
@@ -101,15 +110,19 @@ const SouthernHemisphere = () => {
             </Typography>
           </Box>
           <Box sx={{ mb: 2 }}>
-            <canvas
-              ref={canvasRef}
-              style={{
-                display: 'block',
-                margin: '0 auto',
-                border: '1px solid #444',
-                borderRadius: '8px',
-              }}
-            />
+            <Tooltip title="Click to see image details">
+              <canvas
+                ref={canvasRef}
+                style={{
+                  display: 'block',
+                  margin: '0 auto',
+                  border: '1px solid #444',
+                  borderRadius: '8px',
+                  cursor: 'pointer'
+                }}
+                onClick={handleClickOpen}
+              />
+            </Tooltip>
           </Box>
           <LinearProgress
             variant="determinate"
@@ -125,7 +138,7 @@ const SouthernHemisphere = () => {
             }}
           />
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button
+            <Button
               onClick={handlePlayPause}
               variant="contained"
               sx={{
@@ -137,10 +150,30 @@ const SouthernHemisphere = () => {
             >
               {isPlaying ? 'Pause' : 'Play'}
             </Button>
-
           </Box>
         </CardContent>
       </Card>
+
+      {/* Dialog for Image Details */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>OVATION Aurora Forecast Model</DialogTitle>
+        <DialogContent>
+          <Typography gutterBottom>
+            The OVATION Aurora Forecast Model shows the intensity and location of the aurora predicted for the time shown at the top of the map. This probability forecast is based on current solar wind conditions measured at L1, but using a fixed 30-minute delay time between L1 and Earth. A 30-minute delay corresponds to approximately 800 km/s solar wind speed as might be encountered during geomagnetic storming conditions. In reality, delay times vary from less than 30 minutes to an hour or so for average solar wind conditions.
+          </Typography>
+          <Typography gutterBottom>
+            The sunlit side of Earth is indicated by the lighter blue of the ocean and the lighter color of the continents. The day-night line, or terminator, is shown as a region that goes from light to dark. The lighter edge is where the sun is just at the horizon. The darker edge is where the sun is 12 degrees below the horizon. Note that the aurora will not be visible during daylight hours; however, the aurora can often be observed within an hour before sunrise or after sunset.
+          </Typography>
+          <Typography gutterBottom>
+            Data updates every 5 minutes.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

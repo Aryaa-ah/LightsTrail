@@ -4,7 +4,7 @@ import './index.css'
 import App from './App'
 import StarBackground from './components/StarBackground'
 import React from 'react'
-
+import './i18n'; 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

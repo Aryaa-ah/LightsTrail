@@ -1,16 +1,24 @@
 import AuroraDashboard from '../components/AuroraDashboard.tsx'
-import SolarWindInterface from '../components/SolarWindInterface.jsx'
-import NorthernHemisphere from '../components/Northern.tsx'
-import SouthernHemisphere from '../components/Southern.tsx'
-import KpIndexInterface from '../components/KpIndexInterface.tsx'
 import { Box } from '@mui/material'
-import React from 'react'
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import MapboxMap from '../components/MapComponent.tsx';
+import {AuroraData} from '../types/auroraDashboard.ts';
+
+import { RootState, AppDispatch } from '../store/index';
+import { fetchAuroraData } from '../store/AuroraDashboardSlice';
 interface HomeProps{
     latitude: number,
     longitude: number
 }
 
 const Home = ({ latitude, longitude }: HomeProps) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { data, loading, error } = useSelector((state: RootState) => state.auroraDashboard);
+  useEffect(() => {
+    dispatch(fetchAuroraData({ latitude, longitude }));
+  }, [dispatch, latitude, longitude]);
+
   return (
     <div style={{ paddingTop: '74px' }}>
       {/* Wrapper Box for dashboard content */}
@@ -20,11 +28,18 @@ const Home = ({ latitude, longitude }: HomeProps) => {
           zIndex: 1, // Ensure content is above StarBackground
         }}
       >
-        <AuroraDashboard latitude={latitude} longitude={longitude} />
-        <SolarWindInterface/>
+        <AuroraDashboard/>
+        {/* <SolarWindInterface/>
         <KpIndexInterface/>
+        
         <NorthernHemisphere/>
-        <SouthernHemisphere/>
+        <SouthernHemisphere/> */
+        <div>
+      
+      
+      <MapboxMap data={data } latitude={latitude} longitude={longitude} />
+    </div>
+        }
       </Box>
     </div>
   );

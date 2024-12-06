@@ -1,24 +1,33 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AppBar from "@mui/material/AppBar";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
-import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
-import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  Typography,
+  IconButton,
+  Button,
+  Menu,
+  MenuItem,
+  Avatar,
+  Tooltip,
+  Container,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import {
+  Menu as MenuIcon,
+  AccountCircle,
+  Language as LanguageIcon,
+  LocationOn as LocationOnIcon,
+} from "@mui/icons-material";
+import { CheckIcon } from "lucide-react";
 import LocationDialogPopUp from "./../components/LocationPopUp";
 import auroraIcon from "../images/logo.png";
 import { useAuth } from "../hooks/useAuth";
 import { authService } from "../services/auth";
+import { useTranslation } from "react-i18next";
 
 interface Location {
   city_country: string;
@@ -26,193 +35,135 @@ interface Location {
   longitude: number;
 }
 
-interface ResponsiveAppBarProps {
+interface NavbarProps {
   location: Location;
   setLocation: (location: Location) => void;
 }
 
-// Define the navigation items including new gallery routes
-const pages = [
-  "Gallery",
-  "Glossary",
-  "Weather Forecast",
-  "Live Best Locations ",
+const pages = ["Gallery", "Glossary", "Data", "Live Best Locations "];
+const languages = [
+  { code: "en", name: "English" },
+  { code: "hi", name: "हिंदी" },
+  { code: "kn", name: "ಕನ್ನಡ" },
 ];
-const settings = ["Profile", "Change Language", "Logout"];
 
-const handleLogout = () => {
-  authService.logout(); // clear auth data and redirect to login
-  handleCloseUserMenu(); // Close the menu
-};
-
-function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
+export default function Navbar({ location, setLocation }: NavbarProps) {
   const navigate = useNavigate();
-  const { user } = useAuth(); // Get user authentication status
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [isLocationDialogOpen, setLocationDialogOpen] = React.useState(false);
+  const { i18n, t } = useTranslation();
+  const { user } = useAuth();
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
+  const [anchorElLang, setAnchorElLang] = useState<null | HTMLElement>(null);
+  const [isLocationDialogOpen, setLocationDialogOpen] = useState(false);
+
+  const handleOpenMenu =
+    (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) =>
+    (event: React.MouseEvent<HTMLElement>) => {
+      setter(event.currentTarget);
+    };
+  const handleCloseMenu =
+    (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) =>
+    () => {
+      setter(null);
+    };
+  const [scrollPosition, setScrollPosition] = useState(0);
+
+  const handleLanguageChange = (languageCode: string) => {
+    i18n.changeLanguage(languageCode);
+    setAnchorElLang(null);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
-
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
-  const handleLocationClick = () => {
-    setLocationDialogOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setLocationDialogOpen(false);
-  };
-
-  const handleProfileClick = () => {
-    navigate("/profile");
-    handleCloseUserMenu(); // Close the menu after clicking
-  };
-
-  // Handle navigation for pages
   const handleNavigation = (page: string) => {
-    handleCloseNavMenu();
-    switch (page) {
-      case "Gallery":
-        navigate("/gallery");
-        break;
+    setAnchorElNav(null);
+    navigate(`/${page.toLowerCase()}`);
+  };
 
-      case "Glossary":
-        navigate("/glossary");
-        break;
-      case "Weather Forecast":
-        navigate("/weather");
-        break;
-      case "Aurora Predictions":
-        navigate("/aurora-predictions");
-        break;
-      default:
-        break;
-    }
+  const handleLogout = () => {
+    authService.logout();
+    setAnchorElUser(null);
+    navigate("/login");
   };
 
   useEffect(() => {
-    handleLocationClick();
+    setLocationDialogOpen(true);
+    if (typeof window !== "undefined") {
+      const handleScroll = () => {
+        setScrollPosition(window.scrollY);
+      };
+
+      window.addEventListener("scroll", handleScroll);
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }
   }, []);
-
-  // Filter pages based on authentication
-  const filteredPages = pages.filter(
-    (page) => page !== "My Gallery" || (page === "My Gallery" && user)
-  );
-
+  const appBarStyle = {
+    backgroundColor: `rgba(0, 0, 0, ${Math.min(scrollPosition / 300, 0.8)})`, // Adjust opacity based on scroll
+    transition: "background-color 0.3s ease",
+  };
   return (
     <>
-      <AppBar position="fixed" sx={{ backgroundColor: "#00000000" }}>
+      <AppBar position="fixed" style={appBarStyle}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* Logo and Brand */}
             <img
               src={auroraIcon}
               alt="Aurora Logo"
               style={{
-                display: "flex",
                 width: 40,
                 height: 40,
                 marginRight: "8px",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setAnchorElNav(null);
+                navigate("/home");
               }}
             />
             <Typography
               variant="h6"
-              noWrap
               component="a"
-              href="/"
               sx={{
-                mr: 2,
                 display: { xs: "none", md: "flex" },
                 fontFamily: "monospace",
                 fontWeight: 700,
                 color: "inherit",
                 textDecoration: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setAnchorElNav(null);
+                navigate("/home");
               }}
             >
               Lights Trail
             </Typography>
 
-            {/* Mobile Menu */}
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"
-                aria-label="navigation menu"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleOpenNavMenu}
+                onClick={handleOpenMenu(setAnchorElNav)}
                 color="inherit"
               >
                 <MenuIcon />
               </IconButton>
               <Menu
-                id="menu-appbar"
                 anchorEl={anchorElNav}
-                anchorOrigin={{
-                  vertical: "bottom",
-                  horizontal: "left",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
                 open={Boolean(anchorElNav)}
-                onClose={handleCloseNavMenu}
+                onClose={handleCloseMenu(setAnchorElNav)}
                 sx={{ display: { xs: "block", md: "none" } }}
               >
-                {filteredPages.map((page) => (
+                {pages.map((page) => (
                   <MenuItem key={page} onClick={() => handleNavigation(page)}>
-                    <Typography sx={{ textAlign: "center" }}>{page}</Typography>
+                    <Typography textAlign="center">{page}</Typography>
                   </MenuItem>
                 ))}
-                <MenuItem onClick={handleLocationClick}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {location.city_country}
-                  </Typography>
-                </MenuItem>
               </Menu>
             </Box>
 
-            {/* Desktop Brand for Mobile */}
-            <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-            <Typography
-              variant="h5"
-              noWrap
-              component="a"
-              href="/"
-              sx={{
-                mr: 2,
-                display: { xs: "flex", md: "none" },
-                flexGrow: 1,
-                fontFamily: "monospace",
-                fontWeight: 700,
-                color: "inherit",
-                textDecoration: "none",
-              }}
-            >
-              Lights Trail
-            </Typography>
-
-            {/* Desktop Navigation */}
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-              {filteredPages.map((page) => (
+              {pages.map((page) => (
                 <Button
                   key={page}
                   onClick={() => handleNavigation(page)}
@@ -228,89 +179,78 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
               ))}
             </Box>
 
-            {/* Location Button */}
+            <Tooltip title="Change Language">
+              <IconButton
+                onClick={handleOpenMenu(setAnchorElLang)}
+                sx={{ ml: 2, color: "white" }}
+              >
+                <LanguageIcon />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorElLang}
+              open={Boolean(anchorElLang)}
+              onClose={handleCloseMenu(setAnchorElLang)}
+            >
+              {languages.map((lang) => (
+                <MenuItem
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  selected={i18n.language === lang.code}
+                >
+                  <ListItemText primary={lang.name} />
+                  {i18n.language === lang.code && (
+                    <ListItemIcon sx={{ minWidth: "auto", ml: 1 }}>
+                      <CheckIcon size={16} />
+                    </ListItemIcon>
+                  )}
+                </MenuItem>
+              ))}
+            </Menu>
+
             <LocationOnIcon />
             <Button
-              onClick={handleLocationClick}
-              sx={{
-                my: 2,
-                color: "white",
-                display: "block",
-                marginRight: "20px",
-              }}
+              onClick={() => setLocationDialogOpen(true)}
+              sx={{ my: 2, color: "white" }}
             >
               {location.city_country}
             </Button>
 
-            {/* User Menu */}
-            <Box sx={{ flexGrow: 0 }}>
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    alt={user?.firstName || "User Avatar"}
-                    src={`https://api.dicebear.com/9.x/identicon/svg?seed=${Math.random()
-                      .toString(36)
-                      .substring(
-                        7
-                      )}&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80&size=40&radius=50`}
-                    sx={{
-                      width: 40,
-                      height: 40,
-                      border: "2px solid rgba(255,255,255,0.2)",
-                      backgroundColor: "transparent",
-                    }}
-                  />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem
-                    key={setting}
-                    onClick={() => {
-                      if (setting === "Logout") {
-                        handleLogout();
-                      } else if (setting === "Profile") {
-                        navigate("/profile");
-                        handleCloseUserMenu();
-                      } else if (setting === "Change Language") {
-                        handleCloseUserMenu();
-                      }
-                    }}
+            {user && (
+              <Box sx={{ flexGrow: 0 }}>
+                <Tooltip title="Open settings">
+                  <IconButton
+                    onClick={handleOpenMenu(setAnchorElUser)}
+                    sx={{ p: 0 }}
                   >
-                    <Typography sx={{ textAlign: "center" }}>
-                      {setting}
-                    </Typography>
+                    <Avatar
+                      alt={user?.firstName || "User Avatar"}
+                      src={`https://api.dicebear.com/9.x/identicon/svg?seed=${user?.id}`}
+                      sx={{ width: 40, height: 40 }}
+                    />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  anchorEl={anchorElUser}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseMenu(setAnchorElUser)}
+                >
+                  <MenuItem onClick={() => navigate("/profile")}>
+                    Profile
                   </MenuItem>
-                ))}
-              </Menu>
-            </Box>
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </Menu>
+              </Box>
+            )}
           </Toolbar>
         </Container>
       </AppBar>
 
-      {/* Location Dialog */}
       <LocationDialogPopUp
         open={isLocationDialogOpen}
-        onClose={handleCloseDialog}
+        onClose={() => setLocationDialogOpen(false)}
         setLocation={setLocation}
       />
     </>
   );
 }
-
-export default ResponsiveAppBar;
