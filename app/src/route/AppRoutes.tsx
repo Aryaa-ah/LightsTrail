@@ -14,6 +14,7 @@ import GalleryPage from "../pages/GalleryPage";
 import ProfilePage from "../pages/ProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import Glossary from "../pages/glossary";
+import Data from "../pages/DataPage";
 
 // Types
 interface Location {
@@ -149,6 +150,21 @@ export const AppRoutes = ({
                 setLocation={setLocation}
               />
               <Glossary />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
+<Route
+        path="/data"
+        element={
+          <ProtectedRoute>
+            <>
+              <ResponsiveAppBar
+                location={location}
+                setLocation={setLocation}
+              />
+              <Data />
             </>
           </ProtectedRoute>
         }

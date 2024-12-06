@@ -23,15 +23,11 @@ import { authService } from "../services/auth";
 import { useTranslation } from "react-i18next";
 
 import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  List,
-  ListItem,
+  
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { t } from "i18next";
+
 import { CheckIcon } from "lucide-react";
 
 interface Location {
@@ -51,7 +47,7 @@ const languages = [
   { code: "kn", name: "ಕನ್ನಡ" },
 ];
 
-const pages = ["Gallery", "Glossary", "Weather Forecast"];
+const pages = ["Gallery", "Glossary", "Data"];
 
 const settings = ["Profile", "Logout"]; // Removed language selection from here
 
@@ -123,8 +119,8 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
       case "Glossary":
         navigate("/glossary");
         break;
-      case "Weather Forecast":
-        navigate("/weather");
+      case "Data":
+        navigate("/data");
         break;
       default:
         break;
