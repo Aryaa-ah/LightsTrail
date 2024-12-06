@@ -1,52 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Card, CardContent, Typography, Grid, Skeleton } from "@mui/material";
-import DeviceThermostatIcon from "@mui/icons-material/DeviceThermostat";
-import AirIcon from "@mui/icons-material/Air";
-import PublicIcon from "@mui/icons-material/Public";
-import WaterDropIcon from "@mui/icons-material/WaterDrop";
-import WbSunnyIcon from "@mui/icons-material/WbSunny";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
+import { Card, CardContent, Typography, Grid, Skeleton } from '@mui/material';
+import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat';
+import AirIcon from '@mui/icons-material/Air';
+import PublicIcon from '@mui/icons-material/Public';
+import WaterDropIcon from '@mui/icons-material/WaterDrop';
+import WbSunnyIcon from '@mui/icons-material/WbSunny';
+
+import { RootState, AppDispatch } from '../store/index';
+import { fetchAuroraData } from '../store/AuroraDashboardSlice';
 
 interface AuroraDashboardProps {
   latitude: number;
   longitude: number;
 }
+
 const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
   const { t } = useTranslation();
-
-  const [data, setData] = useState({
-    kpIndex: "-",
-    bz: "-",
-    speed: "-",
-    temperature: "-",
-    precipitation: "-",
-    windSpeed: "-",
-    uvIndex: "-",
-  });
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch<AppDispatch>();
+  const { data, loading, error } = useSelector((state: RootState) => state.auroraDashboard);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch(
-          "http://localhost:3002/auroraforecast?longitude=" +
-            longitude +
-            "&latitude=" +
-            latitude
-        );
-        const result = await response.json();
-        setLoading(false);
-        setData(result);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    dispatch(fetchAuroraData({ latitude, longitude }));
+  }, [dispatch, latitude, longitude]);
 
-    fetchData();
-  }, [latitude, longitude]);
+  if (error) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography color="error">{t('dashboard.error', { error })}</Typography>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card
@@ -72,7 +59,6 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
                 sx={{ verticalAlign: "middle", marginRight: 1 }}
               />
               {t("dashboard.kpIndex")}
-              {/* // upadated from Kp Index  */}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
@@ -167,7 +153,7 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
                 fontSize="small"
                 sx={{ verticalAlign: "middle", marginRight: 1 }}
               />
-             {t('dashboard.windSpeed')}
+              {t('dashboard.windSpeed')}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
