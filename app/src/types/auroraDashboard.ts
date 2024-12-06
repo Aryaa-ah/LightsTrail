@@ -5,6 +5,9 @@ export interface AuroraData {
     temperature: string;
     precipitation: string;
     windSpeed: string;
+    probability: string;
+    isDay: string;
+    cloudCover: string
     uvIndex: string;
   }
   

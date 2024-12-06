@@ -7,23 +7,30 @@ import AirIcon from '@mui/icons-material/Air';
 import PublicIcon from '@mui/icons-material/Public';
 import WaterDropIcon from '@mui/icons-material/WaterDrop';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
+import { 
+  Whatshot, 
+  TrendingUp, 
+  TrendingDown 
+} from '@mui/icons-material';
 
 import { RootState, AppDispatch } from '../store/index';
 import { fetchAuroraData } from '../store/AuroraDashboardSlice';
+
+import { Box } from '@mui/material';
 
 interface AuroraDashboardProps {
   latitude: number;
   longitude: number;
 }
 
-const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
+const AuroraDashboard = () => {
   const { t } = useTranslation();
-  const dispatch = useDispatch<AppDispatch>();
+  // const dispatch = useDispatch<AppDispatch>();
   const { data, loading, error } = useSelector((state: RootState) => state.auroraDashboard);
 
-  useEffect(() => {
-    dispatch(fetchAuroraData({ latitude, longitude }));
-  }, [dispatch, latitude, longitude]);
+  // useEffect(() => {
+  //   dispatch(fetchAuroraData({ latitude, longitude }));
+  // }, [dispatch, latitude, longitude]);
 
   if (error) {
     return (
@@ -180,6 +187,67 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
               <Typography variant="body1">{data.uvIndex}</Typography>
             )}
           </Grid>
+
+           {/* Probablity */}
+           <Grid item xs={12} sm={6} md={4}>
+  <Typography
+    variant="subtitle1"
+    sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+  >
+    {t("dashboard.probability")}
+  </Typography>
+  {loading ? (
+    <Skeleton width="20%" />
+  ) : (
+    <Box display="flex" alignItems="center">
+      {parseInt(data.probability) > 70 ? (
+        <Whatshot 
+          sx={{ 
+            color: 
+              parseInt(data.probability) > 90 
+                ? 'error.main' 
+                : 'warning.main',
+            marginRight: 1
+          }} 
+        />
+      ) : parseInt(data.probability) > 50 ? (
+        <TrendingUp 
+          sx={{ 
+            color: 'success.main',
+            marginRight: 1
+          }} 
+        />
+      ) : (
+        <TrendingDown 
+          sx={{ 
+            color: 
+              parseInt(data.probability) < 30 
+                ? 'error.main' 
+                : 'warning.main',
+            marginRight: 1
+          }} 
+        />
+      )}
+      
+      <Typography 
+        variant="body1"
+        sx={{
+          fontWeight: 'bold',
+          color: 
+            parseInt(data.probability) > 90 
+              ? 'error.main' 
+              : parseInt(data.probability) > 70 
+                ? 'warning.main' 
+                : parseInt(data.probability) > 50 
+                  ? 'success.main' 
+                  : 'text.secondary'
+        }}
+      >
+        {data.probability}
+      </Typography>
+    </Box>
+  )}
+</Grid>
         </Grid>
       </CardContent>
     </Card>

@@ -10,6 +10,9 @@ const initialState: AuroraState = {
     temperature: "-", 
     precipitation: "-",
     windSpeed: "-",
+    cloudCover: "-",
+    isDay: "-",
+    probability: "-",
     uvIndex: "-"
   },
   loading: false,

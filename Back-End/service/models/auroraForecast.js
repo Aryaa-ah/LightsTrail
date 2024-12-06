@@ -25,6 +25,15 @@ const AuroraForecastSchema = new mongoose.Schema({
     uvIndex: {
         type: String
     },
+    cloudCover: {
+        type: String
+    },
+    isDay: {
+        type: String
+    },
+    probability: {
+        type: String
+    },
     longitude: {
         type: Number,
         required: true
