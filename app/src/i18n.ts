@@ -105,7 +105,8 @@ i18n
             precipitation: 'Precipitation',
             windSpeed: 'Wind Speed',
             uvIndex: 'UV Index',
-            title: 'Aurora Forecast'
+            title: 'Aurora Forecast',
+            probability: 'Aurora Probability'
           },
           units: {
             kmPerSec: 'km/s',
