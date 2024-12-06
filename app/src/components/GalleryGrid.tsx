@@ -17,6 +17,8 @@ import { styled } from "@mui/material/styles";
 import { Photo } from "../types/gallery.types";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+import React from "react";
+import { document } from "postcss";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
 const PLACEHOLDER_IMAGE = "/placeholder.jpg";
