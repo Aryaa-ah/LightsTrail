@@ -9,6 +9,7 @@ import { dirname } from "path";
 import initializeRouter from "./routers/index.js";
 import fs from "fs";
 import passport from './middleware/passport-config.js';
+import auroraPredictionRouter from "./routers/auroraPredictionRouter.js";
 
 // ES module fixes for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -57,6 +58,8 @@ app.use("/uploads", (req, res, next) => {
 app.use(passport.initialize());
 // Initialize routes
 initializeRouter(app);
+
+app.use("/api", auroraPredictionRouter);
 
 app.use((err, req, res, next) => {
   console.error("App Error:", err.stack);

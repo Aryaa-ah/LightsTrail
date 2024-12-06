@@ -18,6 +18,7 @@ import ResponsiveAppBar from "./components/Navbar";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import GoogleAuthCallback from "./components/GoogleAuthCallback";
+import AuroraPredPage from "../src/pages/auroraPredPage";
 
 // Pages
 import Home from "./pages/Home";
@@ -149,7 +150,7 @@ function App() {
                 }
               />
               <Route
-                path="/my-gallery"
+                path="/aurora-predictions"
                 element={
                   <ProtectedRoute>
                     <>
@@ -157,11 +158,11 @@ function App() {
                         location={location}
                         setLocation={setLocation}
                       />
+                      <AuroraPredPage />
                     </>
                   </ProtectedRoute>
                 }
               />
-              // In App.tsx, add this route with your other routes:
               <Route
                 path="/profile"
                 element={

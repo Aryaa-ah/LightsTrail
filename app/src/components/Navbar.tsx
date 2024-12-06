@@ -32,7 +32,12 @@ interface ResponsiveAppBarProps {
 }
 
 // Define the navigation items including new gallery routes
-const pages = ["Gallery", "Glossary", "Weather Forecast"];
+const pages = [
+  "Gallery",
+  "Glossary",
+  "Weather Forecast",
+  "Live Best Locations ",
+];
 const settings = ["Profile", "Change Language", "Logout"];
 
 const handleLogout = () => {
@@ -93,6 +98,9 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
         break;
       case "Weather Forecast":
         navigate("/weather");
+        break;
+      case "Aurora Predictions":
+        navigate("/aurora-predictions");
         break;
       default:
         break;
@@ -240,9 +248,11 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt={user?.firstName || "User Avatar"}
-                    src={`https://api.dicebear.com/9.x/identicon/svg?seed=${
-                      Math.random().toString(36).substring(7)
-                    }&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80&size=40&radius=50`}
+                    src={`https://api.dicebear.com/9.x/identicon/svg?seed=${Math.random()
+                      .toString(36)
+                      .substring(
+                        7
+                      )}&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80&size=40&radius=50`}
                     sx={{
                       width: 40,
                       height: 40,
