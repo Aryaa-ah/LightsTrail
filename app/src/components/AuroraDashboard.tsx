@@ -43,12 +43,19 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
       opacity: "0.7",
     }}>
       <CardContent>
-        <Grid container spacing={2} sx={{opacity:'1'}}>
+        <Grid container spacing={2} sx={{ opacity: "1" }}>
           {/* Kp Index */}
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
-              <AirIcon fontSize="small" sx={{ verticalAlign: 'middle', marginRight: 1 }} />
-              Kp Index
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+            >
+              <AirIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle", marginRight: 1 }}
+              />
+              {t("dashboard.kpIndex")}
+              {/* // upadated from Kp Index  */}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
@@ -59,9 +66,15 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
 
           {/* Bz */}
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
-              <PublicIcon fontSize="small" sx={{ verticalAlign: 'middle', marginRight: 1 }} />
-              Bz
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+            >
+              <PublicIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle", marginRight: 1 }}
+              />
+              {t("dashboard.magneticField")}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
@@ -72,9 +85,15 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
 
           {/* Solar Wind Speed */}
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
-              <AirIcon fontSize="small" sx={{ verticalAlign: 'middle', marginRight: 1 }} />
-              Solar Wind Speed
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+            >
+              <AirIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle", marginRight: 1 }}
+              />
+              {t("dashboard.solarWind")}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
@@ -85,9 +104,15 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
 
           {/* Temperature */}
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
-              <DeviceThermostatIcon fontSize="small" sx={{ verticalAlign: 'middle', marginRight: 1 }} />
-              Temperature
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+            >
+              <DeviceThermostatIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle", marginRight: 1 }}
+              />
+              {t("dashboard.temperature")}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
@@ -98,9 +123,15 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
 
           {/* Precipitation */}
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
-              <WaterDropIcon fontSize="small" sx={{ verticalAlign: 'middle', marginRight: 1 }} />
-              Precipitation
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+            >
+              <WaterDropIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle", marginRight: 1 }}
+              />
+              {t("dashboard.precipitation")}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
@@ -111,9 +142,15 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
 
           {/* Wind Speed */}
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
-              <AirIcon fontSize="small" sx={{ verticalAlign: 'middle', marginRight: 1 }} />
-              Wind Speed
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+            >
+              <AirIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle", marginRight: 1 }}
+              />
+             {t('dashboard.windSpeed')}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
@@ -124,9 +161,15 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
 
           {/* UV Index */}
           <Grid item xs={12} sm={6} md={4}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 'bold', textTransform: 'capitalize' }}>
-              <WbSunnyIcon fontSize="small" sx={{ verticalAlign: 'middle', marginRight: 1 }} />
-              UV Index
+            <Typography
+              variant="subtitle1"
+              sx={{ fontWeight: "bold", textTransform: "capitalize" }}
+            >
+              <WbSunnyIcon
+                fontSize="small"
+                sx={{ verticalAlign: "middle", marginRight: 1 }}
+              />
+              {t("dashboard.uvIndex")}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />

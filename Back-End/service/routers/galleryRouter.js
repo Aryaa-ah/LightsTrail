@@ -57,6 +57,10 @@ const validatePhotoId = (req, res, next) => {
 };
 
 // Routes
+
+
+
+
 router.post('/photos', 
     upload.single('image'), 
     galleryController.uploadPhoto
@@ -65,21 +69,33 @@ router.post('/photos',
 router.get('/photos',
     galleryController.getPhotos
 );
+//location before photosId works
+router.get('/photos/search', galleryController.searchPhotos);
 
 router.get('/photos/:photoId',
     validatePhotoId,
     galleryController.getPhotoById
 );
 
+
+
+
+
 router.put('/photos/:photoId',
     validatePhotoId,
     galleryController.updatePhoto
 );
 
+
+
 router.delete('/photos/:photoId',
     validatePhotoId,
     galleryController.deletePhoto
 );
+
+
+router.get('/search', galleryController.searchPhotos);
+
 
 // Error handling middleware
 router.use((error, req, res, next) => {

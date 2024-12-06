@@ -15,10 +15,24 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
+import LanguageIcon from "@mui/icons-material/Language";
 import LocationDialogPopUp from "./../components/LocationPopUp";
 import auroraIcon from "../images/logo.png";
 import { useAuth } from "../hooks/useAuth";
 import { authService } from "../services/auth";
+import { useTranslation } from "react-i18next";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import { t } from "i18next";
+import { CheckIcon } from "lucide-react";
 
 interface Location {
   city_country: string;
@@ -31,22 +45,29 @@ interface ResponsiveAppBarProps {
   setLocation: (location: Location) => void;
 }
 
-// Define the navigation items including new gallery routes
-const pages = ["Gallery", "Glossary", "Weather Forecast"];
-const settings = ["Profile", "Change Language", "Logout"];
+const languages = [
+  { code: "en", name: "English" },
+  { code: "hi", name: "हिंदी" },
+  { code: "kn", name: "ಕನ್ನಡ" },
+];
 
-const handleLogout = () => {
-  authService.logout(); // clear auth data and redirect to login
-  handleCloseUserMenu(); // Close the menu
-};
+const pages = ["Gallery", "Glossary", "Weather Forecast"];
+
+const settings = ["Profile", "Logout"]; // Removed language selection from here
 
 function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
   const navigate = useNavigate();
-  const { user } = useAuth(); // Get user authentication status
+  const { i18n } = useTranslation();
+  const { t } = useTranslation();
+  const { user } = useAuth();
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
+    null
+  );
+  const [anchorElLang, setAnchorElLang] = React.useState<null | HTMLElement>(
     null
   );
   const [isLocationDialogOpen, setLocationDialogOpen] = React.useState(false);
@@ -55,8 +76,16 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
     setAnchorElNav(event.currentTarget);
   };
 
+  const handleOpenLangMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElLang(event.currentTarget);
+  };
+
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
+  };
+
+  const handleCloseLangMenu = () => {
+    setAnchorElLang(null);
   };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -65,6 +94,11 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLanguageChange = (languageCode: string) => {
+    i18n.changeLanguage(languageCode);
+    handleCloseLangMenu();
   };
 
   const handleLocationClick = () => {
@@ -77,17 +111,15 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
 
   const handleProfileClick = () => {
     navigate("/profile");
-    handleCloseUserMenu(); // Close the menu after clicking
+    handleCloseUserMenu();
   };
 
-  // Handle navigation for pages
   const handleNavigation = (page: string) => {
     handleCloseNavMenu();
     switch (page) {
       case "Gallery":
         navigate("/gallery");
         break;
-
       case "Glossary":
         navigate("/glossary");
         break;
@@ -99,11 +131,15 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
     }
   };
 
+  const handleLogout = () => {
+    authService.logout();
+    handleCloseUserMenu();
+  };
+
   useEffect(() => {
     handleLocationClick();
   }, []);
 
-  // Filter pages based on authentication
   const filteredPages = pages.filter(
     (page) => page !== "My Gallery" || (page === "My Gallery" && user)
   );
@@ -113,7 +149,6 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
       <AppBar position="fixed" sx={{ backgroundColor: "#00000000" }}>
         <Container maxWidth="xl">
           <Toolbar disableGutters>
-            {/* Logo and Brand */}
             <img
               src={auroraIcon}
               alt="Aurora Logo"
@@ -141,13 +176,9 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
               Lights Trail
             </Typography>
 
-            {/* Mobile Menu */}
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"
-                aria-label="navigation menu"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
                 onClick={handleOpenNavMenu}
                 color="inherit"
               >
@@ -174,15 +205,9 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
                     <Typography sx={{ textAlign: "center" }}>{page}</Typography>
                   </MenuItem>
                 ))}
-                <MenuItem onClick={handleLocationClick}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {location.city_country}
-                  </Typography>
-                </MenuItem>
               </Menu>
             </Box>
 
-            {/* Desktop Brand for Mobile */}
             <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
             <Typography
               variant="h5"
@@ -202,7 +227,6 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
               Lights Trail
             </Typography>
 
-            {/* Desktop Navigation */}
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {filteredPages.map((page) => (
                 <Button
@@ -219,6 +243,37 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
                 </Button>
               ))}
             </Box>
+
+            {/* Language Selection */}
+            <Tooltip title="Change Language">
+              <IconButton
+                onClick={handleOpenLangMenu}
+                sx={{ ml: 2, color: "white" }}
+              >
+                <LanguageIcon />
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorElLang}
+              open={Boolean(anchorElLang)}
+              onClose={handleCloseLangMenu}
+              sx={{ mt: 1 }}
+            >
+              {languages.map((lang) => (
+                <MenuItem
+                  key={lang.code}
+                  onClick={() => handleLanguageChange(lang.code)}
+                  selected={i18n.language === lang.code}
+                >
+                  <ListItemText primary={lang.name} />
+                  {i18n.language === lang.code && (
+                    <ListItemIcon sx={{ minWidth: "auto", ml: 1 }}>
+                      <CheckIcon size={16} />
+                    </ListItemIcon>
+                  )}
+                </MenuItem>
+              ))}
+            </Menu>
 
             {/* Location Button */}
             <LocationOnIcon />
@@ -240,9 +295,11 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
                     alt={user?.firstName || "User Avatar"}
-                    src={`https://api.dicebear.com/9.x/identicon/svg?seed=${
-                      Math.random().toString(36).substring(7)
-                    }&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80&size=40&radius=50`}
+                    src={`https://api.dicebear.com/9.x/identicon/svg?seed=${Math.random()
+                      .toString(36)
+                      .substring(
+                        7
+                      )}&backgroundColor=b6e3f4,c0aede,d1d4f9&scale=80&size=40&radius=50`}
                     sx={{
                       width: 40,
                       height: 40,
@@ -275,10 +332,7 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
                       if (setting === "Logout") {
                         handleLogout();
                       } else if (setting === "Profile") {
-                        navigate("/profile");
-                        handleCloseUserMenu();
-                      } else if (setting === "Change Language") {
-                        handleCloseUserMenu();
+                        handleProfileClick();
                       }
                     }}
                   >
@@ -293,7 +347,6 @@ function ResponsiveAppBar({ location, setLocation }: ResponsiveAppBarProps) {
         </Container>
       </AppBar>
 
-      {/* Location Dialog */}
       <LocationDialogPopUp
         open={isLocationDialogOpen}
         onClose={handleCloseDialog}
