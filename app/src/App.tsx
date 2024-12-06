@@ -23,7 +23,7 @@ import GoogleAuthCallback from "./components/GoogleAuthCallback";
 import Home from "./pages/Home";
 import GalleryPage from "./pages/GalleryPage";
 import ProfilePage from "./pages/ProfilePage";
-
+import Glossary from "./pages/glossary";
 // Define interfaces
 interface Location {
   city_country: string;
@@ -179,6 +179,24 @@ function App() {
               {/* Redirect root to login */}
               <Route path="/" element={<Navigate to="/login" replace />} />
               <Route path="*" element={<Navigate to="/login" replace />} />
+              {/* Added Glossary Route */}
+             
+                {/* Added Glossary  */}
+              <Route
+                path="/glossary"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <ResponsiveAppBar
+                        location={location}
+                        setLocation={setLocation}
+                      />
+                      <Glossary></Glossary>
+                    </>
+                  </ProtectedRoute>
+                }
+              />
+    
             </Routes>
           </Router>
         </Provider>
