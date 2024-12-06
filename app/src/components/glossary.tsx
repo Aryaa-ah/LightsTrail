@@ -1,44 +1,35 @@
-// src/pages/GlossaryPage.tsx
-import React, { useState, useEffect } from "react";
-import { Container, Typography, Accordion, AccordionSummary, AccordionDetails, Box } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-// Define the structure of glossary data.
-interface GlossaryTerm {
-  term: string;
-  definition: string;
-}
-
-const GlossaryPage = () => {
-  const [glossaryData, setGlossaryData] = useState<GlossaryTerm[]>([]);
-  const navigate = useNavigate();
+const Glossary = () => {
+  const [faqData, setFaqData] = useState([]);
 
   useEffect(() => {
-    // Fetch glossary data from the backend (assuming an endpoint exists)
-    fetch('/api/glossary')  // Adjust to your API route
-      .then(response => response.json())
-      .then(data => setGlossaryData(data))
-      .catch(err => console.error("Error fetching glossary data: ", err));
+    const fetchGlossary = async () => {
+      try {
+        const response = await axios.get("/api/glossary");
+        setFaqData(response.data);
+      } catch (error) {
+        console.error("Error fetching glossary data:", error);
+      }
+    };
+
+    fetchGlossary();
   }, []);
 
   return (
-    <Container sx={{ marginTop: 8 }}>
-      <Typography variant="h4" gutterBottom>
-        Glossary
-      </Typography>
-      {glossaryData.map((term, index) => (
-        <Accordion key={index} sx={{ marginBottom: 2 }}>
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} id={`panel-${index}`}>
-            <Typography variant="h6">{term.term}</Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography variant="body2">{term.definition}</Typography>
-          </AccordionDetails>
-        </Accordion>
-      ))}
-    </Container>
+    <div style={{ padding: "20px" }}>
+      <h1>Glossary</h1>
+      <div>
+        {faqData.map((faq: any, index: number) => (
+          <div key={index} style={{ marginBottom: "15px" }}>
+            <h3>{faq.term}</h3>
+            <p>{faq.definition}</p>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default GlossaryPage;
+export default Glossary;
