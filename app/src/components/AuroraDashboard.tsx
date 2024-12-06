@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, Typography, Grid, Skeleton } from '@mui/material';
 import DeviceThermostatIcon from '@mui/icons-material/DeviceThermostat';
 import AirIcon from '@mui/icons-material/Air';
@@ -16,6 +17,7 @@ interface AuroraDashboardProps {
 }
 
 const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch<AppDispatch>();
   const { data, loading, error } = useSelector((state: RootState) => state.auroraDashboard);
 
@@ -27,21 +29,23 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
     return (
       <Card>
         <CardContent>
-          <Typography color="error">Error: {error}</Typography>
+          <Typography color="error">{t('dashboard.error', { error })}</Typography>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card sx={{
-      width: '74%',
-      margin: 'auto',
-      padding: 2,
-      bgcolor: 'grey.800',
-      color: "white",
-      opacity: "0.7",
-    }}>
+    <Card
+      sx={{
+        width: "74%",
+        margin: "auto",
+        padding: 2,
+        bgcolor: "grey.800",
+        color: "white",
+        opacity: "0.7",
+      }}
+    >
       <CardContent>
         <Grid container spacing={2} sx={{ opacity: "1" }}>
           {/* Kp Index */}
@@ -55,7 +59,6 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
                 sx={{ verticalAlign: "middle", marginRight: 1 }}
               />
               {t("dashboard.kpIndex")}
-              {/* // upadated from Kp Index  */}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
@@ -150,7 +153,7 @@ const AuroraDashboard = ({ latitude, longitude }: AuroraDashboardProps) => {
                 fontSize="small"
                 sx={{ verticalAlign: "middle", marginRight: 1 }}
               />
-             {t('dashboard.windSpeed')}
+              {t('dashboard.windSpeed')}
             </Typography>
             {loading ? (
               <Skeleton width="20%" />
