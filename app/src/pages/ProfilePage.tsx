@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -14,10 +14,20 @@ import {
   Avatar,
   useTheme,
   alpha,
+  Divider,
 } from "@mui/material";
-import { DeleteOutline, EmailOutlined, PersonOutline } from "@mui/icons-material";
+import { DeleteOutline, EmailOutlined, PersonOutline, LocationOn } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../services/auth";
+import AlertPreferencesComponent from '../components/AlertPreferences';  
+
+import { useLocation } from '../contexts/LocationContext';
+
+interface Location {
+  city_country: string;
+  latitude: number;
+  longitude: number;
+}
 
 const ProfilePage = () => {
   const theme = useTheme();
@@ -26,6 +36,25 @@ const ProfilePage = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [location, setLocation] = useState<Location | null>(() => {
+    const savedLocation = localStorage.getItem('selectedLocation');
+    return savedLocation ? JSON.parse(savedLocation) : null;
+  });
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'selectedLocation') {
+        const newLocation = e.newValue ? JSON.parse(e.newValue) : null;
+        setLocation(newLocation);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const handleDeleteAccount = async () => {
     setLoading(true);
@@ -107,6 +136,21 @@ const ProfilePage = () => {
               <EmailOutlined fontSize="small" />
               {user?.email}
             </Typography>
+            
+            {/* Location Display */}
+            <Typography 
+              color="text.secondary"
+              sx={{ 
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 1,
+                mt: 2
+              }}
+            >
+              <LocationOn fontSize="small" />
+              {location ? location.city_country : 'No location selected'}
+            </Typography>
           </Box>
 
           {/* Form Fields */}
@@ -177,6 +221,31 @@ const ProfilePage = () => {
                 />
               </Box>
             </Box>
+
+            {/* Add Divider before Alert Preferences */}
+            <Divider sx={{ my: 4, borderColor: alpha(theme.palette.primary.main, 0.1) }} />
+
+            {/* Alert Preferences Section */}
+            {location ? (
+              <AlertPreferencesComponent location={location} />
+            ) : (
+              <Alert 
+                severity="warning" 
+                sx={{ 
+                  mb: 4,
+                  backgroundColor: alpha(theme.palette.warning.main, 0.1),
+                  border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`,
+                  '& .MuiAlert-icon': {
+                    color: theme.palette.warning.main
+                  }
+                }}
+              >
+                Please select a location from the main menu to set up alert preferences
+              </Alert>
+            )}
+
+            {/* Add Divider after Alert Preferences */}
+            <Divider sx={{ my: 4, borderColor: alpha(theme.palette.primary.main, 0.1) }} />
 
             {/* Delete Account Button */}
             <Box sx={{ 

@@ -12,6 +12,8 @@ import passport from './middleware/passport-config.js';
 import glossaryRoutes from "./routers/glossaryRouter.js";
 
 
+import alertRouter from './routers/alertRouter.js';
+
 
 // ES module fixes for __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -57,6 +59,18 @@ app.use("/uploads", (req, res, next) => {
   }
 });
 app.use("/api/glossary", glossaryRoutes);
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
+
+app.use('/api/alerts', alertRouter);
+
+
+
+
+
 app.use(passport.initialize());
 // Initialize routes
 initializeRouter(app);
