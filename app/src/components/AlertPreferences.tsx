@@ -8,8 +8,14 @@ import {
   Box,
   Button,
   Alert,
-  CircularProgress
+  CircularProgress,
+  TextField,
+  Autocomplete,
+  FormControlLabel,
+  useTheme,
+  alpha
 } from '@mui/material';
+import { LocationOn, NotificationsActive } from '@mui/icons-material';
 
 interface Location {
   city_country: string;
@@ -17,52 +23,56 @@ interface Location {
   longitude: number;
 }
 
-interface AlertPreferencesState {
+interface AlertPreference {
   kpThreshold: number;
   isEnabled: boolean;
-  email: string;
+  location: {
+    cityName: string;
+    latitude: number;
+    longitude: number;
+  } | null;
 }
 
-interface AlertPreferencesProps {
-  location: Location; // Add this prop to receive location from parent
-}
-
-const AlertPreferencesComponent: React.FC<AlertPreferencesProps> = ({ location }) => {
-  const [preferences, setPreferences] = useState<AlertPreferencesState>({
+const AlertPreferencesComponent = () => {
+  const theme = useTheme();
+  const [preferences, setPreferences] = useState<AlertPreference>({
     kpThreshold: 5,
     isEnabled: true,
-    email: ''
+    location: null
   });
+  const [locationInput, setLocationInput] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState<Location[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [hasExistingPreferences, setHasExistingPreferences] = useState(false);
 
-  // Get user's email from localStorage
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
+  // Fetch existing preferences
   useEffect(() => {
     const fetchPreferences = async () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        
         const response = await fetch('http://localhost:3002/api/alerts/preferences', {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            'Authorization': `Bearer ${token}`
           }
         });
 
         if (response.ok) {
           const data = await response.json();
-          setPreferences(prev => ({
-            ...prev,
-            ...data.data,
-            email: user.email
-          }));
+          if (data.data) {
+            setPreferences({
+              kpThreshold: data.data.kpThreshold,
+              isEnabled: data.data.isEnabled,
+              location: data.data.location
+            });
+            setHasExistingPreferences(true);
+          }
         }
       } catch (error) {
-        setError('Failed to load preferences');
         console.error('Error fetching preferences:', error);
       } finally {
         setLoading(false);
@@ -70,147 +80,183 @@ const AlertPreferencesComponent: React.FC<AlertPreferencesProps> = ({ location }
     };
 
     fetchPreferences();
-  }, [user.email]);
+  }, []);
 
-  const handleSave = async () => {
+  const handleLocationSearch = async (query: string) => {
+    if (!query.trim()) {
+      setLocationSuggestions([]);
+      return;
+    }
+
     try {
-      // Check if global location is set
-      if (!location || !location.latitude || !location.longitude) {
-        setError('Please select a location from the main menu first');
-        return;
+      const response = await fetch(`http://localhost:3002/longitudeLatitude/${query}`);
+      if (!response.ok) throw new Error('Failed to fetch locations');
+      
+      const data = await response.json();
+      if (data.suggestions) {
+        setLocationSuggestions(data.suggestions);
       }
+    } catch (error) {
+      console.error('Location search error:', error);
+      setError('Failed to search locations');
+    }
+  };
 
+  const handleSavePreferences = async () => {
+    if (!preferences.location) {
+      setError('Please select a location');
+      return;
+    }
+
+    try {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      const preferencesData = {
-        ...preferences,
+      const requestBody = {
+        kpThreshold: preferences.kpThreshold,
         email: user.email,
         location: {
-          latitude: location.latitude,
-          longitude: location.longitude,
-          cityName: location.city_country
-        }
+          cityName: preferences.location.cityName,
+          latitude: preferences.location.latitude,
+          longitude: preferences.location.longitude
+        },
+        isEnabled: preferences.isEnabled
       };
 
+      const method = hasExistingPreferences ? 'PUT' : 'POST';
       const response = await fetch('http://localhost:3002/api/alerts/preferences', {
-        method: 'PUT',
+        method: method,
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(preferencesData)
+        body: JSON.stringify(requestBody)
       });
 
       if (response.ok) {
-        setSuccess('Preferences saved successfully');
+        setSuccess('Alert preferences saved successfully');
+        setHasExistingPreferences(true);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save preferences');
+        throw new Error('Failed to save preferences');
       }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to save preferences');
+      setError('Failed to save preferences. Please try again.');
       setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
     }
   };
 
-  // Render location warning if no location is selected
-  const renderLocationInfo = () => {
-    if (!location || !location.city_country) {
-      return (
-        <Alert severity="warning" sx={{ mb: 2 }}>
-          Please select a location from the main menu first
-        </Alert>
-      );
-    }
-    return (
-      <Box sx={{ mb: 3 }}>
-        <Typography gutterBottom>Location</Typography>
-        <Typography variant="body2" color="text.secondary">
-          Alerts will be sent based on your selected location: {location.city_country}
-        </Typography>
-      </Box>
-    );
-  };
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (locationInput) {
+        handleLocationSearch(locationInput);
+      }
+    }, 300);
 
-  if (loading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+    return () => clearTimeout(timeoutId);
+  }, [locationInput]);
 
   return (
-    <Card sx={{ maxWidth: 600, mx: 'auto', mt: 4 }}>
-      <CardContent>
-        <Typography variant="h5" gutterBottom>
-          Aurora Alert Preferences
-        </Typography>
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h5" gutterBottom sx={{ color: 'white' }}>
+        Aurora Alert Preferences
+      </Typography>
 
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
+      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {success}
-          </Alert>
-        )}
-
-        {renderLocationInfo()}
-
-        <Box sx={{ mb: 3 }}>
-          <Typography gutterBottom>Enable Aurora Alerts</Typography>
-          <Switch
-            checked={preferences.isEnabled}
-            onChange={(e) => setPreferences(prev => ({
-              ...prev,
-              isEnabled: e.target.checked
-            }))}
-            color="primary"
-          />
-        </Box>
-
-        <Box sx={{ mb: 3 }}>
-          <Typography gutterBottom>Kp Index Threshold</Typography>
-          <Slider
-            value={preferences.kpThreshold}
-            onChange={(_, value) => setPreferences(prev => ({
-              ...prev,
-              kpThreshold: value as number
-            }))}
-            min={0}
-            max={9}
-            step={1}
-            marks
-            valueLabelDisplay="auto"
-            disabled={!preferences.isEnabled}
-          />
-        </Box>
-
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          disabled={loading || !location}
-          sx={{
-            mt: 2,
-            background: 'linear-gradient(45deg, #84fab0 30%, #8fd3f4 90%)',
-            color: 'black',
-            '&:hover': {
-              background: 'linear-gradient(45deg, #84fab0 40%, #8fd3f4 100%)',
+      <Box sx={{ mb: 4 }}>
+        <Typography gutterBottom sx={{ color: 'white' }}>Alert Location</Typography>
+        <Autocomplete
+          options={locationSuggestions}
+          getOptionLabel={(option) => option.city_country}
+          value={preferences.location ? {
+            city_country: preferences.location.cityName,
+            latitude: preferences.location.latitude,
+            longitude: preferences.location.longitude
+          } as Location : null}
+          onChange={(_, value) => {
+            if (value) {
+              setPreferences(prev => ({
+                ...prev,
+                location: {
+                  cityName: value.city_country,
+                  latitude: value.latitude,
+                  longitude: value.longitude
+                }
+              }));
             }
           }}
-        >
-          {loading ? 'Saving...' : 'Save Preferences'}
-        </Button>
-      </CardContent>
-    </Card>
+          onInputChange={(_, value) => setLocationInput(value)}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Search location"
+              variant="outlined"
+              fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  color: 'white',
+                  '& fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.23)',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'rgba(255, 255, 255, 0.5)',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'rgba(255, 255, 255, 0.7)',
+                }
+              }}
+            />
+          )}
+        />
+      </Box>
+
+      <Box sx={{ mb: 4 }}>
+        <Typography gutterBottom sx={{ color: 'white' }}>KP Index Threshold</Typography>
+        <Slider
+          value={preferences.kpThreshold}
+          onChange={(_, value) => setPreferences(prev => ({
+            ...prev,
+            kpThreshold: value as number
+          }))}
+          min={0}
+          max={9}
+          step={1}
+          marks
+          valueLabelDisplay="auto"
+          disabled={!preferences.isEnabled}
+        />
+      </Box>
+
+      <Box sx={{ mb: 4 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={preferences.isEnabled}
+              onChange={(e) => setPreferences(prev => ({
+                ...prev,
+                isEnabled: e.target.checked
+              }))}
+            />
+          }
+          label={<Typography sx={{ color: 'white' }}>Enable Aurora Alerts</Typography>}
+        />
+      </Box>
+
+      <Button
+        variant="contained"
+        onClick={handleSavePreferences}
+        disabled={loading}
+        fullWidth
+        startIcon={<NotificationsActive />}
+      >
+        {loading ? <CircularProgress size={24} /> : 'Save Preferences'}
+      </Button>
+    </Box>
   );
 };
 

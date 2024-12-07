@@ -360,8 +360,11 @@ i18n
             precipitation: 'वर्षा',
             windSpeed: 'हवा की गति',
             uvIndex: 'यूवी सूचकांक',
+
             title: 'ऑरोरा पूर्वानुमान',
             probability: 'अरोड़ा संभावना'
+
+
           },
           units: {
             kmPerSec: 'किमी/से',
@@ -526,8 +529,11 @@ i18n
             precipitation: 'ಮಳೆ',
             windSpeed: 'ಗಾಳಿಯ ವೇಗ',
             uvIndex: 'ಯುವಿ ಸೂಚ್ಯಂಕ',
+
             title: 'ಅರೋರಾ ಮುನ್ಸೂಚನೆ',
             probability: 'ಅರೋರಾ ಸಂಭವನೀಯತೆ'
+
+
           },
           units: {
             kmPerSec: 'ಕಿ.ಮೀ/ಸೆ',
