@@ -2,17 +2,6 @@
 
 LightsTrail is a web-based application designed to provide real-time aurora predictions and forecasts, enabling users to experience and track the Northern Lights at any location. Tailored for aurora enthusiasts, travelers, and photographers, the app delivers accurate aurora forecasts based on the user’s location. Users can subscribe to alerts for receiving notifications when auroras are predicted in their area, either in real-time or triggered by specific Index thresholds. Additionally, LightsTrail fosters a community-driven platform where users can share photos, experiences, and sightings and gain insights into the best viewing spots through location-tagged posts. With a blend of observation technology and social engagement, the app offers a dynamic and engaging platform for aurora enthusiasts worldwide.
 
-## 📋 Table of Contents
-- [About](#about)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Getting Started](#getting-started)
-- [Architecture](#architecture)
-- [API Documentation](#api-documentation)
-- [Contributing](#contributing)
-- [Team](#team)
-
-
 ## ✨ Features
 
 ### Core Features
