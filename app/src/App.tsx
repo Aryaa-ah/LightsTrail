@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./App.css";
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -7,7 +8,9 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Footer from './components/Footer';
 import { Box } from "@mui/material";
+import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 
+import { theme } from './theme/theme';
 // Components 
 // Import the new theme and routes
 import { appTheme } from "./themes/theme";
@@ -38,10 +41,7 @@ return(
           setLocation={setLocation} 
         />
       </Router>
-
-
-
-
+      <PWAInstallPrompt />
       <Footer />
     </Provider>
   </ThemeProvider>

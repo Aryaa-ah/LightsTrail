@@ -36,6 +36,7 @@ import { Photo } from "../types/gallery.types";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store";
 import { deletePhoto } from "../store/gallerySlice";
+import { usePhotoPermissions } from "../hooks/usePhotoPermissions";
 
 const dialogVariants = {
   hidden: {
@@ -103,7 +104,9 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
   const [editedLocation, setEditedLocation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
-
+  const { canModify, isLoggedIn: _isLoggedIn } = usePhotoPermissions(
+    photo as Photo
+  );
   if (!photo) return null;
 
   const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
@@ -397,35 +400,53 @@ const PhotoDetail: React.FC<PhotoDetailProps> = ({
                           exit={{ opacity: 0, y: -20 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              mb: 2,
+                            }}
+                          >
                             <Box
                               sx={{
                                 display: "flex",
                                 alignItems: "center",
-                                justifyContent: "space-between",
-                                mb: 2,
+                                gap: 1,
                               }}
                             >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  gap: 1,
-                                }}
-                              >
-                                <LocationOn sx={{ color: "primary.main" }} />
-                                <Typography variant="body1">
-                                  {photo.location}
-                                </Typography>
-                              </Box>
-                              <Button
-                                startIcon={<Edit />}
-                                onClick={handleEdit}
-                                variant="outlined"
-                                size="small"
-                              >
-                                Edit
-                              </Button>
+                              <LocationOn sx={{ color: "primary.main" }} />
+                              <Typography variant="body1">
+                                {photo.location}
+                              </Typography>
+                            </Box>
+                              {/* the edit button only shows to the photo owner
+                               */}
+                            <Box sx={{ display: "flex", gap: 1 }}>
+                              {canModify() && (
+                                <>
+                                  <Tooltip title="Edit">
+                                    <IconButton
+                                      onClick={handleEdit}
+                                      size="small"
+                                      sx={{ color: "primary.main" }}
+                                    >
+                                      <Edit />
+                                    </IconButton>
+                                  </Tooltip>
+                                  {/* <Tooltip title="Delete">
+                                    <IconButton
+                                      onClick={() =>
+                                        setIsDeleteDialogOpen(true)
+                                      }
+                                      size="small"
+                                      sx={{ color: "error.main" }}
+                                    >
+                                      <Delete />
+                                    </IconButton>
+                                  </Tooltip> */}
+                                </>
+                              )}
                             </Box>
                           </Box>
                         </motion.div>

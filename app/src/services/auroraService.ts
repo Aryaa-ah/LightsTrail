@@ -60,8 +60,8 @@ const AURORA_CONSTANTS: AuroraConstants = {
   MIN_PROBABILITY: 1.5,
 
   // Broadened optimal viewing latitudes
-  OPTIMAL_LATITUDE_NORTH: 60, // Lowered to include more areas
-  OPTIMAL_LATITUDE_SOUTH: -60,
+  OPTIMAL_LATITUDE_NORTH: 50, // Lower to include more areas
+  OPTIMAL_LATITUDE_SOUTH: -80,
 
   // Significantly increased for broader coverage
   MAX_LATITUDE_DISTANCE: 65,
@@ -70,7 +70,7 @@ const AURORA_CONSTANTS: AuroraConstants = {
   PROBABILITY_BOOST: 1.5,
 
   // Finer grid for more complete coverage
-  GRID_DENSITY: 1.5,
+  GRID_DENSITY: 5,
 
   // Lowered to catch more events
   MIN_KP_INDEX: 1,
@@ -83,25 +83,39 @@ const AURORA_CONSTANTS: AuroraConstants = {
   LON_RANGE: { MIN: -180, MAX: 180 },
 
   // Reduced for more granular spot detection
-  MIN_SPOT_DISTANCE_KM: 400,
+  MIN_SPOT_DISTANCE_KM: 500,
   CLUSTER_RADIUS_KM: 40,
 
-  // Adjusted weights
+  // Adjust weights
   KP_WEIGHT: 0.45,
   LOCATION_WEIGHT: 0.2,
   SOLAR_WIND_WEIGHT: 0.25,
   BZ_WEIGHT: 0.1,
   AURORA_ZONES: [
-    { lat: 67, lon: -115, name: "Alaska" },
-    { lat: 64, lon: -145, name: "Northern Canada" },
-    { lat: 65, lon: 27, name: "Finland" },
-    { lat: 69, lon: 19, name: "Norway" },
-    { lat: 64, lon: -22, name: "Iceland" },
-    { lat: 78, lon: 15, name: "Svalbard" },
-    { lat: 60, lon: 15, name: "Sweden" },
-    { lat: 65, lon: 170, name: "Northern Russia" },
-    { lat: -72, lon: 166, name: "Antarctica" },
-    { lat: -65, lon: -60, name: "Southern Chile" },
+    // North America
+    { lat: 64.8, lon: -147.7, name: "Fairbanks, Alaska" },
+    { lat: 62.4, lon: -114.4, name: "Yellowknife, Canada" },
+    { lat: 58.4, lon: -134.2, name: "Juneau, Alaska" },
+    { lat: 53.5, lon: -113.5, name: "Edmonton, Canada" },
+
+    // Northern Europe
+    { lat: 69.6, lon: 18.9, name: "Tromsø, Norway" },
+    { lat: 68.4, lon: 27.4, name: "Inari, Finland" },
+    { lat: 67.8, lon: 20.2, name: "Kiruna, Sweden" },
+    { lat: 64.1, lon: -21.9, name: "Reykjavik, Iceland" },
+    { lat: 78.2, lon: 15.6, name: "Longyearbyen, Svalbard" },
+    { lat: 61.5, lon: 23.8, name: "Tampere, Finland" },
+
+    // Northern Russia
+    { lat: 68.9, lon: 33.0, name: "Murmansk, Russia" },
+    { lat: 64.5, lon: 40.5, name: "Arkhangelsk, Russia" },
+    { lat: 69.3, lon: 88.2, name: "Norilsk, Russia" },
+
+    // Southern Hemisphere
+    { lat: -77.8, lon: 166.6, name: "McMurdo Station, Antarctica" },
+    { lat: -64.8, lon: -64.0, name: "Vernadsky Station, Antarctica" },
+    { lat: -51.7, lon: -57.8, name: "Stanley, Falkland Islands" },
+    { lat: -46.4, lon: 168.3, name: "Invercargill, New Zealand" },
   ],
 } as const;
 

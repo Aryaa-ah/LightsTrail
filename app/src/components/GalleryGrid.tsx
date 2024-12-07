@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   ImageList,
   ImageListItem,
@@ -12,16 +12,14 @@ import {
   Typography,
   Tooltip,
 } from "@mui/material";
-import { LocationOn, Download, CalendarToday } from "@mui/icons-material";
+import { LocationOn, Download, CalendarToday, Share } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { Photo } from "../types/gallery.types";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import React from "react";
-import { document } from "postcss";
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || "http://localhost:3002";
-const PLACEHOLDER_IMAGE = "/placeholder.jpg";
 
 const StyledImageListItem = styled(ImageListItem)(({ theme }) => ({
   cursor: "pointer",
@@ -109,6 +107,15 @@ export interface GalleryGridProps {
   onPhotoClick: (photo: Photo) => void;
 }
 
+// Add a new interface for image loading states
+interface ImageLoadingState {
+  [key: string]: {
+    loaded: boolean;
+    retries: number;
+    error: boolean;
+  };
+}
+
 const GalleryGrid: React.FC<GalleryGridProps> = ({
   photos,
   viewMode,
@@ -117,10 +124,50 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isTablet = useMediaQuery(theme.breakpoints.down("md"));
-  const [loadedImages, setLoadedImages] = useState<Record<string, boolean>>({});
+  const [imageStates, setImageStates] = useState<ImageLoadingState>({});
 
+  // Preload images when component mounts
+  useEffect(() => {
+    const preloadImages = async () => {
+      photos.forEach((photo) => {
+        const img = new Image();
+        const imageUrl = photo.url.startsWith("http") 
+          ? photo.url 
+          : `${BACKEND_URL}${photo.url}`;
 
-  // Handle no results case first
+        img.src = imageUrl;
+        
+        img.onload = () => {
+          setImageStates(prev => ({
+            ...prev,
+            [photo.id]: {
+              loaded: true,
+              retries: 0,
+              error: false
+            }
+          }));
+        };
+
+        img.onerror = () => {
+          retryLoading(photo);
+        };
+      });
+    };
+
+    preloadImages();
+  }, [photos]);
+
+  const getImageListCols = () => {
+    if (viewMode === "list") return 1;
+    if (isMobile) return 1;
+    if (isTablet) return 2;
+    return 3;
+  };
+
+  // Add retry logic
+  const retryLoading = useCallback((photo: Photo, attempt = 0) => {
+
+  // Handle no results case
   if (!photos.length) {
     return (
       <motion.div
@@ -152,27 +199,42 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
       </motion.div>
     );
   }
+    if (attempt >= 3) {
+      setImageStates(prev => ({
+        ...prev,
+        [photo.id]: {
+          loaded: false,
+          retries: attempt,
+          error: true
+        }
+      }));
+      return;
+    }
 
-  
-  const getImageListCols = () => {
-    if (viewMode === "list") return 1;
-    if (isMobile) return 1;
-    if (isTablet) return 2;
-    return 3;
-  };
+    setTimeout(() => {
+      const img = new Image();
+      const imageUrl = photo.url.startsWith("http") 
+        ? photo.url 
+        : `${BACKEND_URL}${photo.url}`;
 
-  const handleImageLoad = useCallback((photoId: string) => {
-    setLoadedImages((prev) => ({ ...prev, [photoId]: true }));
+      img.src = imageUrl;
+      
+      img.onload = () => {
+        setImageStates(prev => ({
+          ...prev,
+          [photo.id]: {
+            loaded: true,
+            retries: attempt,
+            error: false
+          }
+        }));
+      };
+
+      img.onerror = () => {
+        retryLoading(photo, attempt + 1);
+      };
+    }, 1000 * attempt); // Exponential backoff
   }, []);
-
-  const handleImageError = useCallback(
-    (e: React.SyntheticEvent<HTMLImageElement>, photo: Photo) => {
-      console.error(`Failed to load image: ${photo.url}`);
-      e.currentTarget.src = PLACEHOLDER_IMAGE;
-      setLoadedImages((prev) => ({ ...prev, [photo.id]: true }));
-    },
-    []
-  );
 
   const handleDownload = async (e: React.MouseEvent, photo: Photo) => {
     e.stopPropagation();
@@ -194,6 +256,26 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Failed to download photo:", error);
+    }
+  };
+
+  // Add share handler
+  const handleShare = async (e: React.MouseEvent, photo: Photo) => {
+    e.stopPropagation(); // Prevent photo click event
+    
+    if (!navigator.share) {
+      console.log('Web Share API not supported');
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: `Aurora photo from ${photo.location}`,
+        text: `Check out this amazing aurora photo taken at ${photo.location}!`,
+        url: window.location.origin + `/gallery/${photo.id}`,
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
     }
   };
 
@@ -220,7 +302,7 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
             transition={{ duration: 0.3 }}
           >
             <StyledImageListItem onClick={() => onPhotoClick(photo)}>
-              {!loadedImages[photo.id] && (
+              {(!imageStates[photo.id]?.loaded) && (
                 <Skeleton
                   variant="rectangular"
                   width="100%"
@@ -237,18 +319,44 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
                 }
                 alt={`Aurora at ${photo.location}`}
                 loading="lazy"
-                onLoad={() => handleImageLoad(photo.id)}
-                onError={(e) => handleImageError(e, photo)}
                 style={{
+                  display: imageStates[photo.id]?.loaded ? 'block' : 'none',
                   height: "100%",
                   width: "100%",
                   objectFit: "cover",
                   transition: "transform 0.3s ease",
-                  display: loadedImages[photo.id] ? "block" : "none",
                 }}
               />
 
+              {imageStates[photo.id]?.error && (
+                <Box 
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)'
+                  }}
+                >
+                  <Typography color="error">
+                    Failed to load image
+                  </Typography>
+                </Box>
+              )}
+
               <ActionButtons className="photo-actions">
+                <IconButton
+                  size="medium"
+                  onClick={(e) => handleShare(e, photo)}
+                  sx={{
+                    color: 'white',
+                    bgcolor: 'rgba(0,0,0,0.8)',
+                    '&:hover': {
+                      bgcolor: 'rgba(0,0,0,0.95)',
+                    },
+                  }}
+                >
+                  <Share fontSize="small" />
+                </IconButton>
                 <Tooltip title="Download">
                   <IconButton
                     size="small"
