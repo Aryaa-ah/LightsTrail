@@ -139,7 +139,7 @@ export const AppRoutes = ({
         }
       />
       <Route
-        path="/best-locations"
+        path="/best-Locations"
         element={
           <ProtectedRoute>
             <>

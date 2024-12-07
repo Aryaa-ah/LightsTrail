@@ -5,7 +5,7 @@ import { Box, Typography, Container } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
 import { fetchViewingSpots, setSelectedSpot } from "../store/AuroraPredSlice";
-import AuroraMap from "../components/AuroraMap";
+import AuroraBestLocations from "../components/auroraBestLocations";
 import PredictionList from "../components/PredictionList";
 import type { ViewingSpot } from "../types/auroraPred.types";
 
@@ -77,7 +77,7 @@ const AuroraPredictionPage: React.FC = () => {
           }}
         >
           <Box sx={{ flex: { md: "0 0 66.666667%" }, width: "100%" }}>
-            <AuroraMap
+            <AuroraBestLocations
               spots={viewingSpots}
               selectedSpot={selectedSpot}
               onSpotSelect={handleSpotSelect}

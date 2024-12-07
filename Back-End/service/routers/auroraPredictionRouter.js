@@ -8,7 +8,7 @@ const router = express.Router();
 
 // GET aurora predictions
 router.get(
-  "/aurora-predictions",
+  "/best-locations",
   authenticateToken,
   auroraPredictionController.getPredictions
 );

@@ -42,7 +42,7 @@ interface NavbarProps {
 
 declare var window: any;
 
-const pages = ["Gallery", "Glossary", "Data", "WebCam", "Best Locations"];
+const pages = ["Gallery", "Glossary", "Data", "WebCam", "Best-Locations"];
 const languages = [
   { code: "en", name: "English" },
   { code: "hi", name: "हिंदी" },
