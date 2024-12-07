@@ -226,7 +226,10 @@ export default function LoginPage() {
           overflow: "hidden",
           borderRadius: 2,
           position: "relative",
+          scrollbarWidth: "none",
           bgcolor: "transparent",
+      
+
         }}
       >
         <Box
@@ -266,9 +269,11 @@ export default function LoginPage() {
                       height: '100%',
                       width: '100%',
                       objectFit: 'cover',
+                      display:'block',
                     }}
                     src={slide.imgPath}
                     alt={slide.label}
+                   
                   />
                   <Box
                     sx={{
