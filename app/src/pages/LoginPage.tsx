@@ -223,6 +223,7 @@ export default function LoginPage() {
             Sign up
           </Link>
         </Typography>
+
       </Card>
     </Box>
   );

@@ -1,4 +1,6 @@
 import AuroraForecast from "./../models/auroraForecast.js";
+import { checkAndSendAlerts } from '../controllers/alertController.js';
+
 import axios from 'axios';
 const calculateAuroraPrediction = (data) => {
   // Extract values from the data object
@@ -97,6 +99,12 @@ export const call = async (forecastData) => {
         console.log("weatherData.data.current.isDay"+weatherData.data.current.isDay);
         const forecastObject = forecast.toObject();
         delete forecastObject._id;
+        
+        await checkAndSendAlerts(
+          parseFloat(response.data.ace.kp),
+          forecast.location
+      );
+
         return forecastObject; 
     } catch (error) {
         console.log(error)
