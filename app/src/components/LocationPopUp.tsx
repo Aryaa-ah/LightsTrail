@@ -13,6 +13,7 @@ import MapIcon from '@mui/icons-material/Map';
 // Mapbox imports
 import Map, { Marker } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useTranslation } from 'react-i18next';
 
 interface Location {
   city_country: string;
@@ -40,7 +41,7 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
   const [loading, setLoading] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [error, setError] = useState<string | null>(null);
-  
+  const {t} = useTranslation();
   // New state for map selection
   const [isMapMode, setIsMapMode] = useState(false);
   const [mapLocation, setMapLocation] = useState<{
@@ -187,7 +188,7 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
                   <TextField
                     sx={{ marginTop: '20px' }}
                     {...params}
-                    label="Search for a location"
+                    label={t("locationDialogPopUp.searchPlaceholder")}
                     variant="outlined"
                    // error={Boolean(error)}
                     helperText={error || ''}
@@ -240,9 +241,9 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
           {/* Show selected location */}
           {selectedLocation && !isMapMode && (
             <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <p>Selected: {selectedLocation.city_country}</p>
-              <p>Latitude: {selectedLocation.latitude}</p>
-              <p>Longitude: {selectedLocation.longitude}</p>
+              <p>{t("locationDialogPopUp.selected")}: {selectedLocation.city_country}</p>
+              <p>{t("locationDialogPopUp.latitude")}: {selectedLocation.latitude}</p>
+              <p>{t("locationDialogPopUp.longitude")}: {selectedLocation.longitude}</p>
             </Box>
           )}
         </Box>
@@ -251,19 +252,19 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
         {isMapMode ? (
           <>
             <Button onClick={() => setIsMapMode(false)} color="primary">
-              Cancel
+            {t("locationDialogPopUp.buttons.cancel")}
             </Button>
             <Button 
               onClick={confirmMapLocation} 
               color="primary" 
               disabled={!mapLocation}
             >
-              Confirm Location
+             {t("locationDialogPopUp.buttons.confirm")}
             </Button>
           </>
         ) : (
           <Button onClick={onClose} color="primary">
-            Close
+            {t("locationDialogPopUp.buttons.close")}
           </Button>
         )}
       </DialogActions>
@@ -272,3 +273,4 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
 };
 
 export default LocationDialogPopUp;
+

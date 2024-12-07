@@ -15,6 +15,7 @@ import { theme } from './theme/theme';
 // Import the new theme and routes
 import { appTheme } from "./themes/theme";
 import { AppRoutes } from "./route/AppRoutes";
+import { useTranslation } from "react-i18next";
 
 // Define Location interface
 interface Location {

@@ -1,4 +1,5 @@
-import React from "react";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface WebCam {
   name: string;
@@ -9,6 +10,7 @@ interface WebCam {
 declare var window: any;
 
 const WebCamPage: React.FC = () => {
+  const {t} = useTranslation();
   const tableList: WebCam[] = [
     {
       name: "Lyngen North Aurora Cam",
@@ -66,15 +68,11 @@ const WebCamPage: React.FC = () => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "calc(100vh - 74px)",
-        marginTop: "74px",
-        display: "flex",
-        flexDirection: "column",
-        position: "relative",
-      }}
-    >
+    <div style={{ marginTop: '40px', padding: '20px' }}>
+      <div style={{ marginBottom: '20px', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white' }}>{t("webCam.title")}</h1>
+      </div>
+
       <div
         style={{
           flex: "1",
@@ -94,7 +92,7 @@ const WebCamPage: React.FC = () => {
               color: "white",
             }}
           >
-            See The Aurora - Webcams
+            {/* See The Aurora - Webcams */}
           </h1>
         </div>
 
