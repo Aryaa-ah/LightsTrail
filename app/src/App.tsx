@@ -5,6 +5,8 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import Footer from './components/Footer';
+import { Box } from "@mui/material";
 
 // Import the new theme and routes
 import { appTheme } from "./themes/theme";
@@ -26,19 +28,30 @@ function App() {
   });
 
   return (
-    <div className="min-h-screen bg-background-default">
-      <ThemeProvider theme={appTheme}>
-        <CssBaseline />
-        <Provider store={store}>
-          <Router>
-            <AppRoutes 
-              location={location} 
-              setLocation={setLocation} 
-            />
-          </Router>
-        </Provider>
-      </ThemeProvider>
-    </div>
+    <ThemeProvider theme={appTheme}>
+      <CssBaseline />
+      <Provider store={store}>
+        <Router>
+          <Box sx={{ 
+            minHeight: '100vh',
+            display: 'flex',
+            flexDirection: 'column',
+            bgcolor: 'background.default'
+          }}>
+            {/* Main content */}
+            <Box sx={{ flex: 1 }}>
+              <AppRoutes 
+                location={location} 
+                setLocation={setLocation} 
+              />
+            </Box>
+            
+            {/* Footer */}
+            <Footer />
+          </Box>
+        </Router>
+      </Provider>
+    </ThemeProvider>
   );
 }
 

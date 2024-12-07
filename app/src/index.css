@@ -42,6 +42,8 @@ body {
 /* Root container styles */
 #root {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Custom utility classes */
@@ -49,4 +51,8 @@ body {
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600;
   }
+}
+
+.main-content {
+  flex: 1;
 }
