@@ -3,6 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import Backend from 'i18next-http-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 import { Dashboard } from '@mui/icons-material';
+import NorthernHemisphere from './components/Northern';
 
 i18n
   .use(Backend)
@@ -113,21 +114,91 @@ i18n
             kmPerHour: 'km/h',
             celsius: '°C',
             mm: 'mm'
-          }
+          },
+          
+            solarWind: { 
+           hour2:  "2 Hour",
+          hour24:"24 Hour",
+          hour6:"6 Hour",
+          day3:"3 Day",
+          day7:"7 Day",
+              title: "ACE Real-Time Solar Wind Data", 
+              description: "The data on this graph comes from NASA’s Advanced Composition Explorer (ACE) Satellite. ACE is positioned at the L1 Lagrange Point about 1.5 million km from Earth in the direction of the sun. The satellite samples and measures the solar wind up to 1 hour before it reaches Earth.", 
+              note: "Note: Since July of 2016 ACE is no longer the primary source for solar wind data. The new satellite DSCOVR (data shown below) is generally more reliable. The data from ACE frequently blacks out for a number of hours.", 
+              measurements: { 
+                BtBz: "Bt/Bz (white/red lines) – Bt indicates the total strength of the Interplanetary Magnetic Field (IMF) carried by the solar wind. A higher number indicates a stronger impact to earth’s magnetic field. Bz indicates the orientation of the IMF. If the Bz is positive (northward), then the earth’s magnetic field will block most of the solar wind, and geomagnetic storming is unlikely. But if Bz is negative (southward), then the sun and the earth’s magnetic field will link up, which allows the solar wind to pour into the earth’s atmosphere, causing the aurora. The further southward the Bz points and the longer the duration, the higher the chance is of a geomagnetic storm occurring.", 
+                Phi: "Phi (blue line) – Phi is the angle of the IMF measured in the GSM (geocentric solar magnetospheric) coordinate system. Sudden and rapid changes in the Phi angle in conjunction with increased solar wind speeds and Bz fluctuations is common during a CME impact.", 
+                Density: "Density (orange line) – The solar wind carries with it plasma (electrons and protons). This is measured in atoms per cubic centimeter. A high and fluctuating plasma density is usually better at stirring up the aurora.", 
+                Speed: "Speed (yellow line) – Measured in kilometers per second, the speed of the solar wind can vary from 250 – 800+ km/s. A faster solar wind is usually associated with elevated geomagnetic activity.", 
+                Temp: "Temp (green line) – The temperature of the solar wind is measured in Kelvin units. A rise in temperature is likely during an impact to earth’s magnetic field." 
+              },
+              close: "Close" 
+            }
           ,
+           
+    kpIndex: {
+      Day3: "3 Day",
+      Day7: "7 Day",
+      title: "KP-Index",
+      description1: "The KP Index chart is of limited use because it only updates every 3 hours. Activity may vary during those 3 hours and a geomagnetic storm may be completely over by the time it refreshes. The first tab shows the KP index over a 3-day period.",
+      description2: "This chart shows local K-indices as well as the estimated planetary KP Index. The stations shown are Boulder, Colorado; Fredericksburg, Virginia; and Fairbanks, Alaska (College). Unless you happen to be near one of these observatories, it’s best to look at the Estimated Planetary KP Index, which is the 3rd row down.",
+      close: "Close"
+  },
+          southernHemisphere: {
+            title: "Southern Hemisphere",
+            play: "Play",
+            tooltip:"Click to see image details",
+            pause: "Pause",
+            dialogTitle: "OVATION Aurora Forecast Model",
+            dialogContent1: `The OVATION Aurora Forecast Model shows the intensity and location of the aurora predicted for the time shown at the top of the map. This probability forecast is based on current solar wind conditions measured at L1, but using a fixed 30-minute delay time between L1 and Earth. A 30-minute delay corresponds to approximately 800 km/s solar wind speed as might be encountered during geomagnetic storming conditions. In reality, delay times vary from less than 30 minutes to an hour or so for average solar wind conditions.`,
+            dialogContent2: `The sunlit side of Earth is indicated by the lighter blue of the ocean and the lighter color of the continents. The day-night line, or terminator, is shown as a region that goes from light to dark. The lighter edge is where the sun is just at the horizon. The darker edge is where the sun is 12 degrees below the horizon. Note that the aurora will not be visible during daylight hours; however, the aurora can often be observed within an hour before sunrise or after sunset.`,
+            dialogContent3: "Data updates every 5 minutes.",
+            close: "Close",
+          },
+          northernHemisphere: {
+            title: "Northearn Hemisphere",
+            play: "Play",
+            tooltip:"Click to see image details",
+            pause: "Pause",
+            dialogTitle: "OVATION Aurora Forecast Model",
+            dialogContent1: `The OVATION Aurora Forecast Model shows the intensity and location of the aurora predicted for the time shown at the top of the map. This probability forecast is based on current solar wind conditions measured at L1, but using a fixed 30-minute delay time between L1 and Earth. A 30-minute delay corresponds to approximately 800 km/s solar wind speed as might be encountered during geomagnetic storming conditions. In reality, delay times vary from less than 30 minutes to an hour or so for average solar wind conditions.`,
+            dialogContent2: `The sunlit side of Earth is indicated by the lighter blue of the ocean and the lighter color of the continents. The day-night line, or terminator, is shown as a region that goes from light to dark. The lighter edge is where the sun is just at the horizon. The darker edge is where the sun is 12 degrees below the horizon. Note that the aurora will not be visible during daylight hours; however, the aurora can often be observed within an hour before sunrise or after sunset.`,
+            dialogContent3: "Data updates every 5 minutes.",
+            close: "Close",
+          },
           navbar: {
-            liveData: 'Live Data',
+            liveData: 'LiveData',
             glossary: 'Glossary',
             webCam: 'WebCam',
             gallery: 'Gallery',
             bestLocations: 'Best Locations',
             profile:'Profile',
             logout:'Log out'
-          }
+          },
+          locationDialogPopUp: {
+            title: {
+              mapMode: "Select Location on Map",
+              searchMode: "Search Location",
+            },
+            searchPlaceholder: "Search for a location",
+            loading: "Loading...",
+            noOptions: "No locations found",
+            currentLocation: "Current Location",
+            selectFromMap: "Select from Map",
+            selected: "Selected",
+            latitude: "Latitude",
+            longitude: "Longitude",
+            buttons: {
+              cancel: "Cancel",
+              confirm: "Confirm Location",
+              close: "Close",
+            },
+          },
         }
       },
       hi: {
         translation: {
+          
           glossary: {
             title: "शब्दावली",
             items: [
@@ -193,6 +264,73 @@ i18n
             }
             ]
           },
+          solarWind: { 
+            hour2: "2 घंटे",
+            hour24: "24 घंटे",
+            hour6: "6 घंटे",
+            day3: "3 दिन",
+            day7: "7 दिन",
+            title: "एसीई रियल-टाइम सोलर विंड डेटा", 
+            description: "इस ग्राफ का डेटा नासा के एडवांस्ड कंपोजिशन एक्सप्लोरर (ACE) सैटेलाइट से आता है। ACE सूर्य की दिशा में पृथ्वी से लगभग 1.5 मिलियन किमी दूर L1 लैग्रेंज पॉइंट पर स्थित है। उपग्रह सौर वायु का नमूना लेता है और इसे पृथ्वी तक पहुंचने से 1 घंटे पहले मापता है।", 
+            note: "नोट: जुलाई 2016 से ACE अब सौर वायु डेटा के लिए प्राथमिक स्रोत नहीं है। नया उपग्रह DSCOVR (नीचे दिखाया गया डेटा) आमतौर पर अधिक विश्वसनीय है। ACE से डेटा अक्सर कई घंटों के लिए ब्लैक आउट हो जाता है।", 
+            measurements: { 
+              BtBz: "Bt/Bz (सफेद/लाल रेखाएं) – Bt सौर वायु द्वारा ले जाए गए अंतरग्रहीय चुंबकीय क्षेत्र (IMF) की कुल शक्ति को इंगित करता है। एक उच्च संख्या पृथ्वी के चुंबकीय क्षेत्र पर एक मजबूत प्रभाव को इंगित करती है। Bz IMF के अभिविन्यास को इंगित करता है। यदि Bz सकारात्मक (उत्तर की ओर) है, तो पृथ्वी का चुंबकीय क्षेत्र अधिकांश सौर वायु को अवरुद्ध कर देगा, और भू-चुंबकीय तूफान की संभावना नहीं है। लेकिन अगर Bz नकारात्मक (दक्षिण की ओर) है, तो सूर्य और पृथ्वी का चुंबकीय क्षेत्र जुड़ जाएगा, जिससे सौर वायु पृथ्वी के वायुमंडल में प्रवेश कर जाएगी, जिससे ऑरोरा उत्पन्न होगा। Bz जितना अधिक दक्षिण की ओर इंगित करता है और जितनी लंबी अवधि होती है, भू-चुंबकीय तूफान की संभावना उतनी ही अधिक होती है।", 
+              Phi: "Phi (नीली रेखा) – Phi IMF का कोण है जिसे GSM (भू-केंद्रित सौर चुंबकीय) निर्देशांक प्रणाली में मापा जाता है। CME प्रभाव के दौरान Phi कोण में अचानक और तेज़ बदलाव, बढ़ी हुई सौर वायु गति और Bz उतार-चढ़ाव के साथ आम है।", 
+              Density: "Density (नारंगी रेखा) – सौर वायु प्लाज्मा (इलेक्ट्रॉनों और प्रोटॉनों) को अपने साथ ले जाती है। इसे प्रति घन सेंटीमीटर में परमाणुओं में मापा जाता है। एक उच्च और उतार-चढ़ाव वाली प्लाज्मा घनत्व आमतौर पर ऑरोरा को उत्तेजित करने में बेहतर होती है।", 
+              Speed: "Speed (पीली रेखा) – सौर वायु की गति किलोमीटर प्रति सेकंड में मापी जाती है, जो 250 – 800+ किमी/सेकंड तक भिन्न हो सकती है। एक तेज़ सौर वायु आमतौर पर बढ़ी हुई भू-चुंबकीय गतिविधि से जुड़ी होती है।", 
+              Temp: "Temp (हरी रेखा) – सौर वायु का तापमान केल्विन इकाइयों में मापा जाता है। पृथ्वी के चुंबकीय क्षेत्र पर प्रभाव के दौरान तापमान में वृद्धि की संभावना होती है।" 
+            },
+            close: "बंद करें" 
+          },
+          kpIndex: {
+            Day3: "3 दिन",
+            Day7: "7 दिन",
+            title: "केपी-इंडेक्स",
+            description1: "केपी इंडेक्स चार्ट का उपयोग सीमित है क्योंकि यह केवल हर 3 घंटे में अपडेट होता है। उन 3 घंटों के दौरान गतिविधि भिन्न हो सकती है और एक भू-चुंबकीय तूफान पूरी तरह से समाप्त हो सकता है जब तक कि यह ताज़ा नहीं हो जाता। पहला टैब 3-दिन की अवधि में केपी इंडेक्स दिखाता है।",
+            description2: "यह चार्ट स्थानीय के-इंडेक्स के साथ-साथ अनुमानित ग्रह केपी इंडेक्स दिखाता है। दिखाए गए स्टेशन हैं बाउल्डर, कोलोराडो; फ्रेडरिक्सबर्ग, वर्जीनिया; और फेयरबैंक्स, अलास्का (कॉलेज)। जब तक आप इन वेधशालाओं में से किसी एक के पास नहीं हैं, तब तक अनुमानित ग्रह केपी इंडेक्स को देखना सबसे अच्छा है, जो तीसरी पंक्ति में है।",
+            close: "बंद करें"
+        },
+          southernHemisphere: {
+            title: "दक्षिणी गोलार्ध",
+            play: "चालू करें",
+            pause: "रोकें",
+            dialogTitle: "ओवेशन ऑरोरा पूर्वानुमान मॉडल",
+            dialogContent1: `ओवेशन ऑरोरा पूर्वानुमान मॉडल उस समय के लिए ऑरोरा की तीव्रता और स्थान दिखाता है जो मानचित्र के शीर्ष पर दिखाया गया है। यह संभावना पूर्वानुमान वर्तमान सौर पवन स्थितियों पर आधारित है जो L1 पर मापी गई हैं, लेकिन L1 और पृथ्वी के बीच एक स्थिर 30 मिनट की देरी का उपयोग कर रहा है। 30 मिनट की देरी लगभग 800 किमी/से सौर पवन गति के अनुरूप है जो भू-चुंबकीय तूफानी स्थितियों के दौरान अनुभव की जा सकती है। वास्तविकता में, औसत सौर पवन स्थितियों के लिए देरी का समय 30 मिनट से कम से लेकर एक घंटे तक भिन्न हो सकता है।`,
+            dialogContent2: `पृथ्वी के धूप वाले हिस्से को महासागर के हल्के नीले और महाद्वीपों के हल्के रंग द्वारा दिखाया गया है। दिन-रात की रेखा, या टर्मिनेटर, एक क्षेत्र के रूप में दिखाई जाती है जो हल्के से गहरे रंग की ओर जाती है। हल्के किनारे पर सूरज क्षितिज पर ही होता है। गहरे किनारे पर सूरज क्षितिज के नीचे 12 डिग्री पर होता है। ध्यान दें कि दिन के समय के दौरान ऑरोरा दिखाई नहीं देगा; हालाँकि, ऑरोरा को अक्सर सूर्योदय या सूर्यास्त के एक घंटे के भीतर देखा जा सकता है।`,
+            dialogContent3: "डेटा हर 5 मिनट में अपडेट होता है।",
+            close: "बंद करें",
+            tooltip:"छवि विवरण देखने के लिए क्लिक करें"
+          },
+          northernHemisphere: {
+            title: "दक्षिणी गोलार्ध",
+            play: "चालू करें",
+            pause: "रोकें",
+            dialogTitle: "ओवेशन ऑरोरा पूर्वानुमान मॉडल",
+            dialogContent1: `ओवेशन ऑरोरा पूर्वानुमान मॉडल उस समय के लिए ऑरोरा की तीव्रता और स्थान दिखाता है जो मानचित्र के शीर्ष पर दिखाया गया है। यह संभावना पूर्वानुमान वर्तमान सौर पवन स्थितियों पर आधारित है जो L1 पर मापी गई हैं, लेकिन L1 और पृथ्वी के बीच एक स्थिर 30 मिनट की देरी का उपयोग कर रहा है। 30 मिनट की देरी लगभग 800 किमी/से सौर पवन गति के अनुरूप है जो भू-चुंबकीय तूफानी स्थितियों के दौरान अनुभव की जा सकती है। वास्तविकता में, औसत सौर पवन स्थितियों के लिए देरी का समय 30 मिनट से कम से लेकर एक घंटे तक भिन्न हो सकता है।`,
+            dialogContent2: `पृथ्वी के धूप वाले हिस्से को महासागर के हल्के नीले और महाद्वीपों के हल्के रंग द्वारा दिखाया गया है। दिन-रात की रेखा, या टर्मिनेटर, एक क्षेत्र के रूप में दिखाई जाती है जो हल्के से गहरे रंग की ओर जाती है। हल्के किनारे पर सूरज क्षितिज पर ही होता है। गहरे किनारे पर सूरज क्षितिज के नीचे 12 डिग्री पर होता है। ध्यान दें कि दिन के समय के दौरान ऑरोरा दिखाई नहीं देगा; हालाँकि, ऑरोरा को अक्सर सूर्योदय या सूर्यास्त के एक घंटे के भीतर देखा जा सकता है।`,
+            dialogContent3: "डेटा हर 5 मिनट में अपडेट होता है।",
+            close: "बंद करें",
+            tooltip:"छवि विवरण देखने के लिए क्लिक करें"
+          },
+          locationDialogPopUp: {
+            title: {
+              mapMode: "नक्शे पर स्थान चुनें",
+              searchMode: "स्थान खोजें",
+            },
+            searchPlaceholder: "स्थान खोजें",
+            loading: "लोड हो रहा है...",
+            noOptions: "कोई स्थान नहीं मिला",
+            currentLocation: "वर्तमान स्थान",
+            selectFromMap: "नक्शे से चुनें",
+            selected: "चयनित",
+            latitude: "अक्षांश",
+            longitude: "देशांतर",
+            buttons: {
+              cancel: "रद्द करें",
+              confirm: "स्थान की पुष्टि करें",
+              close: "बंद करें",
+            },
+          },
           menu: {
             gallery: 'गैलरी',
             glossary: 'शब्दकोश',
@@ -208,9 +346,7 @@ i18n
             changeLanguage: 'भाषा बदलें',
             user: 'उपयोगकर्ता'
           },
-          locationPopUp:{
-            currentLocation:'Current Location'
-          },
+          
           dashboard: {
             kpIndex: 'केपी इंडेक्स',
             magneticField: 'चुंबकीय क्षेत्र (Bz)',
@@ -229,7 +365,7 @@ i18n
             mm: 'मिमी'
           },
           navbar: {
-            liveData: 'लाइव डेटा',
+            liveData: 'लाइवडेटा',
             glossary: ' शब्दकोश',
             webCam: 'वेबकैम',
             gallery: 'गैलरी',
@@ -292,6 +428,54 @@ i18n
               "answer": "ಆರೋರಲ್ ಮುನ್ಸೂಚನೆ ಸೌರ ಮತ್ತು ಭೂ-ಚುಂಬಕ ಡೇಟಾದ ಆಧಾರದ ಮೇಲೆ ಆರೋರಾಗಳ ಸಂಭವನೆ ಮತ್ತು ತೀವ್ರತೆಯ ಬಗ್ಗೆ ಮುನ್ಸೂಚನೆಗಳನ್ನು ಒದಗಿಸುತ್ತದೆ."
           }]
           },
+          solarWind: { 
+            hour2: "2 ಗಂಟೆ",
+            hour24: "24 ಗಂಟೆ",
+            hour6: "6 ಗಂಟೆ",
+            day3: "3 ದಿನ",
+            day7: "7 ದಿನ",
+            title: "ACE ರಿಯಲ್-ಟೈಮ್ ಸೊಲಾರ್ ವಿಂಡ್ ಡೇಟಾ", 
+            description: "ಈ ಗ್ರಾಫ್‌ನ ಡೇಟಾ ನಾಸಾದ ಅಡ್ವಾನ್ಸ್ಡ್ ಕಾಂಪೊಸಿಷನ್ ಎಕ್ಸ್‌ಪ್ಲೋರರ್ (ACE) ಉಪಗ್ರಹದಿಂದ ಬಂದಿದೆ. ACE ಸೂರ್ಯನ ದಿಕ್ಕಿನಲ್ಲಿ ಭೂಮಿಯಿಂದ ಸುಮಾರು 1.5 ಮಿಲಿಯನ್ ಕಿಮೀ ದೂರದಲ್ಲಿರುವ L1 ಲಾಗ್ರಾಂಜ್ ಪಾಯಿಂಟ್‌ನಲ್ಲಿ ಸ್ಥಿತಿಯಾಗಿದೆ. ಉಪಗ್ರಹವು ಸೊಲಾರ್ ವಿಂಡ್ ಅನ್ನು ಮಾದರಿ ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ ಮತ್ತು ಭೂಮಿಗೆ ತಲುಪುವ ಮೊದಲು 1 ಗಂಟೆವರೆಗೆ ಅಳೆಯುತ್ತದೆ.", 
+            note: "ಸೂಚನೆ: 2016 ರ ಜುಲೈನಿಂದ ACE ಇನ್ನು ಮುಂದೆ ಸೊಲಾರ್ ವಿಂಡ್ ಡೇಟಾದ ಪ್ರಾಥಮಿಕ ಮೂಲವಲ್ಲ. ಹೊಸ ಉಪಗ್ರಹ DSCOVR (ಕೆಳಗೆ ತೋರಿಸಿದ ಡೇಟಾ) ಸಾಮಾನ್ಯವಾಗಿ ಹೆಚ್ಚು ನಂಬಿಕಸ್ಥವಾಗಿದೆ. ACE ನಿಂದ ಡೇಟಾ ಹಲವಾರು ಗಂಟೆಗಳ ಕಾಲ ಕಪ್ಪಾಗುತ್ತದೆ.", 
+            measurements: { 
+              BtBz: "Bt/Bz (ಬಿಳಿ/ಕೆಂಪು ರೇಖೆಗಳು) – Bt ಸೊಲಾರ್ ವಿಂಡ್ ಮೂಲಕ ಸಾಗುವ ಅಂತರ್‌ಗ್ರಹೀಯ ಚುಂಬಕ ಕ್ಷೇತ್ರದ (IMF) ಒಟ್ಟು ಶಕ್ತಿಯನ್ನು ಸೂಚಿಸುತ್ತದೆ. ಹೆಚ್ಚಿನ ಸಂಖ್ಯೆಯು ಭೂಮಿಯ ಚುಂಬಕ ಕ್ಷೇತ್ರದ ಮೇಲೆ ಬಲವಾದ ಪರಿಣಾಮವನ್ನು ಸೂಚಿಸುತ್ತದೆ. Bz IMF ನ ದಿಕ್ಕನ್ನು ಸೂಚಿಸುತ್ತದೆ. Bz ಧನಾತ್ಮಕ (ಉತ್ತರದಿಕ್ಕಿನಲ್ಲಿ) ಇದ್ದರೆ, ಭೂಮಿಯ ಚುಂಬಕ ಕ್ಷೇತ್ರವು ಹೆಚ್ಚಿನ ಸೊಲಾರ್ ವಿಂಡ್ ಅನ್ನು ತಡೆಯುತ್ತದೆ ಮತ್ತು ಭೂಚುಂಬಕ ತೂಫಾನಿನ ಸಾಧ್ಯತೆ ಕಡಿಮೆ. ಆದರೆ Bz ಋಣಾತ್ಮಕ (ದಕ್ಷಿಣದಿಕ್ಕಿನಲ್ಲಿ) ಇದ್ದರೆ, ಸೂರ್ಯ ಮತ್ತು ಭೂಮಿಯ ಚುಂಬಕ ಕ್ಷೇತ್ರವು ಸಂಪರ್ಕ ಹೊಂದುತ್ತದೆ, ಇದು ಸೊಲಾರ್ ವಿಂಡ್ ಅನ್ನು ಭೂಮಿಯ ವಾತಾವರಣಕ್ಕೆ ಹರಿಯಲು ಅನುಮತಿಸುತ್ತದೆ, ಇದು ಔರೊರಾವನ್ನು ಉಂಟುಮಾಡುತ್ತದೆ. Bz ಎಷ್ಟು ಹೆಚ್ಚು ದಕ್ಷಿಣದಿಕ್ಕಿನಲ್ಲಿ ತೋರಿಸುತ್ತದೆ ಮತ್ತು ಅವಧಿಯು ಎಷ್ಟು ದೀರ್ಘವಾಗಿರುತ್ತದೆ, ಭೂಚುಂಬಕ ತೂಫಾನಿನ ಸಂಭವನೀಯತೆ ಹೆಚ್ಚು.", 
+              Phi: "Phi (ನೀಲಿ ರೇಖೆ) – Phi IMF ನ ಕೋನವನ್ನು GSM (ಭೂಕೇಂದ್ರಿತ ಸೊಲಾರ್ ಚುಂಬಕೀಯ) ನಿರ್ಣಯ ವ್ಯವಸ್ಥೆಯಲ್ಲಿ ಅಳೆಯಲಾಗುತ್ತದೆ. CME ಪರಿಣಾಮದ ಸಮಯದಲ್ಲಿ Phi ಕೋನದಲ್ಲಿ ತಕ್ಷಣ ಮತ್ತು ತೀವ್ರ ಬದಲಾವಣೆಗಳು, ಹೆಚ್ಚಿದ ಸೊಲಾರ್ ವಿಂಡ್ ವೇಗಗಳು ಮತ್ತು Bz ಬದಲಾವಣೆಗಳು ಸಾಮಾನ್ಯ.", 
+              Density: "Density (ಕೆಂಪು ರೇಖೆ) – ಸೊಲಾರ್ ವಿಂಡ್ ಪ್ಲಾಸ್ಮಾವನ್ನು (ಇಲೆಕ್ಟ್ರಾನ್‌ಗಳು ಮತ್ತು ಪ್ರೋಟಾನ್‌ಗಳು) ತನ್ನೊಂದಿಗೆ ಹೊಯ್ಯುತ್ತದೆ. ಇದನ್ನು ಪ್ರತಿಯುಬ್ಬು ಸೆಂಟಿಮೀಟರ್‌ನಲ್ಲಿ ಅಣುಗಳಲ್ಲಿ ಅಳೆಯಲಾಗುತ್ತದೆ. ಹೆಚ್ಚಿನ ಮತ್ತು ಬದಲಾವಣೆಗೊಳ್ಳುವ ಪ್ಲಾಸ್ಮಾ ಸಾಂದ್ರತೆಯು ಸಾಮಾನ್ಯವಾಗಿ ಔರೊರಾವನ್ನು ಉಂಟುಮಾಡಲು ಉತ್ತಮವಾಗಿದೆ.", 
+              Speed: "Speed (ಹಳದಿ ರೇಖೆ) – ಸೊಲಾರ್ ವಿಂಡ್‌ನ ವೇಗವನ್ನು ಕಿಲೋಮೀಟರ್‌ಗಳಲ್ಲಿ ಪ್ರತಿ ಸೆಕೆಂಡಿಗೆ ಅಳೆಯಲಾಗುತ್ತದೆ, ಇದು 250 – 800+ ಕಿಮೀ/ಸೆಕೆಂಡುಗಳವರೆಗೆ ಬದಲಾಗಬಹುದು. ವೇಗವಾದ ಸೊಲಾರ್ ವಿಂಡ್ ಸಾಮಾನ್ಯವಾಗಿ ಹೆಚ್ಚಿದ ಭೂಚುಂಬಕ ಚಟುವಟಿಕೆಯಿಂದ ಸಂಬಂಧಿಸಿದೆ.", 
+              Temp: "Temp (ಹಸಿರು ರೇಖೆ) – ಸೊಲಾರ್ ವಿಂಡ್‌ನ ತಾಪಮಾನವನ್ನು ಕೆಲ್ವಿನ್ ಘಟಕಗಳಲ್ಲಿ ಅಳೆಯಲಾಗುತ್ತದೆ. ಭೂಮಿಯ ಚುಂಬಕ ಕ್ಷೇತ್ರದ ಮೇಲೆ ಪರಿಣಾಮ ಬೀರಿದಾಗ ತಾಪಮಾನದಲ್ಲಿ ಏರಿಕೆಯಾಗುವ ಸಾಧ್ಯತೆ ಇದೆ." 
+            },
+            close: "ಮುಚ್ಚಿ" 
+          },
+          kpIndex: {
+            Day3: "3 ದಿನ",
+            Day7: "7 ದಿನ",
+            title: "ಕೆಪಿ-ಸೂಚಿ",
+            description1: "ಕೆಪಿ ಸೂಚಕ ಚಾರ್ಟ್ ಸೀಮಿತ ಬಳಕೆಯಾಗಿದೆ ಏಕೆಂದರೆ ಇದು ಪ್ರತಿ 3 ಗಂಟೆಗಳಲ್ಲಿ ಮಾತ್ರ ನವೀಕರಿಸುತ್ತದೆ. ಆ 3 ಗಂಟೆಗಳ ಅವಧಿಯಲ್ಲಿ ಚಟುವಟಿಕೆ ಬದಲಾಗಬಹುದು ಮತ್ತು ಭೂಚುಂಬಕ ತೂಫಾನವು ಸಂಪೂರ್ಣವಾಗಿ ಮುಗಿದಿರಬಹುದು. ಮೊದಲ ಟ್ಯಾಬ್ 3 ದಿನಗಳ ಅವಧಿಯಲ್ಲಿ ಕೆಪಿ ಸೂಚಕವನ್ನು ತೋರಿಸುತ್ತದೆ.",
+            description2: "ಈ ಚಾರ್ಟ್ ಸ್ಥಳೀಯ ಕೆ-ಸೂಚಕಗಳ ಜೊತೆಗೆ ಅಂದಾಜು ಮಾಡಿದ ಗ್ರಹೀಯ ಕೆಪಿ ಸೂಚಕವನ್ನು ತೋರಿಸುತ್ತದೆ. ತೋರಿಸಲಾದ ಸ್ಟೇಷನ್‌ಗಳು ಬೋಲ್ಡರ್, ಕೊಲೊರಾಡೋ; ಫ್ರೆಡ್ರಿಕ್ಸ್‌ಬರ್ಗ್, ವರ್ಜೀನಿಯಾ; ಮತ್ತು ಫೇರ್‌ಬ್ಯಾಂಕ್ಸ್, ಅಲಾಸ್ಕಾ (ಕಾಲೇಜ್). ನೀವು ಈ ವೀಕ್ಷಣಾಲಯಗಳಲ್ಲಿ ಒಂದರ ಹತ್ತಿರ ಇದ್ದರೆ, ಅಂದಾಜು ಮಾಡಿದ ಗ್ರಹೀಯ ಕೆಪಿ ಸೂಚಕವನ್ನು ನೋಡುವುದು ಉತ್ತಮ, ಇದು ಮೂರನೇ ಸಾಲಿನಲ್ಲಿ ಇದೆ.",
+            close: "ಮುಚ್ಚಿ"
+        },
+          southernHemisphere: {
+            title: "ದಕ್ಷಿಣ ಅರ್ಧಗುಂಡಾದ್ರೋಣ",
+            play: "ನಡಿಗೆಮಾಡು",
+            pause: "ನಿಲ್ಲಿಸು",
+            tooltip:"ಚಿತ್ರದ ವಿವರಗಳನ್ನು ನೋಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+            dialogTitle: "ಓವೇಶನ್ ಆರೋರಾ ಮುನ್ಸೂಚನಾ ಮಾದರಿ",
+            dialogContent1: `ಓವೇಶನ್ ಆರೋರಾ ಮುನ್ಸೂಚನಾ ಮಾದರಿಯು ನಕ್ಷೆಯ ಮೇಲ್ಭಾಗದಲ್ಲಿ ತೋರಿಸಲಾಗುವ ಸಮಯಕ್ಕೆ ಆರೋರಾದ ತೀವ್ರತೆ ಮತ್ತು ಸ್ಥಳವನ್ನು ತೋರಿಸುತ್ತದೆ. ಈ ಸಾಧ್ಯತೆ ಮುನ್ಸೂಚನೆ ಪ್ರಸ್ತುತ ಸೌರ ಗಾಳಿ ಸ್ಥಿತಿಗಳಿಗೆ ಆಧಾರಿತವಾಗಿದೆ, L1 ನಲ್ಲಿ ಅಳೆಯಲ್ಪಟ್ಟಿದೆ, ಆದರೆ L1 ಮತ್ತು ಭೂಮಿಯ ನಡುವಿನ ಸ್ಥಿರ 30 ನಿಮಿಷಗಳ ವಿಳಂಬ ಸಮಯವನ್ನು ಬಳಸುತ್ತಿದೆ. 30 ನಿಮಿಷಗಳ ವಿಳಂಬವು ಸುಮಾರು 800 ಕಿಮೀ/ಸೆಕೆ೦ಡ್ ಸೌರ ಗಾಳಿ ವೇಗಕ್ಕೆ ಹೊಂದಿಕೊಳ್ಳುತ್ತದೆ, ಇದು ಭೂಮ್ಯಾಕಾಂತಿಕ ಚಂಡಮಾರುತದ ಸ್ಥಿತಿಗಳಲ್ಲಿ ಎದುರಾಗಬಹುದು. ವಾಸ್ತವದಲ್ಲಿ, ವಿಳಂಬದ ಸಮಯವು ಕಡಿಮೆ 30 ನಿಮಿಷಗಳಿಂದ ಸರಾಸರಿ ಸೌರ ಗಾಳಿ ಸ್ಥಿತಿಗಳಿಗೆ ಒಂದು ಗಂಟೆ ಅಥವಾ ಹೆಚ್ಚು ಬೇರೆಬೇರೆ ಆಗಬಹುದು.`,
+            dialogContent2: `ಭೂಮಿಯ ಸೂರ್ಯಕಾಂತ ಬದಿಯನ್ನು ಸಾಗರದ ಹಗುರವಾದ ನೀಲಿಯ ಮತ್ತು ಖಂಡಗಳ ಹಗುರವಾದ ಬಣ್ಣದ ಮೂಲಕ ಸೂಚಿಸಲಾಗುತ್ತದೆ. ದಿನ-ರಾತ್ರಿಯ ರೇಖೆ, ಅಥವಾ ಟರ್ಮಿನೇಟರ್, ಬೆಳಕು ಇಂದ ಕತ್ತಲೆಯ ಕಡೆಗೆ ಹೋಗುವ ಪ್ರದೇಶವನ್ನು ತೋರಿಸುತ್ತದೆ. ಹಗುರವಾದ ಅಂಚಿನಲ್ಲಿ ಸೂರ್ಯವು ಸಮೀಪದಲ್ಲಿದೆ. ಗಾಢವಾದ ಅಂಚಿನಲ್ಲಿ ಸೂರ್ಯವು ಸಮೀಪದಿಂದ 12 ಡಿಗ್ರಿ ಕೆಳಗಿರುತ್ತದೆ. ಸೂರ್ಯೋದಯ ಅಥವಾ ಸೂರ್ಯಾಸ್ತದ ಒಂದು ಗಂಟೆಯ ಒಳಗೆ ಆರೋರಾವನ್ನು ನೋಡಬಹುದು, ಆದಾಗ್ಯೂ.`,
+            dialogContent3: "ಡೇಟಾ ಪ್ರತಿ 5 ನಿಮಿಷಕ್ಕೊಮ್ಮೆ ನವೀಕರಿಸಲಾಗುತ್ತದೆ.",
+            close: "ಮುಚ್ಚು",
+          },
+          northernHemisphere: {
+            title: "ದಕ್ಷಿಣ ಅರ್ಧಗುಂಡಾದ್ರೋಣ",
+            play: "ನಡಿಗೆಮಾಡು",
+            pause: "ನಿಲ್ಲಿಸು",
+            tooltip:"ಚಿತ್ರದ ವಿವರಗಳನ್ನು ನೋಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ",
+            dialogTitle: "ಓವೇಶನ್ ಆರೋರಾ ಮುನ್ಸೂಚನಾ ಮಾದರಿ",
+            dialogContent1: `ಓವೇಶನ್ ಆರೋರಾ ಮುನ್ಸೂಚನಾ ಮಾದರಿಯು ನಕ್ಷೆಯ ಮೇಲ್ಭಾಗದಲ್ಲಿ ತೋರಿಸಲಾಗುವ ಸಮಯಕ್ಕೆ ಆರೋರಾದ ತೀವ್ರತೆ ಮತ್ತು ಸ್ಥಳವನ್ನು ತೋರಿಸುತ್ತದೆ. ಈ ಸಾಧ್ಯತೆ ಮುನ್ಸೂಚನೆ ಪ್ರಸ್ತುತ ಸೌರ ಗಾಳಿ ಸ್ಥಿತಿಗಳಿಗೆ ಆಧಾರಿತವಾಗಿದೆ, L1 ನಲ್ಲಿ ಅಳೆಯಲ್ಪಟ್ಟಿದೆ, ಆದರೆ L1 ಮತ್ತು ಭೂಮಿಯ ನಡುವಿನ ಸ್ಥಿರ 30 ನಿಮಿಷಗಳ ವಿಳಂಬ ಸಮಯವನ್ನು ಬಳಸುತ್ತಿದೆ. 30 ನಿಮಿಷಗಳ ವಿಳಂಬವು ಸುಮಾರು 800 ಕಿಮೀ/ಸೆಕೆ೦ಡ್ ಸೌರ ಗಾಳಿ ವೇಗಕ್ಕೆ ಹೊಂದಿಕೊಳ್ಳುತ್ತದೆ, ಇದು ಭೂಮ್ಯಾಕಾಂತಿಕ ಚಂಡಮಾರುತದ ಸ್ಥಿತಿಗಳಲ್ಲಿ ಎದುರಾಗಬಹುದು. ವಾಸ್ತವದಲ್ಲಿ, ವಿಳಂಬದ ಸಮಯವು ಕಡಿಮೆ 30 ನಿಮಿಷಗಳಿಂದ ಸರಾಸರಿ ಸೌರ ಗಾಳಿ ಸ್ಥಿತಿಗಳಿಗೆ ಒಂದು ಗಂಟೆ ಅಥವಾ ಹೆಚ್ಚು ಬೇರೆಬೇರೆ ಆಗಬಹುದು.`,
+            dialogContent2: `ಭೂಮಿಯ ಸೂರ್ಯಕಾಂತ ಬದಿಯನ್ನು ಸಾಗರದ ಹಗುರವಾದ ನೀಲಿಯ ಮತ್ತು ಖಂಡಗಳ ಹಗುರವಾದ ಬಣ್ಣದ ಮೂಲಕ ಸೂಚಿಸಲಾಗುತ್ತದೆ. ದಿನ-ರಾತ್ರಿಯ ರೇಖೆ, ಅಥವಾ ಟರ್ಮಿನೇಟರ್, ಬೆಳಕು ಇಂದ ಕತ್ತಲೆಯ ಕಡೆಗೆ ಹೋಗುವ ಪ್ರದೇಶವನ್ನು ತೋರಿಸುತ್ತದೆ. ಹಗುರವಾದ ಅಂಚಿನಲ್ಲಿ ಸೂರ್ಯವು ಸಮೀಪದಲ್ಲಿದೆ. ಗಾಢವಾದ ಅಂಚಿನಲ್ಲಿ ಸೂರ್ಯವು ಸಮೀಪದಿಂದ 12 ಡಿಗ್ರಿ ಕೆಳಗಿರುತ್ತದೆ. ಸೂರ್ಯೋದಯ ಅಥವಾ ಸೂರ್ಯಾಸ್ತದ ಒಂದು ಗಂಟೆಯ ಒಳಗೆ ಆರೋರಾವನ್ನು ನೋಡಬಹುದು, ಆದಾಗ್ಯೂ.`,
+            dialogContent3: "ಡೇಟಾ ಪ್ರತಿ 5 ನಿಮಿಷಕ್ಕೊಮ್ಮೆ ನವೀಕರಿಸಲಾಗುತ್ತದೆ.",
+            close: "ಮುಚ್ಚು",
+          },
           menu: {
             gallery: 'ಗ್ಯಾಲರಿ',
             glossary: 'ಪದಕೋಶ',
@@ -306,6 +490,25 @@ i18n
             openSettings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ',
             changeLanguage: 'ಭಾಷೆ ಬದಲಾಯಿಸಿ',
             user: 'ಬಳಕೆದಾರ'
+          },
+          locationDialogPopUp: {
+            title: {
+              mapMode: "ನಕ್ಷೆಯಲ್ಲಿ ಸ್ಥಳವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+              searchMode: "ಸ್ಥಳ ಹುಡುಕಿ",
+            },
+            searchPlaceholder: "ಸ್ಥಳವನ್ನು ಹುಡುಕಿ",
+            loading: "ಲೋಡಿಂಗ್...",
+            noOptions: "ಯಾವುದೇ ಸ್ಥಳಗಳು ಕಂಡುಬಂದಿಲ್ಲ",
+            currentLocation: "ಪ್ರಸ್ತುತ ಸ್ಥಳ",
+            selectFromMap: "ನಕ್ಷೆಯಿಂದ ಆಯ್ಕೆಮಾಡಿ",
+            selected: "ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ",
+            latitude: "ಅಕ್ಷಾಂಶ",
+            longitude: "ರೇಖಾಂಶ",
+            buttons: {
+              cancel: "ರದ್ದುಮಾಡಿ",
+              confirm: "ಸ್ಥಳವನ್ನು ದೃಢೀಕರಿಸಿ",
+              close: "ಮುಚ್ಚಿ",
+            },
           },
           dashboard: {
             kpIndex: 'ಕೆಪಿ ಸೂಚ್ಯಂಕ',
@@ -326,7 +529,7 @@ i18n
           }
           ,
           navbar: {
-            liveData: 'ಲೈವ್ ಡೇಟಾ',
+            liveData: 'ಲೈವ್ಡೇಟಾ',
             glossary: 'ಪದಕೋಶ',
             webCam: 'ವೆಬ್‌ಕ್ಯಾಮ್',
             gallery: 'ಗ್ಯಾಲರಿ',
