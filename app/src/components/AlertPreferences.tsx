@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Card,
-  CardContent,
   Typography,
   Slider,
   Switch,
@@ -13,9 +11,9 @@ import {
   Autocomplete,
   FormControlLabel,
   useTheme,
-  alpha
 } from '@mui/material';
-import { LocationOn, NotificationsActive } from '@mui/icons-material';
+import { NotificationsActive } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 interface Location {
   city_country: string;
@@ -34,6 +32,7 @@ interface AlertPreference {
 }
 
 const AlertPreferencesComponent = () => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [preferences, setPreferences] = useState<AlertPreference>({
     kpThreshold: 5,
@@ -74,13 +73,14 @@ const AlertPreferencesComponent = () => {
         }
       } catch (error) {
         console.error('Error fetching preferences:', error);
+        setError(t('alerts.fetchError'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchPreferences();
-  }, []);
+  }, [t]);
 
   const handleLocationSearch = async (query: string) => {
     if (!query.trim()) {
@@ -90,7 +90,7 @@ const AlertPreferencesComponent = () => {
 
     try {
       const response = await fetch(`http://localhost:3002/longitudeLatitude/${query}`);
-      if (!response.ok) throw new Error('Failed to fetch locations');
+      if (!response.ok) throw new Error(t('alerts.locationSearchError'));
       
       const data = await response.json();
       if (data.suggestions) {
@@ -98,13 +98,13 @@ const AlertPreferencesComponent = () => {
       }
     } catch (error) {
       console.error('Location search error:', error);
-      setError('Failed to search locations');
+      setError(t('alerts.locationSearchError'));
     }
   };
 
   const handleSavePreferences = async () => {
     if (!preferences.location) {
-      setError('Please select a location');
+      setError(t('alerts.locationRequired'));
       return;
     }
 
@@ -134,14 +134,14 @@ const AlertPreferencesComponent = () => {
       });
 
       if (response.ok) {
-        setSuccess('Alert preferences saved successfully');
+        setSuccess(t('alerts.saveSuccess'));
         setHasExistingPreferences(true);
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        throw new Error('Failed to save preferences');
+        throw new Error(t('alerts.saveError'));
       }
     } catch (error) {
-      setError('Failed to save preferences. Please try again.');
+      setError(t('alerts.saveError'));
       setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
@@ -161,14 +161,16 @@ const AlertPreferencesComponent = () => {
   return (
     <Box sx={{ p: 3 }}>
       <Typography variant="h5" gutterBottom sx={{ color: 'white' }}>
-        Aurora Alert Preferences
+        {t('alerts.title')}
       </Typography>
 
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
 
       <Box sx={{ mb: 4 }}>
-        <Typography gutterBottom sx={{ color: 'white' }}>Alert Location</Typography>
+        <Typography gutterBottom sx={{ color: 'white' }}>
+          {t('alerts.locationLabel')}
+        </Typography>
         <Autocomplete
           options={locationSuggestions}
           getOptionLabel={(option) => option.city_country}
@@ -193,7 +195,7 @@ const AlertPreferencesComponent = () => {
           renderInput={(params) => (
             <TextField
               {...params}
-              label="Search location"
+              label={t('alerts.searchLocation')}
               variant="outlined"
               fullWidth
               sx={{
@@ -216,7 +218,9 @@ const AlertPreferencesComponent = () => {
       </Box>
 
       <Box sx={{ mb: 4 }}>
-        <Typography gutterBottom sx={{ color: 'white' }}>KP Index Threshold</Typography>
+        <Typography gutterBottom sx={{ color: 'white' }}>
+          {t('alerts.kpThreshold')}
+        </Typography>
         <Slider
           value={preferences.kpThreshold}
           onChange={(_, value) => setPreferences(prev => ({
@@ -243,7 +247,7 @@ const AlertPreferencesComponent = () => {
               }))}
             />
           }
-          label={<Typography sx={{ color: 'white' }}>Enable Aurora Alerts</Typography>}
+          label={<Typography sx={{ color: 'white' }}>{t('alerts.enableAlerts')}</Typography>}
         />
       </Box>
 
@@ -254,7 +258,7 @@ const AlertPreferencesComponent = () => {
         fullWidth
         startIcon={<NotificationsActive />}
       >
-        {loading ? <CircularProgress size={24} /> : 'Save Preferences'}
+        {loading ? <CircularProgress size={24} /> : t('alerts.savePreferences')}
       </Button>
     </Box>
   );

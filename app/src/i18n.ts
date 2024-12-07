@@ -128,19 +128,19 @@ i18n
       deleteWarning: "This action cannot be undone"
     }
   },
-  alerts: {
-    "title": "Aurora Alert Preferences",
-    "locationLabel": "Alert Location",
-    "searchLocation": "Search location",
-    "kpThreshold": "KP Index Threshold",
-    "enableAlerts": "Enable Aurora Alerts",
-    "savePreferences": "Save Preferences",
-    "fetchError": "Error fetching preferences",
-    "locationSearchError": "Failed to search locations",
-    "locationRequired": "Please select a location",
-    "saveSuccess": "Alert preferences saved successfully",
-    "saveError": "Failed to save preferences. Please try again."
-  },
+          alerts: {
+            "title": "Aurora Alert Preferences",
+            "locationLabel": "Alert Location",
+            "searchLocation": "Search location",
+            "kpThreshold": "KP Index Threshold",
+            "enableAlerts": "Enable Aurora Alerts",
+            "savePreferences": "Save Preferences",
+            "fetchError": "Error fetching preferences",
+            "locationSearchError": "Failed to search locations",
+            "locationRequired": "Please select a location",
+            "saveSuccess": "Alert preferences saved successfully",
+            "saveError": "Failed to save preferences. Please try again."
+          },
           menu: {
             gallery: 'Gallery',
             glossary: 'Glossary',
