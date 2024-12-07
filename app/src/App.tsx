@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./App.css";
 import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
@@ -6,6 +7,7 @@ import { store } from "./store";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
+import { theme } from './theme/theme';
 // Components 
 // Import the new theme and routes
 import { appTheme } from "./themes/theme";
