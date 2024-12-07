@@ -82,6 +82,19 @@ i18n
     }
     ]
   },
+  profile: {
+    personalInfo: " Personal Information",
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    alertPreferences: 'Aurora Alert Preferences',
+    deleteAccount: 'Delete Account',
+    deleteAccountTitle: 'Delete Account',
+    deleteAccountConfirm: 'Are you sure you want to delete your account? This action cannot be undone.',
+    deleting: 'Deleting...',
+  },
+  common: {
+    cancel: 'Cancel',
+  },
   gallery: {
     title: {
       main: "Aurora Gallery",
@@ -114,6 +127,19 @@ i18n
       confirmDelete: "Are you sure you want to delete this photo?",
       deleteWarning: "This action cannot be undone"
     }
+  },
+  alerts: {
+    "title": "Aurora Alert Preferences",
+    "locationLabel": "Alert Location",
+    "searchLocation": "Search location",
+    "kpThreshold": "KP Index Threshold",
+    "enableAlerts": "Enable Aurora Alerts",
+    "savePreferences": "Save Preferences",
+    "fetchError": "Error fetching preferences",
+    "locationSearchError": "Failed to search locations",
+    "locationRequired": "Please select a location",
+    "saveSuccess": "Alert preferences saved successfully",
+    "saveError": "Failed to save preferences. Please try again."
   },
           menu: {
             gallery: 'Gallery',
@@ -216,6 +242,36 @@ i18n
             }
             ]
           },
+          
+            alerts: {
+              "title": "औरोरा अलर्ट प्राथमिकताएं",
+              "locationLabel": "अलर्ट स्थान",
+              "searchLocation": "स्थान खोजें",
+              "kpThreshold": "केपी इंडेक्स थ्रेशोल्ड",
+              "enableAlerts": "औरोरा अलर्ट सक्षम करें",
+              "savePreferences": "प्राथमिकताएं सहेजें",
+              "fetchError": "प्राथमिकताएं प्राप्त करने में त्रुटि",
+              "locationSearchError": "स्थान खोजने में विफल",
+              "locationRequired": "कृपया एक स्थान चुनें",
+              "saveSuccess": "अलर्ट प्राथमिकताएं सफलतापूर्वक सहेजी गईं",
+              "saveError": "प्राथमिकताएं सहेजने में विफल। कृपया पुनः प्रयास करें।"
+            
+          },
+          profile: {
+            personalInfo: 'व्यक्तिगत जानकारी',
+            firstName: 'पहला नाम',
+            lastName: 'अंतिम नाम',
+            alertPreferences: 'ऑरोरा अलर्ट प्राथमिकताएं',
+            deleteAccount: 'खाता हटाएं',
+            deleteAccountTitle: 'खाता हटाएं',
+            deleteAccountConfirm: 'क्या आप वाकई अपना खाता हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती.',
+            deleting: 'हटाया जा रहा है...',
+          },
+          common: {
+            cancel: 'रद्द करें',
+          },
+          
+          
           gallery: {
             title: {
               main: "ऑरोरा गैलरी",
@@ -338,6 +394,20 @@ i18n
           }]
           },
           
+            alerts: {
+              "title": "ಅರೋರ ಅಲರ್ಟ್ ಆದ್ಯತೆಗಳು",
+              "locationLabel": "ಅಲರ್ಟ್ ಸ್ಥಳ",
+              "searchLocation": "ಸ್ಥಳ ಹುಡುಕಿ",
+              "kpThreshold": "ಕೆಪಿ ಇಂಡೆಕ್ಸ್ ಥ್ರೆಶೋಲ್ಡ್",
+              "enableAlerts": "ಅರೋರ ಅಲರ್ಟ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ",
+              "savePreferences": "ಆದ್ಯತೆಗಳನ್ನು ಉಳಿಸಿ",
+              "fetchError": "ಆದ್ಯತೆಗಳನ್ನು ಪಡೆಯುವಲ್ಲಿ ದೋಷ",
+              "locationSearchError": "ಸ್ಥಳಗಳನ್ನು ಹುಡುಕಲು ವಿಫಲವಾಗಿದೆ",
+              "locationRequired": "ದಯವಿಟ್ಟು ಒಂದು ಸ್ಥಳವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ",
+              "saveSuccess": "ಅಲರ್ಟ್ ಆದ್ಯತೆಗಳು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ",
+              "saveError": "ಆದ್ಯತೆಗಳನ್ನು ಉಳಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+            },
+          
           gallery: {
             title: {
               main: "ಅರೋರಾ ಗ್ಯಾಲರಿ",
@@ -370,6 +440,19 @@ i18n
               confirmDelete: "ನೀವು ಖಚಿತವಾಗಿ ಈ ಫೋಟೋವನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?",
               deleteWarning: "ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
             }
+          },
+          profile: {
+            personalInfo: 'ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ',
+            firstName: 'ಮೊದಲ ಹೆಸರು',
+            lastName: 'ಕೊನೆಯ ಹೆಸರು',
+            alertPreferences: 'ಅರೋರಾ ಅಲರ್ಟ್ ಪ್ರಾಶಸ್ತ್ಯಗಳು',
+            deleteAccount: 'ಖಾತೆಯನ್ನು ಅಳಿಸಿ',
+            deleteAccountTitle: 'ಖಾತೆಯನ್ನು ಅಳಿಸಿ',
+            deleteAccountConfirm: 'ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.',
+            deleting: 'ಅಳಿಸಲಾಗುತ್ತಿದೆ...',
+          },
+          common: {
+            cancel: 'ರದ್ದುಮಾಡಿ',
           },
           menu: {
             gallery: 'ಗ್ಯಾಲರಿ',
