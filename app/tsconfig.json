@@ -23,7 +23,8 @@
     "paths": {
       "@/*": ["src/*"]
     },
-     "esModuleInterop": true
+    "types": ["vite/client"],
+    "esModuleInterop": true
   },
   "include": ["src", "Back-End/service/**/*.d.ts"],
   "exclude": ["node_modules", "build", "dist"],

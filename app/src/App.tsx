@@ -6,6 +6,7 @@ import { store } from "./store";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 
+// Components 
 // Import the new theme and routes
 import { appTheme } from "./themes/theme";
 import { AppRoutes } from "./route/AppRoutes";

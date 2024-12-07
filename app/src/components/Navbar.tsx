@@ -39,8 +39,10 @@ interface NavbarProps {
   location: Location;
   setLocation: (location: Location) => void;
 }
+
 declare var window: any;
-const pages = ["Gallery", "Glossary", "Data", "WebCam"];
+
+const pages = ["Gallery", "Glossary", "Data", "WebCam", "Best-Locations"];
 const languages = [
   { code: "en", name: "English" },
   { code: "hi", name: "हिंदी" },
@@ -57,12 +59,16 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
   const [anchorElLang, setAnchorElLang] = useState<null | HTMLElement>(null);
   const [isLocationDialogOpen, setLocationDialogOpen] = useState(false);
 
-  const handleOpenMenu = (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) => (event: React.MouseEvent<HTMLElement>) => {
-    setter(event.currentTarget);
-  };
-  const handleCloseMenu = (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) => () => {
-    setter(null);
-  };
+  const handleOpenMenu =
+    (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) =>
+    (event: React.MouseEvent<HTMLElement>) => {
+      setter(event.currentTarget);
+    };
+  const handleCloseMenu =
+    (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) =>
+    () => {
+      setter(null);
+    };
   const [scrollPosition, setScrollPosition] = useState(0);
 
   const handleLanguageChange = (languageCode: string) => {
@@ -84,15 +90,15 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
   useEffect(() => {
     setLocationDialogOpen(true);
     if (typeof window !== "undefined") {
-    const handleScroll = () => {
-      setScrollPosition(window.scrollY);
-    };
+      const handleScroll = () => {
+        setScrollPosition(window.scrollY);
+      };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }
+      window.addEventListener("scroll", handleScroll);
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+      };
+    }
   }, []);
   const appBarStyle = {
     backgroundColor: `rgba(0, 0, 0, ${Math.min(scrollPosition / 300, 0.8)})`, // Adjust opacity based on scroll
@@ -106,30 +112,42 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
             <img
               src={auroraIcon}
               alt="Aurora Logo"
-              style={{ width: 40, height: 40, marginRight: "8px", cursor: 'pointer' }}
-              onClick={() => {setAnchorElNav(null);
-                navigate("/home")}}
+              style={{
+                width: 40,
+                height: 40,
+                marginRight: "8px",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                setAnchorElNav(null);
+                navigate("/home");
+              }}
             />
             <Typography
               variant="h6"
               component="a"
-              
               sx={{
                 display: { xs: "none", md: "flex" },
                 fontFamily: "monospace",
                 fontWeight: 700,
                 color: "inherit",
                 textDecoration: "none",
-                cursor: 'pointer' 
+                cursor: "pointer",
               }}
-              onClick={() => {setAnchorElNav(null);
-                navigate("/home")}}
+              onClick={() => {
+                setAnchorElNav(null);
+                navigate("/home");
+              }}
             >
               Lights Trail
             </Typography>
 
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-              <IconButton size="large" onClick={handleOpenMenu(setAnchorElNav)} color="inherit">
+              <IconButton
+                size="large"
+                onClick={handleOpenMenu(setAnchorElNav)}
+                color="inherit"
+              >
                 <MenuIcon />
               </IconButton>
               <Menu
@@ -151,7 +169,12 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                 <Button
                   key={page}
                   onClick={() => handleNavigation(page)}
-                  sx={{ my: 2, color: "white", display: "block", marginLeft: "20px" }}
+                  sx={{
+                    my: 2,
+                    color: "white",
+                    display: "block",
+                    marginLeft: "20px",
+                  }}
                 >
                   {page}
                 </Button>
@@ -159,7 +182,10 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
             </Box>
 
             <Tooltip title="Change Language">
-              <IconButton onClick={handleOpenMenu(setAnchorElLang)} sx={{ ml: 2, color: "white" }}>
+              <IconButton
+                onClick={handleOpenMenu(setAnchorElLang)}
+                sx={{ ml: 2, color: "white" }}
+              >
                 <LanguageIcon />
               </IconButton>
             </Tooltip>
@@ -185,14 +211,20 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
             </Menu>
 
             <LocationOnIcon />
-            <Button onClick={() => setLocationDialogOpen(true)} sx={{ my: 2, color: "white" }}>
+            <Button
+              onClick={() => setLocationDialogOpen(true)}
+              sx={{ my: 2, color: "white" }}
+            >
               {location.city_country}
             </Button>
 
             {user && (
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenMenu(setAnchorElUser)} sx={{ p: 0 }}>
+                  <IconButton
+                    onClick={handleOpenMenu(setAnchorElUser)}
+                    sx={{ p: 0 }}
+                  >
                     <Avatar
                       alt={user?.firstName || "User Avatar"}
                       src={`https://api.dicebear.com/9.x/identicon/svg?seed=${user?.id}`}
@@ -205,7 +237,9 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                   open={Boolean(anchorElUser)}
                   onClose={handleCloseMenu(setAnchorElUser)}
                 >
-                  <MenuItem onClick={() => navigate("/profile")}>Profile</MenuItem>
+                  <MenuItem onClick={() => navigate("/profile")}>
+                    Profile
+                  </MenuItem>
                   <MenuItem onClick={handleLogout}>Logout</MenuItem>
                 </Menu>
               </Box>

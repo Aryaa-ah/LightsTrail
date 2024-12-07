@@ -15,6 +15,7 @@ import ProfilePage from "../pages/ProfilePage";
 import NotFoundPage from "../pages/NotFoundPage";
 import Glossary from "../pages/glossary";
 import Data from "../pages/DataPage";
+import AuroraPredictionPage from "../pages/auroraPredPage";
 import WebCamPage from "../pages/WebCamPage";
 
 // Types
@@ -59,26 +60,23 @@ export const AppRoutes = ({
   return (
     <Routes>
       {/* Public Routes */}
-      <Route 
-        path="/auth/login" 
+      <Route
+        path="/auth/login"
         element={
           <PublicRoute>
             <LoginPage />
           </PublicRoute>
-        } 
+        }
       />
-      <Route 
-        path="/auth/signup" 
+      <Route
+        path="/auth/signup"
         element={
           <PublicRoute>
             <SignupPage />
           </PublicRoute>
-        } 
+        }
       />
-      <Route
-        path="/auth/google/callback"
-        element={<GoogleAuthCallback />}
-      />
+      <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
       <Route path="/auth/success" element={<GoogleAuthCallback />} />
 
       {/* Protected Routes */}
@@ -87,10 +85,7 @@ export const AppRoutes = ({
         element={
           <ProtectedRoute>
             <>
-              <ResponsiveAppBar
-                location={location}
-                setLocation={setLocation}
-              />
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
               <Home
                 latitude={location.latitude}
                 longitude={location.longitude}
@@ -104,10 +99,7 @@ export const AppRoutes = ({
         element={
           <ProtectedRoute>
             <>
-              <ResponsiveAppBar
-                location={location}
-                setLocation={setLocation}
-              />
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
               <GalleryPage userOnly={false} />
             </>
           </ProtectedRoute>
@@ -118,10 +110,7 @@ export const AppRoutes = ({
         element={
           <ProtectedRoute>
             <>
-              <ResponsiveAppBar
-                location={location}
-                setLocation={setLocation}
-              />
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
               <GalleryPage userOnly={true} />
             </>
           </ProtectedRoute>
@@ -132,10 +121,7 @@ export const AppRoutes = ({
         element={
           <ProtectedRoute>
             <>
-              <ResponsiveAppBar
-                location={location}
-                setLocation={setLocation}
-              />
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
               <ProfilePage />
             </>
           </ProtectedRoute>
@@ -146,11 +132,19 @@ export const AppRoutes = ({
         element={
           <ProtectedRoute>
             <>
-              <ResponsiveAppBar
-                location={location}
-                setLocation={setLocation}
-              />
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
               <Glossary />
+            </>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/best-Locations"
+        element={
+          <ProtectedRoute>
+            <>
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
+              <AuroraPredictionPage />
             </>
           </ProtectedRoute>
         }
@@ -161,16 +155,13 @@ export const AppRoutes = ({
         element={
           <ProtectedRoute>
             <>
-              <ResponsiveAppBar
-                location={location}
-                setLocation={setLocation}
-              />
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
               <Data />
             </>
           </ProtectedRoute>
         }
       />
-
+       
         <Route
         path="/webcam"
         element={
@@ -187,10 +178,7 @@ export const AppRoutes = ({
       />
 
       {/* Root and Fallback Routes */}
-      <Route 
-        path="/" 
-        element={<Navigate to="/auth/login" replace />} 
-      />
+      <Route path="/" element={<Navigate to="/auth/login" replace />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
