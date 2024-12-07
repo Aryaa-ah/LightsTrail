@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Card, CardContent, Button, Typography, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions,Tooltip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { Box, Card, CardContent, Button, Typography, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, Tooltip } from '@mui/material';
 
 // Define the shape of each image object
 interface ImageData {
@@ -7,6 +8,7 @@ interface ImageData {
 }
 
 const NorthernHemisphere = () => {
+  const { t } = useTranslation();
   const [images, setImages] = useState<ImageData[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -78,7 +80,7 @@ const NorthernHemisphere = () => {
   };
 
   if (!isLoaded) {
-    return <Typography>Loading...</Typography>;
+    return <Typography>{t('northernHemisphere.loading')}</Typography>;
   }
 
   return (
@@ -89,7 +91,7 @@ const NorthernHemisphere = () => {
         alignItems: 'center',
         justifyContent: 'center',
         margin: '20px',
-        opacity: '0.7'
+        opacity: '0.7',
       }}
     >
       <Card sx={{ bgcolor: 'grey.800', borderColor: 'grey.700', width: '77%' }}>
@@ -106,11 +108,11 @@ const NorthernHemisphere = () => {
                 fontWeight: 'bold',
               }}
             >
-              Northern Hemisphere
+              {t('northernHemisphere.title')}
             </Typography>
           </Box>
           <Box sx={{ mb: 2 }}>
-          <Tooltip title="Click to see image details">
+            <Tooltip title={t('northernHemisphere.tooltip')}>
               <canvas
                 ref={canvasRef}
                 style={{
@@ -118,7 +120,7 @@ const NorthernHemisphere = () => {
                   margin: '0 auto',
                   border: '1px solid #444',
                   borderRadius: '8px',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
                 }}
                 onClick={handleClickOpen}
               />
@@ -148,7 +150,7 @@ const NorthernHemisphere = () => {
                 },
               }}
             >
-              {isPlaying ? 'Pause' : 'Play'}
+              {isPlaying ? t('northernHemisphere.pause') : t('northernHemisphere.play')}
             </Button>
           </Box>
         </CardContent>
@@ -156,21 +158,15 @@ const NorthernHemisphere = () => {
 
       {/* Dialog for Image Details */}
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>OVATION Aurora Forecast Model</DialogTitle>
+        <DialogTitle>{t('northernHemisphere.dialogTitle')}</DialogTitle>
         <DialogContent>
-          <Typography gutterBottom>
-            The OVATION Aurora Forecast Model shows the intensity and location of the aurora predicted for the time shown at the top of the map. This probability forecast is based on current solar wind conditions measured at L1, but using a fixed 30-minute delay time between L1 and Earth. A 30-minute delay corresponds to approximately 800 km/s solar wind speed as might be encountered during geomagnetic storming conditions. In reality, delay times vary from less than 30 minutes to an hour or so for average solar wind conditions.
-          </Typography>
-          <Typography gutterBottom>
-            The sunlit side of Earth is indicated by the lighter blue of the ocean and the lighter color of the continents. The day-night line, or terminator, is shown as a region that goes from light to dark. The lighter edge is where the sun is just at the horizon. The darker edge is where the sun is 12 degrees below the horizon. Note that the aurora will not be visible during daylight hours; however, the aurora can often be observed within an hour before sunrise or after sunset.
-          </Typography>
-          <Typography gutterBottom>
-            Data updates every 5 minutes.
-          </Typography>
+          <Typography gutterBottom>{t('northernHemisphere.dialogContent1')}</Typography>
+          <Typography gutterBottom>{t('northernHemisphere.dialogContent2')}</Typography>
+          <Typography gutterBottom>{t('northernHemisphere.dialogContent3')}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Close
+            {t('northernHemisphere.close')}
           </Button>
         </DialogActions>
       </Dialog>
