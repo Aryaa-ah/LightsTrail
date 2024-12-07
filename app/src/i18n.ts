@@ -114,6 +114,16 @@ i18n
             celsius: '°C',
             mm: 'mm'
           }
+          ,
+          navbar: {
+            liveData: 'Live Data',
+            glossary: 'Glossary',
+            webCam: 'WebCam',
+            gallery: 'Gallery',
+            bestLocations: 'Best Locations',
+            profile:'Profile',
+            logout:'Log out'
+          }
         }
       },
       hi: {
@@ -198,6 +208,9 @@ i18n
             changeLanguage: 'भाषा बदलें',
             user: 'उपयोगकर्ता'
           },
+          locationPopUp:{
+            currentLocation:'Current Location'
+          },
           dashboard: {
             kpIndex: 'केपी इंडेक्स',
             magneticField: 'चुंबकीय क्षेत्र (Bz)',
@@ -206,13 +219,23 @@ i18n
             precipitation: 'वर्षा',
             windSpeed: 'हवा की गति',
             uvIndex: 'यूवी सूचकांक',
-            title: 'ऑरोरा पूर्वानुमान'
+            title: 'ऑरोरा पूर्वानुमान',
+            probability: 'अरोड़ा संभावना'
           },
           units: {
             kmPerSec: 'किमी/से',
             kmPerHour: 'किमी/घंटा',
             celsius: '°से',
             mm: 'मिमी'
+          },
+          navbar: {
+            liveData: 'लाइव डेटा',
+            glossary: ' शब्दकोश',
+            webCam: 'वेबकैम',
+            gallery: 'गैलरी',
+            bestLocations: 'सर्वश्रेष्ठ स्थान',
+            profile:'प्रोफ़ाइल',
+            logout:'लॉग आउट'
           }
         }
       },
@@ -292,13 +315,24 @@ i18n
             precipitation: 'ಮಳೆ',
             windSpeed: 'ಗಾಳಿಯ ವೇಗ',
             uvIndex: 'ಯುವಿ ಸೂಚ್ಯಂಕ',
-            title: 'ಅರೋರಾ ಮುನ್ಸೂಚನೆ'
+            title: 'ಅರೋರಾ ಮುನ್ಸೂಚನೆ',
+            probability: 'ಅರೋರಾ ಸಂಭವನೀಯತೆ'
           },
           units: {
             kmPerSec: 'ಕಿ.ಮೀ/ಸೆ',
             kmPerHour: 'ಕಿ.ಮೀ/ಗಂ',
             celsius: '°ಸೆ',
             mm: 'ಮಿ.ಮೀ'
+          }
+          ,
+          navbar: {
+            liveData: 'ಲೈವ್ ಡೇಟಾ',
+            glossary: 'ಪದಕೋಶ',
+            webCam: 'ವೆಬ್‌ಕ್ಯಾಮ್',
+            gallery: 'ಗ್ಯಾಲರಿ',
+            bestLocations: 'ಉತ್ತಮ ಸ್ಥಳಗಳು',
+            profile:'ಪ್ರೊಫೈಲ್',
+            logout:'ಲಾಗ್ ಔಟ್'
           }
         }
      }

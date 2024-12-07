@@ -42,7 +42,7 @@ interface NavbarProps {
 
 declare var window: any;
 
-const pages = ["Gallery", "Glossary", "Data", "WebCam", "Best-Locations"];
+
 const languages = [
   { code: "en", name: "English" },
   { code: "hi", name: "हिंदी" },
@@ -51,9 +51,18 @@ const languages = [
 
 export default function Navbar({ location, setLocation }: NavbarProps) {
   const navigate = useNavigate();
+ 
+
+//  const pages = [gallery, "Glossary", "Data", "WebCam", "Best-Locations"];
   const { i18n, t } = useTranslation();
   const { user } = useAuth();
-
+  const pages = [
+    t('navbar.gallery'),
+    t('navbar.glossary'),
+    t('navbar.liveData'),
+    t('navbar.webCam'),
+    t('navbar.bestLocations')
+  ];
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [anchorElLang, setAnchorElLang] = useState<null | HTMLElement>(null);
@@ -238,9 +247,9 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                   onClose={handleCloseMenu(setAnchorElUser)}
                 >
                   <MenuItem onClick={() => navigate("/profile")}>
-                    Profile
+                  {t("navbar.profile")}
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  <MenuItem onClick={handleLogout}>{t("navbar.logout")}</MenuItem>
                 </Menu>
               </Box>
             )}
