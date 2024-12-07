@@ -23,6 +23,7 @@ import {
   DateRange as CalendarIcon
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import Graph from '../components/KpGraph';
 
 // Destination Data
 const destinations = [
@@ -150,11 +151,11 @@ const AuroraTourismGuide = () => {
           </Grid>
         ))}
       </Grid>
-
+        <Graph/>
       {/* Aurora Probability Chart */}
       <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" gutterBottom>
-          Aurora Viewing Probability by Month
+          General Aurora Viewing Probability by Month
         </Typography>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={auroraData}>
