@@ -83,6 +83,65 @@ i18n
     }
     ]
   },
+  profile: {
+    personalInfo: " Personal Information",
+    firstName: 'First Name',
+    lastName: 'Last Name',
+    alertPreferences: 'Aurora Alert Preferences',
+    deleteAccount: 'Delete Account',
+    deleteAccountTitle: 'Delete Account',
+    deleteAccountConfirm: 'Are you sure you want to delete your account? This action cannot be undone.',
+    deleting: 'Deleting...',
+    cancel: 'Cancel',
+    deleteConfirmation : "Are you sure you want to delete your account? This action cannot be undone.",
+    delete : "Delete"
+  },
+  gallery: {
+    title: {
+      main: "Aurora Gallery",
+      personal: "My Gallery"
+    },
+    subtitle: {
+      main: "Discover and share stunning aurora captures",
+      personal: "Manage and showcase your aurora captures"
+    },
+    actions: {
+      upload: "Upload",
+      search: "Search photos by location...",
+      grid: "Grid view",
+      list: "List view",
+      delete: "Delete",
+      edit: "Edit",
+      save: "Save Changes",
+      cancel: "Cancel"
+    },
+    empty: {
+      title: "No Photos Yet",
+      description: "Upload your first aurora photo to get started",
+      upload: "Upload Photo"
+    },
+    photo: {
+      edit: "Edit Photo",
+      delete: "Delete Photo",
+      location: "Location",
+      description: "Description",
+      confirmDelete: "Are you sure you want to delete this photo?",
+      deleteWarning: "This action cannot be undone"
+    }
+  },
+          alerts: {
+            "title": "Aurora Alert Preferences",
+            "locationLabel": "Alert Location",
+            "searchLocation": "Search location",
+            "kpThreshold": "KP Index Threshold",
+            "enableAlerts": "Enable Aurora Alerts",
+            "savePreferences": "Save Preferences",
+            "fetchError": "Error fetching preferences",
+            "locationSearchError": "Failed to search locations",
+            "locationRequired": "Please select a location",
+            "saveSuccess": "Alert preferences saved successfully",
+            "saveError": "Failed to save preferences. Please try again."
+          },
           menu: {
             gallery: 'Gallery',
             glossary: 'Glossary',
@@ -173,6 +232,7 @@ i18n
             glossary: 'Glossary',
             webCam: 'WebCam',
             gallery: 'Gallery',
+            TourismGuide:'Tourism Guide',
             bestLocations: 'Best Locations',
             profile:'Profile',
             logout:'Log out'
@@ -266,6 +326,69 @@ i18n
             }
             ]
           },
+          
+            alerts: {
+              "title": "औरोरा अलर्ट प्राथमिकताएं",
+              "locationLabel": "अलर्ट स्थान",
+              "searchLocation": "स्थान खोजें",
+              "kpThreshold": "केपी इंडेक्स थ्रेशोल्ड",
+              "enableAlerts": "औरोरा अलर्ट सक्षम करें",
+              "savePreferences": "प्राथमिकताएं सहेजें",
+              "fetchError": "प्राथमिकताएं प्राप्त करने में त्रुटि",
+              "locationSearchError": "स्थान खोजने में विफल",
+              "locationRequired": "कृपया एक स्थान चुनें",
+              "saveSuccess": "अलर्ट प्राथमिकताएं सफलतापूर्वक सहेजी गईं",
+              "saveError": "प्राथमिकताएं सहेजने में विफल। कृपया पुनः प्रयास करें।"
+            
+          },
+          profile: {
+            personalInfo: 'व्यक्तिगत जानकारी',
+            firstName: 'पहला नाम',
+            lastName: 'अंतिम नाम',
+            alertPreferences: 'ऑरोरा अलर्ट प्राथमिकताएं',
+            deleteAccount: 'खाता हटाएं',
+            deleteAccountTitle: 'खाता हटाएं',
+            deleteAccountConfirm: 'क्या आप वाकई अपना खाता हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती.',
+            deleting: 'हटाया जा रहा है...',
+            cancel: 'रद्द करें',
+            delete: 'हटाएं',
+            deleteConfirmation : "क्या आप वाकई अपना खाता हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती."
+          },
+          
+          
+          gallery: {
+            title: {
+              main: "ऑरोरा गैलरी",
+              personal: "मेरी गैलरी"
+            },
+            subtitle: {
+              main: "आकर्षक ऑरोरा तस्वीरें खोजें और साझा करें",
+              personal: "अपनी ऑरोरा तस्वीरों को प्रबंधित करें"
+            },
+            actions: {
+              upload: "अपलोड करें",
+              search: "स्थान के अनुसार फ़ोटो खोजें...",
+              grid: "ग्रिड व्यू",
+              list: "सूची व्यू",
+              delete: "हटाएं",
+              edit: "संपादित करें",
+              save: "परिवर्तन सहेजें",
+              cancel: "रद्द करें"
+            },
+            empty: {
+              title: "अभी तक कोई फ़ोटो नहीं",
+              description: "शुरू करने के लिए अपना पहला ऑरोरा फ़ोटो अपलोड करें",
+              upload: "फ़ोटो अपलोड करें"
+            },
+            photo: {
+              edit: "फ़ोटो संपादित करें",
+              delete: "फ़ोटो हटाएं",
+              location: "स्थान",
+              description: "विवरण",
+              confirmDelete: "क्या आप वाकई इस फ़ोटो को हटाना चाहते हैं?",
+              deleteWarning: "यह क्रिया पूर्ववत नहीं की जा सकती"
+            }
+          },          
           webCam:{
             title:"ऑरोरा देखें - वेबकैम्स"
           },
@@ -377,6 +500,7 @@ i18n
             glossary: ' शब्दकोश',
             webCam: 'वेबकैम',
             gallery: 'गैलरी',
+            TourismGuide:'पर्यटन गाइड',
             bestLocations: 'सर्वश्रेष्ठ स्थान',
             profile:'प्रोफ़ाइल',
             logout:'लॉग आउट'
@@ -435,6 +559,67 @@ i18n
               "question": "ಆರೋರಲ್ ಮುನ್ಸೂಚನೆ ಏನು?",
               "answer": "ಆರೋರಲ್ ಮುನ್ಸೂಚನೆ ಸೌರ ಮತ್ತು ಭೂ-ಚುಂಬಕ ಡೇಟಾದ ಆಧಾರದ ಮೇಲೆ ಆರೋರಾಗಳ ಸಂಭವನೆ ಮತ್ತು ತೀವ್ರತೆಯ ಬಗ್ಗೆ ಮುನ್ಸೂಚನೆಗಳನ್ನು ಒದಗಿಸುತ್ತದೆ."
           }]
+          },
+          
+            alerts: {
+              "title": "ಅರೋರ ಅಲರ್ಟ್ ಆದ್ಯತೆಗಳು",
+              "locationLabel": "ಅಲರ್ಟ್ ಸ್ಥಳ",
+              "searchLocation": "ಸ್ಥಳ ಹುಡುಕಿ",
+              "kpThreshold": "ಕೆಪಿ ಇಂಡೆಕ್ಸ್ ಥ್ರೆಶೋಲ್ಡ್",
+              "enableAlerts": "ಅರೋರ ಅಲರ್ಟ್‌ಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ",
+              "savePreferences": "ಆದ್ಯತೆಗಳನ್ನು ಉಳಿಸಿ",
+              "fetchError": "ಆದ್ಯತೆಗಳನ್ನು ಪಡೆಯುವಲ್ಲಿ ದೋಷ",
+              "locationSearchError": "ಸ್ಥಳಗಳನ್ನು ಹುಡುಕಲು ವಿಫಲವಾಗಿದೆ",
+              "locationRequired": "ದಯವಿಟ್ಟು ಒಂದು ಸ್ಥಳವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ",
+              "saveSuccess": "ಅಲರ್ಟ್ ಆದ್ಯತೆಗಳು ಯಶಸ್ವಿಯಾಗಿ ಉಳಿಸಲಾಗಿದೆ",
+              "saveError": "ಆದ್ಯತೆಗಳನ್ನು ಉಳಿಸಲು ವಿಫಲವಾಗಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ."
+            },
+          
+          gallery: {
+            title: {
+              main: "ಅರೋರಾ ಗ್ಯಾಲರಿ",
+              personal: "ನನ್ನ ಗ್ಯಾಲರಿ"
+            },
+            subtitle: {
+              main: "ಅದ್ಭುತ ಅರೋರಾ ಫೋಟೋಗಳನ್ನು ಹುಡುಕಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ",
+              personal: "ನಿಮ್ಮ ಅರೋರಾ ಫೋಟೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಪ್ರದರ್ಶಿಸಿ"
+            },
+            actions: {
+              upload: "ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+              search: "ಸ್ಥಳದ ಮೂಲಕ ಫೋಟೋಗಳನ್ನು ಹುಡುಕಿ...",
+              grid: "ಗ್ರಿಡ್ ವೀಕ್ಷಣೆ",
+              list: "ಪಟ್ಟಿ ವೀಕ್ಷಣೆ",
+              delete: "ಅಳಿಸಿ",
+              edit: "ಸಂಪಾದಿಸಿ",
+              save: "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ",
+              cancel: "ರದ್ದುಮಾಡಿ"
+            },
+            empty: {
+              title: "ಇನ್ನೂ ಯಾವುದೇ ಫೋಟೋಗಳಿಲ್ಲ",
+              description: "ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಮೊದಲ ಅರೋರಾ ಫೋಟೋವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+              upload: "ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ"
+            },
+            photo: {
+              edit: "ಫೋಟೋ ಸಂಪಾದಿಸಿ",
+              delete: "ಫೋಟೋ ಅಳಿಸಿ",
+              location: "ಸ್ಥಳ",
+              description: "ವಿವರಣೆ",
+              confirmDelete: "ನೀವು ಖಚಿತವಾಗಿ ಈ ಫೋಟೋವನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?",
+              deleteWarning: "ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
+            }
+          },
+          profile: {
+            personalInfo: 'ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ',
+            firstName: 'ಮೊದಲ ಹೆಸರು',
+            lastName: 'ಕೊನೆಯ ಹೆಸರು',
+            alertPreferences: 'ಅರೋರಾ ಅಲರ್ಟ್ ಪ್ರಾಶಸ್ತ್ಯಗಳು',
+            deleteAccount: 'ಖಾತೆಯನ್ನು ಅಳಿಸಿ',
+            deleteAccountTitle: 'ಖಾತೆಯನ್ನು ಅಳಿಸಿ',
+            deleteAccountConfirm: 'ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.',
+            deleting: 'ಅಳಿಸಲಾಗುತ್ತಿದೆ...',
+            cancel: 'ರದ್ದುಮಾಡಿ',
+            delete: 'ಅಳಿಸಿ',
+            deleteConfirmation : "ನೀವು ಖಚಿತವಾಗಿ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ."
           },
           webCam:{
             title:"ಔರೊರಾವನ್ನು ನೋಡಿ - ವೆಬ್‌ಕ್ಯಾಮ್‌ಗಳು"
@@ -529,11 +714,8 @@ i18n
             precipitation: 'ಮಳೆ',
             windSpeed: 'ಗಾಳಿಯ ವೇಗ',
             uvIndex: 'ಯುವಿ ಸೂಚ್ಯಂಕ',
-
-            title: 'ಅರೋರಾ ಮುನ್ಸೂಚನೆ',
-            probability: 'ಅರೋರಾ ಸಂಭವನೀಯತೆ'
-
-
+            title: 'ಅರೋರಾ ಮುನ್ಸೂಚನೆ', 
+            probability : 'ಅರೋರಾ ಸಂಭಾವನೆ',
           },
           units: {
             kmPerSec: 'ಕಿ.ಮೀ/ಸೆ',
@@ -547,6 +729,7 @@ i18n
             glossary: 'ಪದಕೋಶ',
             webCam: 'ವೆಬ್‌ಕ್ಯಾಮ್',
             gallery: 'ಗ್ಯಾಲರಿ',
+            TourismGuide:'ಪ್ರವಾಸೋದ್ಯಮ ಮಾರ್ಗದರ್ಶಿ',
             bestLocations: 'ಉತ್ತಮ ಸ್ಥಳಗಳು',
             profile:'ಪ್ರೊಫೈಲ್',
             logout:'ಲಾಗ್ ಔಟ್'

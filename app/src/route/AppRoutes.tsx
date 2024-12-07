@@ -17,6 +17,7 @@ import Glossary from "../pages/glossary";
 import Data from "../pages/DataPage";
 import AuroraPredictionPage from "../pages/auroraPredPage";
 import WebCamPage from "../pages/WebCamPage";
+import AuroraPredictionService from "../pages/TourismGuide";
 
 // Types
 interface Location {
@@ -76,6 +77,8 @@ export const AppRoutes = ({
           </PublicRoute>
         }
       />
+
+      
       <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
       <Route path="/auth/success" element={<GoogleAuthCallback />} />
 
@@ -94,6 +97,19 @@ export const AppRoutes = ({
           </ProtectedRoute>
         }
       />
+
+<Route
+        path="/Tourism-Guide"
+        element={
+          <ProtectedRoute>
+            <>
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
+              <AuroraPredictionService />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
       <Route
         path="/gallery"
         element={

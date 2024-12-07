@@ -42,6 +42,7 @@ interface NavbarProps {
 
 declare var window: any;
 
+
 const languages = [
   { code: "en", name: "English" },
   { code: "hi", name: "हिंदी" },
@@ -59,6 +60,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
     { key: "liveData", path: "live-data" },
     { key: "webCam", path: "webcam" },
     { key: "bestLocations", path: "best-locations" },
+    { key: "TourismGuide", path: "Tourism-Guide"},
   ];
 
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);

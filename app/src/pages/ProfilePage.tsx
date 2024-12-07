@@ -13,31 +13,33 @@ import {
   CircularProgress,
   Avatar,
   useTheme,
-  alpha,
   Divider,
+  Paper,
 } from "@mui/material";
 
-import { DeleteOutline, EmailOutlined, PersonOutline } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { authService } from '../services/auth';
-import AlertPreferencesComponent from '../components/AlertPreferences';
+import { DeleteOutline, EmailOutlined } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import { authService } from "../services/auth";
+import AlertPreferencesComponent from "../components/AlertPreferences";
+import { useTranslation } from "react-i18next";
 
 const ProfilePage = () => {
+  const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
   const user = authService.getCurrentUser();
   const [openDialog, setOpenDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(null);
 
   const handleDeleteAccount = async () => {
     setLoading(true);
     setError(null);
     try {
       await authService.deleteAccount();
-      navigate('/login', { replace: true });
+      navigate("/login", { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete account');
+      setError(err instanceof Error ? err.message : t('profile.deleteError'));
     } finally {
       setLoading(false);
       setOpenDialog(false);
@@ -45,133 +47,145 @@ const ProfilePage = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', pt: "100px" }}>
-      <Container maxWidth="md">
-        <Box
-          sx={{
-            bgcolor: 'rgba(10, 25, 41, 0.7)',
-            borderRadius: '16px',
-            boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)',
-            backdropFilter: 'blur(10px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-          }}
-        >
-          {/* Profile Header */}
-          <Box
+    <Box sx={{ 
+      minHeight: "100vh", 
+      pt: "64px",
+      overflowY: "auto"
+    }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box sx={{ display: "flex", gap: 4, flexDirection: { xs: "column", md: "row" } }}>
+          {/* Left Sidebar */}
+          <Paper 
+            elevation={0}
             sx={{
-              p: 4,
-              textAlign: 'center',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+              flex: "0 0 300px",
+              p: 3,
+              borderRadius: 2,
+              bgcolor: "background.paper",
+              border: "1px solid",
+              borderColor: "divider",
             }}
           >
-            <Avatar
+            <Box sx={{ textAlign: "center", mb: 4 }}>
+              <Avatar
+                sx={{
+                  width: 120,
+                  height: 120,
+                  mx: "auto",
+                  mb: 2,
+                  fontSize: "3rem",
+                  background: "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+                }}
+              >
+                {user?.firstName?.[0]?.toUpperCase()}
+              </Avatar>
+              <Typography variant="h5" sx={{ mb: 1 }}>
+                {user?.firstName} {user?.lastName}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: "text.secondary",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1,
+                }}
+              >
+                <EmailOutlined fontSize="small" />
+                {user?.email}
+              </Typography>
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Button
+              variant="outlined"
+              color="error"
+              fullWidth
+              onClick={() => setOpenDialog(true)}
+              startIcon={<DeleteOutline />}
+              sx={{ mt: 2 }}
+            >
+              {t('profile.deleteAccount')}
+            </Button>
+          </Paper>
+
+          {/* Main Content */}
+          <Box sx={{ flex: 1 }}>
+            <Paper
+              elevation={0}
               sx={{
-                width: 120,
-                height: 120,
-                bgcolor: '#2196f3',
-                fontSize: '3rem',
-                margin: '0 auto',
-                border: '4px solid rgba(255, 255, 255, 0.2)',
+                p: 3,
+                mb: 4,
+                borderRadius: 2,
+                bgcolor: "background.paper",
+                border: "1px solid",
+                borderColor: "divider",
               }}
             >
-              {user?.firstName?.[0]?.toUpperCase()}
-            </Avatar>
-            <Typography variant="h4" sx={{ mt: 3, mb: 1, color: 'white' }}>
-              {user?.firstName} {user?.lastName}
-            </Typography>
-            <Typography sx={{ 
-              color: 'rgba(255, 255, 255, 0.7)', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center', 
-              gap: 1 
-            }}>
-              <EmailOutlined fontSize="small" />
-              {user?.email}
-            </Typography>
-          </Box>
-
-          {/* Profile Content */}
-          <Box sx={{ p: 4 }}>
-            {/* User Details */}
-            <Box sx={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(2, 1fr)', 
-              gap: 3, 
-              mb: 4 
-            }}>
-              <Box>
-                <Typography sx={{ mb: 1, color: 'rgba(255, 255, 255, 0.7)' }}>
-                  First Name
-                </Typography>
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                {t('profile.personalInfo')}
+              </Typography>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)" },
+                  gap: 3,
+                }}
+              >
                 <TextField
                   fullWidth
+                  label={t('profile.firstName')}
                   value={user?.firstName}
                   disabled
                   variant="outlined"
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      color: 'white',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    }
-                  }}
                 />
-              </Box>
-
-              <Box>
-                <Typography sx={{ mb: 1, color: 'rgba(255, 255, 255, 0.7)' }}>
-                  Last Name
-                </Typography>
                 <TextField
                   fullWidth
+                  label={t('profile.lastName')}
                   value={user?.lastName}
                   disabled
                   variant="outlined"
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      color: 'white',
-                      backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    }
-                  }}
                 />
               </Box>
-            </Box>
+            </Paper>
 
-            <Divider sx={{ my: 4, borderColor: 'rgba(255, 255, 255, 0.1)' }} />
-
-            {/* Alert Preferences */}
-            <AlertPreferencesComponent />
-
-            {/* Delete Account */}
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
-              <Button
-                variant="contained"
-                color="error"
-                onClick={() => setOpenDialog(true)}
-                startIcon={<DeleteOutline />}
-              >
-                Delete Account
-              </Button>
-            </Box>
+            {/* Alert Preferences Section */}
+            <Paper
+              elevation={0}
+              sx={{
+                p: 3,
+                borderRadius: 2,
+                bgcolor: "background.paper",
+                border: "1px solid",
+                borderColor: "divider",
+              }}
+            >
+              <Typography variant="h6" sx={{ mb: 3 }}>
+                {t('profile.alertPreferences')}
+              </Typography>
+              <AlertPreferencesComponent />
+            </Paper>
           </Box>
         </Box>
 
         {/* Delete Account Dialog */}
-        <Dialog 
-          open={openDialog} 
+        <Dialog
+          open={openDialog}
           onClose={() => !loading && setOpenDialog(false)}
           PaperProps={{
             sx: {
-              bgcolor: 'rgba(10, 25, 41, 0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }
+              bgcolor: "background.paper",
+              backdropFilter: "blur(20px)",
+              borderRadius: 2,
+            },
           }}
         >
-          <DialogTitle>Delete Account</DialogTitle>
+          <DialogTitle>{t('profile.deleteAccountTitle')}</DialogTitle>
           <DialogContent>
-            <Typography sx={{ color: 'white' }}>
-              Are you sure you want to delete your account? This action cannot be undone.
+            <Typography>
+              {t('profile.deleteConfirmation')}
             </Typography>
             {error && (
               <Alert severity="error" sx={{ mt: 2 }}>
@@ -181,7 +195,7 @@ const ProfilePage = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenDialog(false)} disabled={loading}>
-              Cancel
+              {t('profile.cancel')}
             </Button>
             <Button
               onClick={handleDeleteAccount}
@@ -190,7 +204,7 @@ const ProfilePage = () => {
               disabled={loading}
               startIcon={loading ? <CircularProgress size={20} /> : <DeleteOutline />}
             >
-              {loading ? "Deleting..." : "Delete Account"}
+              {loading ? t('profile.deleting') : t('profile.delete')}
             </Button>
           </DialogActions>
         </Dialog>
