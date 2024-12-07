@@ -8,6 +8,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Footer from './components/Footer';
 import { Box } from "@mui/material";
 
+// Components 
 // Import the new theme and routes
 import { appTheme } from "./themes/theme";
 import { AppRoutes } from "./route/AppRoutes";
