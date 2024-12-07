@@ -2,6 +2,7 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import app from "./service/app.js";
+import initScheduler from './service/scheduler.js';
 
 dotenv.config();
 
@@ -51,6 +52,7 @@ const startServer = async () => {
   try {
     await connectDB();
 
+    initScheduler();
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

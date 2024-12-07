@@ -343,6 +343,124 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /api/alerts/preferences:
+    post:
+      summary: Create alert preferences
+      tags:
+        - Alert Preferences
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlertPreferenceRequest"
+      responses:
+        "201":
+          description: Alert preferences created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertPreferenceResponse"
+        "400":
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      summary: Get user's alert preferences
+      tags:
+        - Alert Preferences
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Successfully retrieved alert preferences
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertPreferenceResponse"
+        "401":
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not Found - Alert preferences not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    put:
+      summary: Update alert preferences
+      tags:
+        - Alert Preferences
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlertPreferenceUpdateRequest"
+      responses:
+        "200":
+          description: Alert preferences updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AlertPreferenceResponse"
+        "400":
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/alerts/test-email:
+    post:
+      summary: Test alert email notification
+      tags:
+        - Alert Preferences
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Test email sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Test email sent successfully"
+        "401":
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   schemas:
     SignupRequest:
@@ -451,6 +569,98 @@ components:
           type: string
           format: date-time
           example: "2024-03-15T22:30:00Z"
+    AlertPreferenceRequest:
+      type: object
+      properties:
+        kpThreshold:
+          type: number
+          minimum: 0
+          maximum: 9
+          description: Minimum Kp index value to trigger alerts
+          example: 5
+        email:
+          type: string
+          format: email
+          description: Email address for receiving alerts
+        location:
+          type: object
+          properties:
+            cityName:
+              type: string
+              description: Name of the city
+              example: "Test City"
+            latitude:
+              type: number
+              description: Latitude coordinate
+              example: 60.1695
+            longitude:
+              type: number
+              description: Longitude coordinate
+              example: 24.9354
+        isEnabled:
+          type: boolean
+          description: Whether alerts are enabled
+          default: true
+      required:
+        - kpThreshold
+        - email
+        - location
+
+    AlertPreferenceUpdateRequest:
+      type: object
+      properties:
+        kpThreshold:
+          type: number
+          minimum: 0
+          maximum: 9
+          description: Minimum Kp index value to trigger alerts
+        isEnabled:
+          type: boolean
+          description: Whether alerts are enabled
+
+    AlertPreferenceResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            userId:
+              type: string
+              example: "user123"
+            kpThreshold:
+              type: number
+              example: 5
+            email:
+              type: string
+              example: "user@example.com"
+            location:
+              type: object
+              properties:
+                cityName:
+                  type: string
+                  example: "Test City"
+                latitude:
+                  type: number
+                  example: 60.1695
+                longitude:
+                  type: number
+                  example: 24.9354
+            isEnabled:
+              type: boolean
+              example: true
+            lastNotificationSent:
+              type: string
+              format: date-time
+              nullable: true
+            createdAt:
+              type: string
+              format: date-time
+            updatedAt:
+              type: string
+              format: date-time
 
   responses:
     BadRequest:

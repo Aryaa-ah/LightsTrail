@@ -6,6 +6,8 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import Footer from './components/Footer';
+import { Box } from "@mui/material";
 
 import { theme } from './theme/theme';
 // Components 
@@ -27,22 +29,28 @@ function App() {
     latitude: 0,
     longitude: 0,
   });
+return(
+  <div className="min-h-screen bg-background-default">
+  <ThemeProvider theme={appTheme}>
+    <CssBaseline />
+    <Provider store={store}>
+      <Router>
+        <AppRoutes 
+          location={location} 
+          setLocation={setLocation} 
+        />
+      </Router>
 
-  return (
-    <div className="min-h-screen bg-background-default">
-      <ThemeProvider theme={appTheme}>
-        <CssBaseline />
-        <Provider store={store}>
-          <Router>
-            <AppRoutes 
-              location={location} 
-              setLocation={setLocation} 
-            />
-          </Router>
-        </Provider>
-      </ThemeProvider>
-    </div>
-  );
+
+
+
+      <Footer />
+    </Provider>
+  </ThemeProvider>
+</div>
+
+);
 }
+
 
 export default App;
