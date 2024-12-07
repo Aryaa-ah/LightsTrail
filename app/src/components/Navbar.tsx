@@ -142,6 +142,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                 display: { xs: "none", md: "flex" },
                 fontFamily: "monospace",
                 fontWeight: 700,
+                fontSize:"1.4em",
                 color: "inherit",
                 textDecoration: "none",
                 cursor: "pointer",
@@ -171,6 +172,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                 {pages.map((page) => (
                   <MenuItem
                     key={page.key}
+                    
                     onClick={() => handleNavigation(page.path)}
                   >
                     <Typography textAlign="center">
@@ -191,6 +193,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                     color: "white",
                     display: "block",
                     marginLeft: "20px",
+                    fontSize : "1.25em"
                   }}
                 >
                   {t(`navbar.${page.key}`)}
