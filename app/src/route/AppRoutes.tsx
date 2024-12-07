@@ -151,7 +151,7 @@ export const AppRoutes = ({
       />
 
       <Route
-        path="/data"
+        path="/live-data"
         element={
           <ProtectedRoute>
             <>

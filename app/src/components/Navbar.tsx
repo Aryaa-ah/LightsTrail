@@ -42,7 +42,6 @@ interface NavbarProps {
 
 declare var window: any;
 
-
 const languages = [
   { code: "en", name: "English" },
   { code: "hi", name: "हिंदी" },
@@ -51,43 +50,43 @@ const languages = [
 
 export default function Navbar({ location, setLocation }: NavbarProps) {
   const navigate = useNavigate();
- 
-
-//  const pages = [gallery, "Glossary", "Data", "WebCam", "Best-Locations"];
   const { i18n, t } = useTranslation();
   const { user } = useAuth();
+
   const pages = [
-    t('navbar.gallery'),
-    t('navbar.glossary'),
-    t('navbar.liveData'),
-    t('navbar.webCam'),
-    t('navbar.bestLocations')
+    { key: "gallery", path: "gallery" },
+    { key: "glossary", path: "glossary" },
+    { key: "liveData", path: "live-data" },
+    { key: "webCam", path: "webcam" },
+    { key: "bestLocations", path: "best-locations" },
   ];
+
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
   const [anchorElLang, setAnchorElLang] = useState<null | HTMLElement>(null);
   const [isLocationDialogOpen, setLocationDialogOpen] = useState(false);
+  const [scrollPosition, setScrollPosition] = useState(0);
 
   const handleOpenMenu =
     (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) =>
     (event: React.MouseEvent<HTMLElement>) => {
       setter(event.currentTarget);
     };
+
   const handleCloseMenu =
     (setter: React.Dispatch<React.SetStateAction<HTMLElement | null>>) =>
     () => {
       setter(null);
     };
-  const [scrollPosition, setScrollPosition] = useState(0);
 
   const handleLanguageChange = (languageCode: string) => {
     i18n.changeLanguage(languageCode);
     setAnchorElLang(null);
   };
 
-  const handleNavigation = (page: string) => {
+  const handleNavigation = (path: string) => {
     setAnchorElNav(null);
-    navigate(`/${page.toLowerCase()}`);
+    navigate(`/${path}`);
   };
 
   const handleLogout = () => {
@@ -109,10 +108,12 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
       };
     }
   }, []);
+
   const appBarStyle = {
-    backgroundColor: `rgba(0, 0, 0, ${Math.min(scrollPosition / 300, 0.8)})`, // Adjust opacity based on scroll
+    backgroundColor: `rgba(0, 0, 0, ${Math.min(scrollPosition / 300, 0.8)})`,
     transition: "background-color 0.3s ease",
   };
+
   return (
     <>
       <AppBar position="fixed" style={appBarStyle}>
@@ -166,8 +167,13 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                 sx={{ display: { xs: "block", md: "none" } }}
               >
                 {pages.map((page) => (
-                  <MenuItem key={page} onClick={() => handleNavigation(page)}>
-                    <Typography textAlign="center">{page}</Typography>
+                  <MenuItem
+                    key={page.key}
+                    onClick={() => handleNavigation(page.path)}
+                  >
+                    <Typography textAlign="center">
+                      {t(`navbar.${page.key}`)}
+                    </Typography>
                   </MenuItem>
                 ))}
               </Menu>
@@ -176,8 +182,8 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
             <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
                 <Button
-                  key={page}
-                  onClick={() => handleNavigation(page)}
+                  key={page.key}
+                  onClick={() => handleNavigation(page.path)}
                   sx={{
                     my: 2,
                     color: "white",
@@ -185,7 +191,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                     marginLeft: "20px",
                   }}
                 >
-                  {page}
+                  {t(`navbar.${page.key}`)}
                 </Button>
               ))}
             </Box>
@@ -247,9 +253,11 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                   onClose={handleCloseMenu(setAnchorElUser)}
                 >
                   <MenuItem onClick={() => navigate("/profile")}>
-                  {t("navbar.profile")}
+                    {t("navbar.profile")}
                   </MenuItem>
-                  <MenuItem onClick={handleLogout}>{t("navbar.logout")}</MenuItem>
+                  <MenuItem onClick={handleLogout}>
+                    {t("navbar.logout")}
+                  </MenuItem>
                 </Menu>
               </Box>
             )}
