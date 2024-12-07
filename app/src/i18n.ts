@@ -82,6 +82,39 @@ i18n
     }
     ]
   },
+  gallery: {
+    title: {
+      main: "Aurora Gallery",
+      personal: "My Gallery"
+    },
+    subtitle: {
+      main: "Discover and share stunning aurora captures",
+      personal: "Manage and showcase your aurora captures"
+    },
+    actions: {
+      upload: "Upload",
+      search: "Search photos by location...",
+      grid: "Grid view",
+      list: "List view",
+      delete: "Delete",
+      edit: "Edit",
+      save: "Save Changes",
+      cancel: "Cancel"
+    },
+    empty: {
+      title: "No Photos Yet",
+      description: "Upload your first aurora photo to get started",
+      upload: "Upload Photo"
+    },
+    photo: {
+      edit: "Edit Photo",
+      delete: "Delete Photo",
+      location: "Location",
+      description: "Description",
+      confirmDelete: "Are you sure you want to delete this photo?",
+      deleteWarning: "This action cannot be undone"
+    }
+  },
           menu: {
             gallery: 'Gallery',
             glossary: 'Glossary',
@@ -183,6 +216,39 @@ i18n
             }
             ]
           },
+          gallery: {
+            title: {
+              main: "ऑरोरा गैलरी",
+              personal: "मेरी गैलरी"
+            },
+            subtitle: {
+              main: "आकर्षक ऑरोरा तस्वीरें खोजें और साझा करें",
+              personal: "अपनी ऑरोरा तस्वीरों को प्रबंधित करें"
+            },
+            actions: {
+              upload: "अपलोड करें",
+              search: "स्थान के अनुसार फ़ोटो खोजें...",
+              grid: "ग्रिड व्यू",
+              list: "सूची व्यू",
+              delete: "हटाएं",
+              edit: "संपादित करें",
+              save: "परिवर्तन सहेजें",
+              cancel: "रद्द करें"
+            },
+            empty: {
+              title: "अभी तक कोई फ़ोटो नहीं",
+              description: "शुरू करने के लिए अपना पहला ऑरोरा फ़ोटो अपलोड करें",
+              upload: "फ़ोटो अपलोड करें"
+            },
+            photo: {
+              edit: "फ़ोटो संपादित करें",
+              delete: "फ़ोटो हटाएं",
+              location: "स्थान",
+              description: "विवरण",
+              confirmDelete: "क्या आप वाकई इस फ़ोटो को हटाना चाहते हैं?",
+              deleteWarning: "यह क्रिया पूर्ववत नहीं की जा सकती"
+            }
+          },          
           menu: {
             gallery: 'गैलरी',
             glossary: 'शब्दकोश',
@@ -271,6 +337,40 @@ i18n
               "answer": "ಆರೋರಲ್ ಮುನ್ಸೂಚನೆ ಸೌರ ಮತ್ತು ಭೂ-ಚುಂಬಕ ಡೇಟಾದ ಆಧಾರದ ಮೇಲೆ ಆರೋರಾಗಳ ಸಂಭವನೆ ಮತ್ತು ತೀವ್ರತೆಯ ಬಗ್ಗೆ ಮುನ್ಸೂಚನೆಗಳನ್ನು ಒದಗಿಸುತ್ತದೆ."
           }]
           },
+          
+          gallery: {
+            title: {
+              main: "ಅರೋರಾ ಗ್ಯಾಲರಿ",
+              personal: "ನನ್ನ ಗ್ಯಾಲರಿ"
+            },
+            subtitle: {
+              main: "ಅದ್ಭುತ ಅರೋರಾ ಫೋಟೋಗಳನ್ನು ಹುಡುಕಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ",
+              personal: "ನಿಮ್ಮ ಅರೋರಾ ಫೋಟೋಗಳನ್ನು ನಿರ್ವಹಿಸಿ ಮತ್ತು ಪ್ರದರ್ಶಿಸಿ"
+            },
+            actions: {
+              upload: "ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+              search: "ಸ್ಥಳದ ಮೂಲಕ ಫೋಟೋಗಳನ್ನು ಹುಡುಕಿ...",
+              grid: "ಗ್ರಿಡ್ ವೀಕ್ಷಣೆ",
+              list: "ಪಟ್ಟಿ ವೀಕ್ಷಣೆ",
+              delete: "ಅಳಿಸಿ",
+              edit: "ಸಂಪಾದಿಸಿ",
+              save: "ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಿ",
+              cancel: "ರದ್ದುಮಾಡಿ"
+            },
+            empty: {
+              title: "ಇನ್ನೂ ಯಾವುದೇ ಫೋಟೋಗಳಿಲ್ಲ",
+              description: "ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಮೊದಲ ಅರೋರಾ ಫೋಟೋವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+              upload: "ಫೋಟೋ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ"
+            },
+            photo: {
+              edit: "ಫೋಟೋ ಸಂಪಾದಿಸಿ",
+              delete: "ಫೋಟೋ ಅಳಿಸಿ",
+              location: "ಸ್ಥಳ",
+              description: "ವಿವರಣೆ",
+              confirmDelete: "ನೀವು ಖಚಿತವಾಗಿ ಈ ಫೋಟೋವನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ?",
+              deleteWarning: "ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ"
+            }
+          },
           menu: {
             gallery: 'ಗ್ಯಾಲರಿ',
             glossary: 'ಪದಕೋಶ',
@@ -295,7 +395,7 @@ i18n
             windSpeed: 'ಗಾಳಿಯ ವೇಗ',
             uvIndex: 'ಯುವಿ ಸೂಚ್ಯಂಕ',
             title: 'ಅರೋರಾ ಮುನ್ಸೂಚನೆ', 
-            probability : 'ಅರೋರಾ ಸಂಭಾವನೆ'
+            probability : 'ಅರೋರಾ ಸಂಭಾವನೆ',
           },
           units: {
             kmPerSec: 'ಕಿ.ಮೀ/ಸೆ',
