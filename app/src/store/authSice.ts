@@ -1,8 +1,7 @@
-// src/store/slices/authSlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import type { User } from "../hooks/useAuth";
 
-interface AuthState {
+export interface AuthState {
   user: User | null;
   token: string | null;
   loading: boolean;
@@ -21,7 +20,6 @@ const initialState: AuthState = {
 export const login = createAsyncThunk(
   "auth/login",
   async (credentials: { email: string; password: string }) => {
-    // Implement your login API call here
     const response = await fetch("/api/login", {
       method: "POST",
       headers: {

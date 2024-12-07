@@ -58,7 +58,7 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ starCount = 1000 }) => 
     // Animation loop
     const animate = () => {
       // Clear canvas
-      ctx.fillStyle = 'rgba(2, 6, 23, 1)';
+      ctx.fillStyle = 'rgba(0, 0, 0, 1)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Draw and update stars

@@ -7,6 +7,8 @@ import {AuroraData} from '../types/auroraDashboard.ts';
 
 import { RootState, AppDispatch } from '../store/index';
 import { fetchAuroraData } from '../store/AuroraDashboardSlice';
+import AuroraMap from '../components/latestData';
+import MapWithAurora from '../components/AuroraMap.tsx';
 interface HomeProps{
     latitude: number,
     longitude: number
@@ -34,10 +36,13 @@ const Home = ({ latitude, longitude }: HomeProps) => {
         
         <NorthernHemisphere/>
         <SouthernHemisphere/> */
+        
         <div>
       
       
-      <MapboxMap data={data } latitude={latitude} longitude={longitude} />
+      {/* <MapboxMap data={data } latitude={latitude} longitude={longitude} /> */}
+      {/* <AuroraMap/> */}
+      <MapWithAurora data={data } latitude={latitude} longitude={longitude}/>
     </div>
         }
       </Box>

@@ -219,7 +219,7 @@ export default function LoginPage() {
 
         <Typography variant="body2" textAlign="center" sx={{ color: "white" }}>
           Don't have an account?{" "}
-          <Link to="/signup" style={{ color: "#90caf9" }}>
+          <Link to="/auth/signup" style={{ color: "#90caf9" }}>
             Sign up
           </Link>
         </Typography>
