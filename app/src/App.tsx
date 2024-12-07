@@ -8,6 +8,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import Footer from './components/Footer';
 import { Box } from "@mui/material";
+import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 
 import { theme } from './theme/theme';
 // Components 
@@ -40,10 +41,7 @@ return(
           setLocation={setLocation} 
         />
       </Router>
-
-
-
-
+      <PWAInstallPrompt />
       <Footer />
     </Provider>
   </ThemeProvider>
