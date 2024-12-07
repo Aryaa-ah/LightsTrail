@@ -1,6 +1,6 @@
 // src/features/auroraPrediction/pages/AuroraPredictionPage.tsx
 
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState, useCallback } from "react";
 import { Box, Typography, Container } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store";
@@ -8,11 +8,16 @@ import { fetchViewingSpots, setSelectedSpot } from "../store/AuroraPredSlice";
 import AuroraBestLocations from "../components/auroraBestLocations";
 import PredictionList from "../components/PredictionList";
 import type { ViewingSpot } from "../types/auroraPred.types";
+import StarBackground from "../components/StarBackground";
+import { debounce } from 'lodash';
 
 const AuroraPredictionPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { viewingSpots, selectedSpot, loading, error, lastUpdated } =
     useSelector((state: RootState) => state.auroraPrediction);
+
+  const [page, setPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   useEffect(() => {
     dispatch(fetchViewingSpots());
@@ -27,6 +32,17 @@ const AuroraPredictionPage: React.FC = () => {
   const handleSpotSelect = (spot: ViewingSpot) => {
     dispatch(setSelectedSpot(spot));
   };
+
+  const paginatedSpots = useMemo(() => {
+    return viewingSpots.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  }, [viewingSpots, page]);
+
+  const debouncedSpotSelect = useCallback(
+    debounce((spot) => {
+      handleSpotSelect(spot);
+    }, 300),
+    []
+  );
 
   if (error) {
     return (
@@ -47,14 +63,33 @@ const AuroraPredictionPage: React.FC = () => {
   return (
     <Box
       sx={{
+        position: 'relative',
         minHeight: "100vh",
         pt: 10,
         pb: 4,
         px: 3,
-        bgcolor: "background.default",
+        bgcolor: "transparent",  
       }}
     >
-      <Container maxWidth="xl">
+      <StarBackground starCount={1000} />
+      <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          bgcolor: 'rgba(0,0,0,0.4)',
+          zIndex: 1,
+        }}
+      />
+      <Container 
+        maxWidth="xl"
+        sx={{ 
+          position: 'relative',
+          zIndex: 2 
+        }}
+      >
         <Typography
           variant="h4"
           sx={{
@@ -78,18 +113,22 @@ const AuroraPredictionPage: React.FC = () => {
         >
           <Box sx={{ flex: { md: "0 0 66.666667%" }, width: "100%" }}>
             <AuroraBestLocations
-              spots={viewingSpots}
+              spots={paginatedSpots}
               selectedSpot={selectedSpot}
-              onSpotSelect={handleSpotSelect}
+              onSpotSelect={debouncedSpotSelect}
+              loading={loading}
             />
           </Box>
           <Box sx={{ flex: { md: "0 0 33.333333%" }, width: "100%" }}>
             <PredictionList
-              spots={viewingSpots}
+              spots={paginatedSpots}
               selectedSpot={selectedSpot}
-              onSpotClick={handleSpotSelect}
+              onSpotClick={debouncedSpotSelect}
               loading={loading}
               lastUpdated={lastUpdated}
+              page={page}
+              onPageChange={setPage}
+              totalPages={Math.ceil(viewingSpots.length / ITEMS_PER_PAGE)}
             />
           </Box>
         </Box>
