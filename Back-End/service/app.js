@@ -11,8 +11,6 @@ import fs from "fs";
 import passport from './middleware/passport-config.js';
 import auroraPredictionRouter from "./routers/auroraPredictionRouter.js";
 import glossaryRoutes from "./routers/glossaryRouter.js";
-
-
 import alertRouter from './routers/alertRouter.js';
 
 

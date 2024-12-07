@@ -40,7 +40,7 @@ const Footer = () => {
           <Grid item xs={12} md={4}>
             <Typography variant="h6" 
               sx={{ 
-                background: 'linear-gradient(45deg, #84fab0 30%, #8fd3f4 90%)',
+               background: 'linear-gradient(45deg, #84fab0 30%, #8fd3f4 90%)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',

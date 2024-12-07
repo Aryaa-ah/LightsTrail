@@ -27,33 +27,28 @@ function App() {
     latitude: 0,
     longitude: 0,
   });
+return(
+  <div className="min-h-screen bg-background-default">
+  <ThemeProvider theme={appTheme}>
+    <CssBaseline />
+    <Provider store={store}>
+      <Router>
+        <AppRoutes 
+          location={location} 
+          setLocation={setLocation} 
+        />
+      </Router>
 
-  return (
-    <ThemeProvider theme={appTheme}>
-      <CssBaseline />
-      <Provider store={store}>
-        <Router>
-          <Box sx={{ 
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            bgcolor: 'background.default'
-          }}>
-            {/* Main content */}
-            <Box sx={{ flex: 1 }}>
-              <AppRoutes 
-                location={location} 
-                setLocation={setLocation} 
-              />
-            </Box>
-            
-            {/* Footer */}
-            <Footer />
-          </Box>
-        </Router>
-      </Provider>
-    </ThemeProvider>
-  );
+
+
+
+      <Footer />
+    </Provider>
+  </ThemeProvider>
+</div>
+
+);
 }
+
 
 export default App;
