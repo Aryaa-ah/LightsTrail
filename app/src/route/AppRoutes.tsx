@@ -16,6 +16,7 @@ import NotFoundPage from "../pages/NotFoundPage";
 import Glossary from "../pages/glossary";
 import Data from "../pages/DataPage";
 import AuroraPredictionPage from "../pages/auroraPredPage";
+import WebCamPage from "../pages/WebCamPage";
 
 // Types
 interface Location {
@@ -138,7 +139,7 @@ export const AppRoutes = ({
         }
       />
       <Route
-        path="/aurora-prediction"
+        path="/best-locations"
         element={
           <ProtectedRoute>
             <>
@@ -156,6 +157,21 @@ export const AppRoutes = ({
             <>
               <ResponsiveAppBar location={location} setLocation={setLocation} />
               <Data />
+            </>
+          </ProtectedRoute>
+        }
+      />
+       
+        <Route
+        path="/webcam"
+        element={
+          <ProtectedRoute>
+            <>
+              <ResponsiveAppBar
+                location={location}
+                setLocation={setLocation}
+              />
+              <WebCamPage/>
             </>
           </ProtectedRoute>
         }

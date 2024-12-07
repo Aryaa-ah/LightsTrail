@@ -40,7 +40,9 @@ interface NavbarProps {
   setLocation: (location: Location) => void;
 }
 
-const pages = ["Gallery", "Glossary", "Data", "Live Best Locations "];
+declare var window: any;
+
+const pages = ["Gallery", "Glossary", "Data", "WebCam", "Best Locations"];
 const languages = [
   { code: "en", name: "English" },
   { code: "hi", name: "हिंदी" },

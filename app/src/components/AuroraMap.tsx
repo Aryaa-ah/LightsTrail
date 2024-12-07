@@ -1,152 +1,176 @@
-// src/components/AuroraMap.tsx
+import React, { useEffect, useRef, useState } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
-import React from "react";
-import { Box, useTheme, alpha, Typography } from "@mui/material";
-import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import { styled } from "@mui/material/styles";
-import { ViewingSpot } from "../types/auroraPred.types";
+// Replace with your Mapbox Access Token
+mapboxgl.accessToken =
+  "pk.eyJ1Ijoic2lkNzMyIiwiYSI6ImNtNGNjMWcxajBhOG8yaXB6Nmxka2ZoazIifQ.-VDkqKwQTD476C9cm31S8w";
 
-const MapWrapper = styled(Box)(() => ({
-  "& .leaflet-container": {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "#242424",
-  },
-  "& .leaflet-popup-content-wrapper": {
-    backgroundColor: "rgba(30, 30, 30, 0.95)",
-    color: "white",
-    backdropFilter: "blur(8px)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-    borderRadius: "8px",
-  },
-  "& .leaflet-popup-tip": {
-    backgroundColor: "rgba(30, 30, 30, 0.95)",
-    border: "1px solid rgba(255, 255, 255, 0.1)",
-  },
-  "& .leaflet-control-zoom": {
-    border: "none",
-  },
-  "& .leaflet-control-zoom a": {
-    backgroundColor: "rgba(30, 30, 30, 0.95) !important",
-    color: "white !important",
-    border: "1px solid rgba(255, 255, 255, 0.1) !important",
-    backdropFilter: "blur(8px)",
-  },
-  "& .leaflet-control-zoom a:hover": {
-    backgroundColor: "rgba(50, 50, 50, 0.95) !important",
-  },
-  "& .leaflet-control-attribution": {
-    backgroundColor: "rgba(30, 30, 30, 0.8) !important",
-    color: "rgba(255, 255, 255, 0.7) !important",
-    backdropFilter: "blur(8px)",
-  },
-  "& .leaflet-control-attribution a": {
-    color: "rgba(255, 255, 255, 0.9) !important",
-  },
-  "& .aurora-marker": {
-    animation: "pulse 2s infinite",
-  },
-  "@keyframes pulse": {
-    "0%": {
-      transform: "scale(1)",
-      opacity: 1,
-    },
-    "50%": {
-      transform: "scale(1.2)",
-      opacity: 0.7,
-    },
-    "100%": {
-      transform: "scale(1)",
-      opacity: 1,
-    },
-  },
-}));
-
-interface AuroraMapProps {
-  spots: ViewingSpot[];
-  selectedSpot: ViewingSpot | null;
-  onSpotSelect: (spot: ViewingSpot) => void;
+export interface AuroraData {
+  kpIndex: string;
+  bz: string;
+  speed: string;
+  temperature: string;
+  precipitation: string;
+  windSpeed: string;
+  probability: string;
+  isDay: string;
+  cloudCover: string;
+  uvIndex: string;
 }
 
-const AuroraMap: React.FC<AuroraMapProps> = ({
-  spots,
-  selectedSpot,
-  onSpotSelect,
-}) => {
-  const theme = useTheme();
-  const mapCenter: [number, number] = [65, -150];
+const MapWithAurora: React.FC<{
+  data: AuroraData;
+  longitude: number;
+  latitude: number;
+}> = ({ data, longitude, latitude }) => {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const [auroraData, setAuroraData] = useState<number[][] | null>(null);
 
-  const getSpotColor = (spot: ViewingSpot) => {
-    if (spot.probability >= 80) return theme.palette.success.main;
-    if (spot.probability >= 60) return theme.palette.info.main;
-    if (spot.probability >= 40) return theme.palette.warning.main;
-    return theme.palette.error.main;
-  };
+  // Fetch aurora data
+  useEffect(() => {
+    const fetchAuroraData = async () => {
+      try {
+        const response = await fetch(
+          "https://services.swpc.noaa.gov/json/ovation_aurora_latest.json"
+        );
+        const auroraJson = await response.json();
+        setAuroraData(auroraJson.coordinates);
+      } catch (error) {
+        console.error("Error fetching aurora data:", error);
+      }
+    };
+    fetchAuroraData();
+  }, []);
 
-  return (
-    <MapWrapper
-      sx={{
-        height: "70vh",
-        bgcolor: alpha(theme.palette.background.paper, 0.8),
-        backdropFilter: "blur(8px)",
-        borderRadius: 2,
-        overflow: "hidden",
-        border: `1px solid ${alpha(theme.palette.primary.main, 0.1)}`,
-      }}
-    >
-      <MapContainer
-        center={mapCenter}
-        zoom={3}
-        style={{ height: "100%", width: "100%" }}
-        attributionControl={false}
-      >
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-        />
+  useEffect(() => {
+    if (!mapContainerRef.current) return;
 
-        {spots.filter(spot => spot.probability > 0).map((spot) => (
-          <React.Fragment key={spot.id}>
-            <Circle
-              center={spot.coordinates}
-              radius={100000}
-              pathOptions={{
-                color: getSpotColor(spot),
-                fillColor: getSpotColor(spot),
-                fillOpacity: selectedSpot?.id === spot.id ? 0.4 : 0.2,
-              }}
-            />
-            <Marker
-              position={spot.coordinates}
-              eventHandlers={{
-                click: () => onSpotSelect(spot),
-              }}
-            >
-              <Popup>
-                <Box sx={{ p: 1 }}>
-                  <Typography variant="subtitle1">{spot.location || 'Aurora Viewing Spot'}</Typography>
-                  <Typography variant="body2">
-                    Probability: {Math.round(spot.probability)}%
-                  </Typography>
-                  {spot.visibility && (
-                    <Typography variant="body2">
-                      Visibility: {spot.visibility}%
-                    </Typography>
-                  )}
-                  {spot.temperature && (
-                    <Typography variant="body2">
-                      Temperature: {spot.temperature}°C
-                    </Typography>
-                  )}
-                </Box>
-              </Popup>
-            </Marker>
-          </React.Fragment>
-        ))}
-      </MapContainer>
-    </MapWrapper>
-  );
+    mapRef.current = new mapboxgl.Map({
+      container: mapContainerRef.current!,
+      style: data.isDay.toLowerCase() === "day"
+        ? "mapbox://styles/mapbox/light-v11"
+        : "mapbox://styles/mapbox/dark-v11",
+      center: [longitude, latitude],
+      zoom: 1.3,
+      projection: "globe",
+    });
+
+    mapRef.current.on("style.load", () => {
+      mapRef.current?.setFog({
+        range: [-1, 2],
+        color: "white",
+        "high-color": "#add8e6",
+        "horizon-blend": 0.05,
+        "space-color": "#000000",
+        "star-intensity": 0.2,
+      });
+
+      // Add aurora data to the map
+      if (auroraData) {
+        
+        const filteredAuroraData = auroraData.filter(([lng, lat, value]) => value > 2);
+
+        const geojson = {
+          type: "FeatureCollection",
+          features: filteredAuroraData.map(([lng, lat, value]) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: [lng, lat],
+            },
+            properties: {
+              aurora: value,
+            },
+          })),
+        };
+
+        mapRef.current?.addSource("aurora-data", {
+          type: "geojson",
+          data: geojson,
+        });
+
+        mapRef.current?.addLayer({
+          id: "aurora-points",
+          type: "circle",
+          source: "aurora-data",
+          paint: {
+            "circle-radius": ["interpolate", ["linear"], ["get", "aurora"], 3, 3, 10, 8],
+            "circle-color": [
+              "interpolate",
+              ["linear"],
+              ["get", "aurora"],
+              3,
+              "rgba(0, 255, 0, 0.2)", // Slightly more visible at lower values
+              10,
+              "rgba(0, 255, 0, 0.8)",
+            ],
+            "circle-opacity": 0.7,
+          },
+        });
+      }
+
+      // Add the marker and circle from additional data
+      const marker = new mapboxgl.Marker()
+        .setLngLat([longitude, latitude])
+        .addTo(mapRef.current);
+
+      marker.setPopup(
+        new mapboxgl.Popup({ offset: 25 }).setHTML(`
+          <div  style="color: black;">
+            <strong>KP Index:</strong> ${data.kpIndex}<br />
+            <strong>Bz:</strong> ${data.bz}<br />
+            <strong>Speed:</strong> ${data.speed} km/s<br />
+            <strong>Temperature:</strong> ${data.temperature}<br />
+            <strong>Precipitation:</strong> ${data.precipitation}<br />
+            <strong>Wind Speed:</strong> ${data.windSpeed}<br />
+            <strong>UV Index:</strong> ${data.uvIndex}<br />
+            <strong>Cloud Cover:</strong> ${data.cloudCover}<br />
+            <strong>Day/Night:</strong> ${data.isDay}<br />
+            <strong>Probability:</strong> ${data.probability}<br />
+          </div>
+        `)
+      );
+
+      if (parseInt(data.probability) > 30) {
+        const circleRadius = Math.min(parseInt(data.probability) * 0.5, 50);
+        const circleColor = `rgba(0, 255, 0, ${parseInt(data.probability) / 100})`;
+
+        mapRef.current?.addLayer({
+          id: "custom-circle",
+          type: "circle",
+          source: {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [
+                {
+                  type: "Feature",
+                  geometry: {
+                    type: "Point",
+                    coordinates: [longitude, latitude],
+                  },
+                  properties: {},
+                },
+              ],
+            },
+          },
+          paint: {
+            "circle-radius": circleRadius,
+            "circle-color": circleColor,
+            "circle-opacity": 0.6,
+          },
+        });
+      }
+    });
+
+    return () => mapRef.current?.remove();
+  }, [auroraData, data]);
+
+  return <div ref={mapContainerRef} style={{ height: "80vh", width: "74%" , margin: "auto",
+    padding: 20,
+    marginTop:30, opacity:0.7}} />;
 };
 
-export default AuroraMap;
+export default MapWithAurora;
