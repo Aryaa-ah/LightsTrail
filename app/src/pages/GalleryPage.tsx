@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../store/index";
 import type { Photo as GalleryPhoto } from "../types/gallery.types";
 import { AppDispatch } from "../store";
+import { useTranslation } from 'react-i18next';
 
 // Custom Components
 import GalleryGrid from "../components/GalleryGrid";
@@ -106,6 +107,8 @@ interface SearchResult {
 
 
 const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
+  
+  const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const {
@@ -305,12 +308,10 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
                 mb: 2,
               }}
             >
-              {userOnly ? "My Gallery" : "Aurora Gallery"}
+                {t(userOnly ? 'gallery.title.personal' : 'gallery.title.main')}
             </Typography>
             <Typography variant="h6" color="text.secondary">
-              {userOnly
-                ? "Manage and showcase your aurora captures"
-                : "Discover and share stunning aurora captures"}
+            {t(userOnly ? 'gallery.subtitle.personal' : 'gallery.subtitle.main')}
             </Typography>
           </Box>
         </motion.div>
@@ -329,7 +330,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
             <TextField
                 fullWidth
                 size="medium"
-                placeholder="Search photos by location..."
+                placeholder={t('gallery.actions.search')}
                 value={searchQuery}
                 onChange={handleSearchChange}
                 sx={{
@@ -418,7 +419,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
                     },
                   }}
                 >
-                  Upload
+                  {t('gallery.actions.upload')}
                 </Button>
               </motion.div>
             </Box>
@@ -505,14 +506,13 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
           fullWidth
           TransitionComponent={Fade}
         >
-          <DialogTitle>Edit Photo</DialogTitle>
-          <DialogContent>
+          <DialogTitle>{t('gallery.photo.edit')}</DialogTitle>          <DialogContent>
             <Box
               sx={{ display: "flex", flexDirection: "column", gap: 2, pt: 2 }}
             >
               <TextField
                 fullWidth
-                label="Location"
+                label={t('gallery.photo.location')}
                 defaultValue={editingPhoto?.location}
                 onChange={(e) => {
                   if (editingPhoto) {
@@ -527,7 +527,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
                 fullWidth
                 multiline
                 rows={4}
-                label="Description"
+                label={t('gallery.photo.description')}
                 defaultValue={editingPhoto?.description}
                 onChange={(e) => {
                   if (editingPhoto) {
@@ -542,7 +542,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
           </DialogContent>
           <DialogActions>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button onClick={() => setEditingPhoto(null)}>Cancel</Button>
+              <Button onClick={() => setEditingPhoto(null)}>  {t('gallery.photo.cancel')}</Button>
             </motion.div>
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Button
@@ -556,7 +556,7 @@ const GalleryPage: React.FC<GalleryPageProps> = ({ userOnly = false }) => {
                 }}
                 variant="contained"
               >
-                Save Changes
+                 {t('gallery.photo.save')}
               </Button>
             </motion.div>
           </DialogActions>
