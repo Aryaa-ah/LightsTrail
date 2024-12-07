@@ -64,7 +64,7 @@ export const call = async (forecastData) => {
         // API call with await
         const apiUrl = `https://api.auroras.live/v1/?type=all&lat=${latitude}&long=${longitude}&forecast=false&threeday=false`;
         const response = await axios.get(apiUrl);
-
+        
         const options = {
             method: 'GET',
             url: 'https://api.open-meteo.com/v1/forecast',
@@ -99,12 +99,7 @@ export const call = async (forecastData) => {
         console.log("weatherData.data.current.isDay"+weatherData.data.current.isDay);
         const forecastObject = forecast.toObject();
         delete forecastObject._id;
-        
-        await checkAndSendAlerts(
-          parseFloat(response.data.ace.kp),
-          forecast.location
-      );
-
+    
         return forecastObject; 
     } catch (error) {
         console.log(error)

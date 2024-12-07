@@ -1,4 +1,3 @@
-// Back-End/service/models/alertPreferences.js
 import mongoose from "mongoose";
 
 const alertPreferencesSchema = new mongoose.Schema({
@@ -11,12 +10,25 @@ const alertPreferencesSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0,
-    max: 9,
-    default: 5
+    max: 9
   },
   email: {
     type: String,
     required: true
+  },
+  location: {
+    cityName: {
+      type: String,
+      required: true
+    },
+    latitude: {
+      type: Number,
+      required: true
+    },
+    longitude: {
+      type: Number,
+      required: true
+    }
   },
   isEnabled: {
     type: Boolean,
@@ -25,13 +37,7 @@ const alertPreferencesSchema = new mongoose.Schema({
   lastNotificationSent: {
     type: Date,
     default: null
-  },
-  location: {
-    latitude: Number,
-    longitude: Number,
-    cityName: String
   }
 }, { timestamps: true });
 
-const AlertPreferences = mongoose.model('AlertPreferences', alertPreferencesSchema);
-export default AlertPreferences;
+export default mongoose.model('AlertPreference', alertPreferencesSchema);
