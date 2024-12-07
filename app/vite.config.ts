@@ -10,10 +10,24 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       VitePWA({
-        registerType: "autoUpdate",
-        manifest: false, // We're using our custom manifest
+        registerType: "prompt",
+        includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
+        manifest: false,
         workbox: {
-          globPatterns: ["**/*.{js,css,html,ico,png,svg,json}"],
+          globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/api\.*/i,
+              handler: "NetworkFirst",
+              options: {
+                cacheName: "api-cache",
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24, // 24 hours
+                },
+              },
+            },
+          ],
         },
       }),
     ],
@@ -39,14 +53,10 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: "dist",
-      // Don't generate source maps
       sourcemap: false,
-      // Clean the output directory before build
       emptyOutDir: true,
-      // Prevent extra file generation
       rollupOptions: {
-        external: ["path", "source-map-js"],  
-
+        external: ["path", "source-map-js"],
         output: {
           manualChunks: undefined,
         },
