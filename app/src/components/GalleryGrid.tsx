@@ -12,7 +12,7 @@ import {
   Typography,
   Tooltip,
 } from "@mui/material";
-import { LocationOn, Download, CalendarToday } from "@mui/icons-material";
+import { LocationOn, Download, CalendarToday, Share } from "@mui/icons-material";
 import { styled } from "@mui/material/styles";
 import { Photo } from "../types/gallery.types";
 import { motion, AnimatePresence } from "framer-motion";
@@ -259,6 +259,26 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
     }
   };
 
+  // Add share handler
+  const handleShare = async (e: React.MouseEvent, photo: Photo) => {
+    e.stopPropagation(); // Prevent photo click event
+    
+    if (!navigator.share) {
+      console.log('Web Share API not supported');
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: `Aurora photo from ${photo.location}`,
+        text: `Check out this amazing aurora photo taken at ${photo.location}!`,
+        url: window.location.origin + `/gallery/${photo.id}`,
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   return (
     <ImageList
       cols={getImageListCols()}
@@ -324,6 +344,19 @@ const GalleryGrid: React.FC<GalleryGridProps> = ({
               )}
 
               <ActionButtons className="photo-actions">
+                <IconButton
+                  size="medium"
+                  onClick={(e) => handleShare(e, photo)}
+                  sx={{
+                    color: 'white',
+                    bgcolor: 'rgba(0,0,0,0.8)',
+                    '&:hover': {
+                      bgcolor: 'rgba(0,0,0,0.95)',
+                    },
+                  }}
+                >
+                  <Share fontSize="small" />
+                </IconButton>
                 <Tooltip title="Download">
                   <IconButton
                     size="small"
