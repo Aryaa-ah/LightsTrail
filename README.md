@@ -1,13 +1,17 @@
-# 🌠 LightsTrail
+Welcome to the LightsTrail website repository.
 
-LightsTrail is a web-based application designed to provide real-time aurora predictions and forecasts, enabling users to experience and track the Northern Lights at any location. Tailored for aurora enthusiasts, travelers, and photographers, the app delivers accurate aurora forecasts based on the user’s location. Users can subscribe to alerts for receiving notifications when auroras are predicted in their area, either in real-time or triggered by specific Index thresholds. Additionally, LightsTrail fosters a community-driven platform where users can share photos, experiences, and sightings and gain insights into the best viewing spots through location-tagged posts. With a blend of observation technology and social engagement, the app offers a dynamic and engaging platform for aurora enthusiasts worldwide.
+## Project Title: LightsTrail
 
-## ✨ Features
+#### Project Description: 
+
+
+LightsTrail is a web-based application designed to provide real-time aurora predictions and forecasts, enabling users to experience and track the Northern Lights at any location. Tailored for aurora enthusiasts, travelers, and photographers, the app delivers accurate aurora forecasts based on the user’s location. Users can set the preferences to alerts for receiving notifications when auroras are predicted in their location, either in real-time or triggered by specific Index thresholds. Additionally, LightsTrail fosters a community-driven platform where users can share photos, experiences, and sightings and gain insights into the best viewing spots through location-tagged posts. With a blend of observation technology and social engagement, the app offers a dynamic and engaging platform for aurora enthusiasts worldwide.
+
+## Features
 
 ### Core Features
 
-<details>
-<summary>🎯 Aurora Forecasting System</summary>
+### Aurora Forecasting System
 
 - Real-time KP index monitoring
 - Custom probability algorithms
@@ -16,72 +20,59 @@ LightsTrail is a web-based application designed to provide real-time aurora pred
 - Magnetic field analysis
 - Location-based predictions
 
-</details>
-
-<details>
-<summary>📸 Community Gallery</summary>
+### Community Gallery
 
 - Photo sharing capabilities
 - Location tagging
 - Search functionality
 - Photo management tools (Upload, Edit, Update, Delete)
 
-</details>
-
-<details>
-<summary>🔔 Alert System</summary>
+### Alert System
 
 - Customizable KP thresholds
 - Email notifications
 - Location-based alerts
 - Real-time updates
-- Custom alert schedules
-</details>
 
-<details>
-<summary>🗺️ Live Best Locations</summary>
+### Live Best Locations
 
 - Real-time probability calculation
-- Weather condition integration
-- Accessibility ratings
 - Interactive mapping
 - Location suggestions
 - Viewing spot details
 
-</details>
-
-<details>
-<summary>📖 Information Center</summary>
+### Information Center
 
 - Aurora glossary
 - Educational resources
+
+## ✨ Features
+
+### Real-time data visualization
 - Real-time data visualization
 - Historical data analysis
 - Weather information
+
+### WebCam Integration 
+
+- Live aurora feeds
+- Multiple viewing locations 
 - Viewing guides
 
-</details>
-
-<details>
-<summary>🌍 Multi-language Support</summary>
+### Multi-language Support
 
 - English
 - Hindi
 - Kannada
 </details>
 
+
+
+
+
+
 ### Additional Features
-
-<details>
-<summary>🎥 WebCam Integration</summary>
-
-- Live aurora feeds
-- Multiple viewing locations 
-
-</details>
-
-<details>
-<summary>📱 PWA Features</summary>
+<summary> PWA Features 📱 </summary>
 
 - Install prompts
 - Cache management
@@ -89,7 +80,8 @@ LightsTrail is a web-based application designed to provide real-time aurora pred
 
 </details>
 
-## 🛠️ Tech Stack
+
+### Tech Stack
 
 <details>
 <summary>Frontend Technologies</summary>
@@ -129,14 +121,13 @@ LightsTrail is a web-based application designed to provide real-time aurora pred
 
 </details>
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
 ```bash
 node -v # v18.x or higher
 npm -v  # 9.x or higher
-```
 
 ### Installation
 
@@ -168,6 +159,8 @@ MONGODB_URI=
 JWT_SECRET=
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
+EMAIL_USER=
+EMAIL_PASSWORD=
 ```
 
 4. Start development servers
@@ -179,7 +172,8 @@ npm run dev
 npm run dev
 ```
 
-## 🏗️ Architecture
+
+##  Architecture
 
 ### Domain Model
 
@@ -367,7 +361,8 @@ classDiagram
 
 </details>
 
-## 👥 Team
+## Team Memebers:
+1. Pooja Doddannavar: doddannavar.p@northeastern.edu
 
 -Pooja Doddannavar: doddannavar.p@northeastern.edu
 
@@ -377,4 +372,7 @@ classDiagram
 
 -Siddharth Nashikkar: nashikkar.s@northeastern.edu
 
-</div>
+
+[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/DIHvCS29)
+
+
