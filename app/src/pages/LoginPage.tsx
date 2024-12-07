@@ -51,8 +51,10 @@ export default function LoginPage() {
         throw new Error(data.message || "Login failed");
       }
 
-      localStorage.setItem("token", data.token);
+      localStorage.setItem("token", `Bearer ${data.token}`);
       localStorage.setItem("user", JSON.stringify(data.user));
+      // localStorage.setItem("token", data.token);
+      // localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/home");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Login failed");

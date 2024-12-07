@@ -6,12 +6,17 @@ import galleryRouter from "./galleryRouter.js";
 import { setError } from "../controllers/response-handler.js";
 // import auroraPredictionRouter from "./auroraPredictionRouter.js";
 
+import alertRouter from './alertRouter.js';
+
 const initializeRouter = (app) => {
   // app.use("/api/predictions", auroraPredictionRouter); // Mount under /api/predictions
   app.use("/auroraforecast", auroraForecastRouter);
   app.use("/longitudeLatitude", longitudeLatitudeRouter);
   app.use("/api/gallery", galleryRouter);
   app.use("/auth", authRouter);
+ 
+ 
+  app.use('/api/alerts', alertRouter);
 
   app.use((req, res) => {
     console.log("Route not found:", req.path);

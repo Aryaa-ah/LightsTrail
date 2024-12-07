@@ -1,13 +1,20 @@
-// alertRouter.js
+// routes/alertRouter.js
 import express from 'express';
 import { authenticateToken } from '../middleware/auth.js';
-import * as alertController from '../controllers/alertController.js';
+import {
+    createAlertPreference,
+    getAlertPreference,
+    updateAlertPreference,
+    sendTestAlert
+} from '../controllers/alertController.js';
 
 const router = express.Router();
 
-router.route('/preferences')
-  .get(authenticateToken, alertController.getAlertPreference)
-  .post(authenticateToken, alertController.createAlertPreference)
-  .put(authenticateToken, alertController.updateAlertPreference);
+router.use(authenticateToken);
+
+router.post('/preferences', createAlertPreference);
+router.get('/preferences', getAlertPreference);
+router.put('/preferences', updateAlertPreference);
+router.post('/test-email', sendTestAlert);
 
 export default router;
