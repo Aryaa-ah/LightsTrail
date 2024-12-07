@@ -91,9 +91,9 @@ i18n
     deleteAccountTitle: 'Delete Account',
     deleteAccountConfirm: 'Are you sure you want to delete your account? This action cannot be undone.',
     deleting: 'Deleting...',
-  },
-  common: {
     cancel: 'Cancel',
+    deleteConfirmation : "Are you sure you want to delete your account? This action cannot be undone.",
+    delete : "Delete"
   },
   gallery: {
     title: {
@@ -266,9 +266,9 @@ i18n
             deleteAccountTitle: 'खाता हटाएं',
             deleteAccountConfirm: 'क्या आप वाकई अपना खाता हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती.',
             deleting: 'हटाया जा रहा है...',
-          },
-          common: {
             cancel: 'रद्द करें',
+            delete: 'हटाएं',
+            deleteConfirmation : "क्या आप वाकई अपना खाता हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती."
           },
           
           
@@ -450,9 +450,9 @@ i18n
             deleteAccountTitle: 'ಖಾತೆಯನ್ನು ಅಳಿಸಿ',
             deleteAccountConfirm: 'ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.',
             deleting: 'ಅಳಿಸಲಾಗುತ್ತಿದೆ...',
-          },
-          common: {
             cancel: 'ರದ್ದುಮಾಡಿ',
+            delete: 'ಅಳಿಸಿ',
+            deleteConfirmation : "ನೀವು ಖಚಿತವಾಗಿ ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಅಳಿಸಲು ಬಯಸುವಿರಾ? ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ."
           },
           menu: {
             gallery: 'ಗ್ಯಾಲರಿ',

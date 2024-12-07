@@ -195,7 +195,7 @@ const ProfilePage = () => {
           </DialogContent>
           <DialogActions>
             <Button onClick={() => setOpenDialog(false)} disabled={loading}>
-              {t('common.cancel')}
+              {t('profile.cancel')}
             </Button>
             <Button
               onClick={handleDeleteAccount}
@@ -204,7 +204,7 @@ const ProfilePage = () => {
               disabled={loading}
               startIcon={loading ? <CircularProgress size={20} /> : <DeleteOutline />}
             >
-              {loading ? t('common.deleting') : t('common.delete')}
+              {loading ? t('profile.deleting') : t('profile.delete')}
             </Button>
           </DialogActions>
         </Dialog>
