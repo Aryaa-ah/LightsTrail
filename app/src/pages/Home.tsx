@@ -22,7 +22,7 @@ const Home = ({ latitude, longitude }: HomeProps) => {
   }, [dispatch, latitude, longitude]);
 
   return (
-    <div style={{ paddingTop: '74px' }}>
+    <div style={{ paddingTop: '160px' }}>
       {/* Wrapper Box for dashboard content */}
       <Box 
         sx={{

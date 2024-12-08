@@ -2,6 +2,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useTranslation } from "react-i18next";
+import { useTheme, Typography } from '@mui/material';
 
 interface GlossaryItem {
   question: string;
@@ -77,10 +78,28 @@ const Glossary: React.FC = () => {
 
   // Use type assertion to tell TypeScript that this is an array of GlossaryItem
   const glossaryItems = t('glossary.items', { returnObjects: true }) as GlossaryItem[];
-
+  const theme = useTheme();
   return (
     <GlossaryContainer>
-      <Title>{t('glossary.title')}</Title>
+      
+      <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 800,
+                margineTop: '180px',
+                marginBottom: '50px',
+                background:
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)"
+                    : "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                mb: 2,
+              }}
+            >
+                {t('glossary.title')}
+            </Typography>
       
       <GlossaryGrid>
         {Array.isArray(glossaryItems) && glossaryItems.map((item: GlossaryItem, index: number) => (
