@@ -24,6 +24,7 @@ import {
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import Graph from '../components/KpGraph';
+import axios from "axios";
 
 // Destination Data
 const destinations = [
@@ -82,11 +83,24 @@ const AuroraTourismGuide = () => {
     }));
   };
 
-  const handleSubmitBooking = (e) => {
+  const handleSubmitBooking = async (e) => {
     e.preventDefault();
-    // Placeholder for booking submission logic
-    alert('Booking submitted! We will contact you soon.');
-    setBookingOpen(false);
+  
+    try {
+      const response = await axios.post("http://localhost:3002/api/email/send", bookingDetails);
+  
+      if (response.data.success) {
+        alert("Booking confirmed! An email has been sent to you.");
+      } else {
+        alert("Failed to send booking confirmation. Please try again.");
+      }
+  
+      setBookingOpen(false); // Close the dialog
+      setBookingDetails({ name: '', email: '', destination: '', date: '' }); // Reset the form
+    } catch (error) {
+      console.log("Error submitting booking:", error);
+      alert("An error occurred while sending the email. Please try again later.");
+    }
   };
 
   return (

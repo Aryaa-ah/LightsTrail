@@ -11,7 +11,7 @@ import fs from "fs";
 import passport from './middleware/passport-config.js';
 import glossaryRoutes from "./routers/glossaryRouter.js";
 import alertRouter from './routers/alertRouter.js';
-
+import tourismRouter from "./routers/tourismGuideRouter.js";
 
 
 // import initScheduler from './service/scheduler.js';
@@ -62,6 +62,8 @@ app.use("/uploads", (req, res, next) => {
 });
 app.use("/api/glossary", glossaryRoutes);
 
+app.use("/api/email", tourismRouter);
+
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
@@ -70,6 +72,7 @@ app.use((req, res, next) => {
 app.use(passport.initialize());
 // Initialize routes
 initializeRouter(app);
+
 
 app.use((err, req, res, next) => {
   console.error("App Error:", err.stack);
