@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import TripBooking from "../models/TripBooking.js";
 
 const sendEmail = async (emailData) => {
   const { name, email, destination, date } = emailData;
@@ -21,6 +22,14 @@ const sendEmail = async (emailData) => {
 
   try {
     const result = await transporter.sendMail(mailOptions);
+    const trip = new TripBooking({
+      email: email,
+      name: name,
+      destination: destination,
+      date: date
+
+    });
+    await trip.save();
     return { success: true, result };
   } catch (error) {
     console.error("Error sending email:", error);
