@@ -104,7 +104,7 @@ const AuroraTourismGuide = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4, paddingTop: "160px" }}>
       {/* Header Section */}
       <Box textAlign="center" mb={4}>
         <Typography variant="h3" color="primary" gutterBottom>
