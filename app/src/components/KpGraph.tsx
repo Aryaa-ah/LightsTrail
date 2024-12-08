@@ -3,6 +3,7 @@ import { Line } from "react-chartjs-2";
 import axios from 'axios';
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale } from "chart.js";
 import { Container, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 // Registering the necessary chart components
 ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale);
@@ -15,6 +16,7 @@ interface KIndexData {
 }
 
 const Graph: React.FC = () => {
+  const {t} = useTranslation();
   const [data, setData] = useState<KIndexData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -107,7 +109,7 @@ const Graph: React.FC = () => {
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
-        Planetary K-index Graph
+        {t("tourBooking.planetaryKIndexGraph")}
       </Typography>
       <Line data={chartData} options={chartOptions} />
     </Container>

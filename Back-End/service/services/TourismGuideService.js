@@ -17,7 +17,9 @@ const sendEmail = async (emailData) => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: `Aurora Booking Confirmation for ${destination}`,
-    text: `Hi ${name},\n\nThank you for booking your Aurora adventure! Here are your details:\n\nDestination: ${destination}\nTravel Date: ${date}\n\nWe look forward to helping you chase the Aurora!\n\nBest Regards,\nLights Trail Team`,
+    text: `Hi ${name},\n\nThank you for booking your Aurora adventure! Here are your details:\n\nDestination: ${destination}\nTravel Date: ${date}\n\n
+    Our Executives will contact you in next 3 hours.\n
+    \nWe look forward to helping you chase the Aurora!\n\nBest Regards,\nLights Trail Team`,
   };
 
   try {
