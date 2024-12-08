@@ -15,6 +15,7 @@ import {
   Container,
   ListItemIcon,
   ListItemText,
+  useMediaQuery
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -53,7 +54,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
   const navigate = useNavigate();
   const { i18n, t } = useTranslation();
   const { user } = useAuth();
-
+ const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const pages = [
     { key: "gallery", path: "gallery" },
     { key: "glossary", path: "glossary" },
@@ -172,7 +173,6 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                 {pages.map((page) => (
                   <MenuItem
                     key={page.key}
-                    
                     onClick={() => handleNavigation(page.path)}
                   >
                     <Typography textAlign="center">
@@ -230,13 +230,20 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
               ))}
             </Menu>
 
-            <LocationOnIcon />
-            <Button
-              onClick={() => setLocationDialogOpen(true)}
-              sx={{ my: 2, color: "white" }}
-            >
-              {location.city_country}
-            </Button>
+            <Tooltip title={isMobile ? location.city_country : ""} arrow>
+        <LocationOnIcon
+          onClick={() => setLocationDialogOpen(true)}
+          sx={{ cursor: "pointer", color: "white", mr: isMobile ? 0 : 1 }}
+        />
+      </Tooltip>
+      {!isMobile && (
+        <Button
+          onClick={() => setLocationDialogOpen(true)}
+          sx={{ my: 2, color: "white" }}
+        >
+          {location.city_country}
+        </Button>
+      )}
 
             {user && (
               <Box sx={{ flexGrow: 0 }}>
