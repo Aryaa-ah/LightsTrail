@@ -362,6 +362,8 @@ classDiagram
 
 </details>
 
+Video Link: https://northeastern.sharepoint.com/:v:/r/sites/WEBDPROJECTTEAM/Shared%20Documents/General/Recordings/Meeting%20in%20_General_-20241207_223517-Meeting%20Recording.mp4?csf=1&web=1&nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&e=sooloc
+
 ## Team Memebers:
 1. Pooja Doddannavar: doddannavar.p@northeastern.edu
 
