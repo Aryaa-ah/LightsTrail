@@ -12,6 +12,7 @@ import {
   DialogContent, 
   TextField, 
   DialogActions,
+  useTheme,
   Paper,
   Box
 } from '@mui/material';
@@ -104,14 +105,33 @@ const AuroraTourismGuide = () => {
       alert("An error occurred while sending the email. Please try again later.");
     }
   };
-
+  const theme = useTheme();
   return (
     <Container maxWidth="lg" sx={{ py: 4, paddingTop: "160px" }}>
       {/* Header Section */}
+
       <Box textAlign="center" mb={4}>
-        <Typography variant="h3" color="primary" gutterBottom>
-          {t("tourBooking.title")}
-        </Typography>
+
+      <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 800,
+                margineTop: '180px',
+                marginBottom: '50px',
+                background:
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)"
+                    : "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                mb: 2,
+              }}
+            >
+                 {t("tourBooking.title")}
+            </Typography>
+        
+
         <Typography variant="subtitle1" color="textSecondary">
         {t("tourBooking.description1")}
         </Typography>

@@ -193,7 +193,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                     color: "white",
                     display: "block",
                     marginLeft: "20px",
-                    fontSize : "1.25em"
+                    fontSize : "1em"
                   }}
                 >
                   {t(`navbar.${page.key}`)}
