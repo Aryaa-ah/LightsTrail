@@ -47,6 +47,7 @@ LightsTrail is a web-based application designed to provide real-time aurora pred
 - Aurora glossary
 - Educational resources
 
+## ✨ Features
 
 ### Real-time data visualization
 - Real-time data visualization
@@ -109,7 +110,6 @@ LightsTrail is a web-based application designed to provide real-time aurora pred
 - **Email Service**: Nodemailer
 
 </details>
-
 
 <details>
 <summary>External APIs</summary>
@@ -365,12 +365,13 @@ classDiagram
 ## Team Memebers:
 1. Pooja Doddannavar: doddannavar.p@northeastern.edu
 
-2. Aryaa Hanamar: hanamar.a@northeastern.edu
+-Pooja Doddannavar: doddannavar.p@northeastern.edu
 
-3. Samarth Rayar: rayar.s@northeastern.edu
+-Aryaa Hanamar: hanamar.a@northeastern.edu
 
-4. Siddharth Nashikkar: nashikkar.s@northeastern.edu
+-Samarth Rayar: rayar.s@northeastern.edu
 
+-Siddharth Nashikkar: nashikkar.s@northeastern.edu
 
 
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/DIHvCS29)

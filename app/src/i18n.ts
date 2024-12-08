@@ -232,6 +232,7 @@ i18n
             glossary: 'Glossary',
             webCam: 'WebCam',
             gallery: 'Gallery',
+            TourismGuide:'Tourism Guide',
             bestLocations: 'Best Locations',
             profile:'Profile',
             logout:'Log out'
@@ -499,6 +500,7 @@ i18n
             glossary: ' शब्दकोश',
             webCam: 'वेबकैम',
             gallery: 'गैलरी',
+            TourismGuide:'पर्यटन गाइड',
             bestLocations: 'सर्वश्रेष्ठ स्थान',
             profile:'प्रोफ़ाइल',
             logout:'लॉग आउट'
@@ -727,6 +729,7 @@ i18n
             glossary: 'ಪದಕೋಶ',
             webCam: 'ವೆಬ್‌ಕ್ಯಾಮ್',
             gallery: 'ಗ್ಯಾಲರಿ',
+            TourismGuide:'ಪ್ರವಾಸೋದ್ಯಮ ಮಾರ್ಗದರ್ಶಿ',
             bestLocations: 'ಉತ್ತಮ ಸ್ಥಳಗಳು',
             profile:'ಪ್ರೊಫೈಲ್',
             logout:'ಲಾಗ್ ಔಟ್'
