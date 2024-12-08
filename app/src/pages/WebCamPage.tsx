@@ -1,4 +1,5 @@
 import React from 'react';
+import { Card, CardContent, Grid, Typography, Box, useTheme, } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 interface WebCam {
@@ -7,141 +8,140 @@ interface WebCam {
   location: string;
   youtubeLink: string;
 }
+
 declare var window: any;
 
 const WebCamPage: React.FC = () => {
-  const {t} = useTranslation();
+  const theme = useTheme();
+  const { t } = useTranslation();
   const tableList: WebCam[] = [
     {
-      name: "Lyngen North Aurora Cam",
-      country: "Norway",
-      location: "Rotsund",
-      youtubeLink:
-        "https://www.youtube.com/live/SY6DOBZ2hPk?si=0Pfi1txt2DtKKdcW",
+      name: 'Lyngen North Aurora Cam',
+      country: 'Norway',
+      location: 'Rotsund',
+      youtubeLink: 'https://www.youtube.com/live/SY6DOBZ2hPk?si=0Pfi1txt2DtKKdcW',
     },
     {
-      name: "Aurora Borealis (LIVE!)",
-      country: "Finland",
-      location: "Utsjoki",
-      youtubeLink:
-        "https://www.youtube.com/live/dvNb31_0D68?si=-ziY3Mz1baUKT6Ia",
+      name: 'Aurora Borealis (LIVE!)',
+      country: 'Finland',
+      location: 'Utsjoki',
+      youtubeLink: 'https://www.youtube.com/live/dvNb31_0D68?si=-ziY3Mz1baUKT6Ia',
     },
     {
-      name: "Fairbanks Aurora Camera",
-      country: "United States",
-      location: "Fairbanks,AK",
-      youtubeLink:
-        "https://www.youtube.com/live/O52zDyxg5QI?si=dntH2-y29Bwq8yP_",
+      name: 'Fairbanks Aurora Camera',
+      country: 'United States',
+      location: 'Fairbanks, AK',
+      youtubeLink: 'https://www.youtube.com/live/O52zDyxg5QI?si=dntH2-y29Bwq8yP_',
     },
     {
-      name: "Northern Studies Center",
-      country: "Canada",
-      location: "Churchill, MB",
-      youtubeLink:
-        "https://www.youtube.com/live/a0i1Kg6fROg?si=mOS0SugFla1htMnA",
+      name: 'Northern Studies Center',
+      country: 'Canada',
+      location: 'Churchill, MB',
+      youtubeLink: 'https://www.youtube.com/live/a0i1Kg6fROg?si=mOS0SugFla1htMnA',
     },
     {
-      name: "Queenstown Roundshot",
-      country: "New Zealand",
-      location: "Queenstown",
-      youtubeLink:
-        "https://www.youtube.com/live/a0i1Kg6fROg?si=mOS0SugFla1htMnA",
+      name: 'Queenstown Roundshot',
+      country: 'New Zealand',
+      location: 'Queenstown',
+      youtubeLink: 'https://www.youtube.com/live/a0i1Kg6fROg?si=mOS0SugFla1htMnA',
     },
     {
-      name: "Kjell Henriksen Observatory",
-      country: "Norway",
-      location: "Longyearbyen, Svalbard",
-      youtubeLink:
-        "https://www.youtube.com/live/a0i1Kg6fROg?si=mOS0SugFla1htMnA",
+      name: 'Kjell Henriksen Observatory',
+      country: 'Norway',
+      location: 'Longyearbyen, Svalbard',
+      youtubeLink: 'https://www.youtube.com/live/a0i1Kg6fROg?si=mOS0SugFla1htMnA',
     },
     {
-      name: "Northern Studies Center",
-      country: "Canada",
-      location: "Churchill, MB",
-      youtubeLink:
-        "https://www.youtube.com/live/a0i1Kg6fROg?si=mOS0SugFla1htMnA",
+      name: 'Northern Studies Center',
+      country: 'Canada',
+      location: 'Churchill, MB',
+      youtubeLink: 'https://www.youtube.com/live/a0i1Kg6fROg?si=mOS0SugFla1htMnA',
     },
   ];
 
   const handleClick = (link: string): void => {
-    window.open(link, "_blank");
+    window.open(link, '_blank');
   };
 
   return (
-    <div style={{ marginTop: '40px', padding: '20px' }}>
-      <div style={{ marginBottom: '20px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white' }}>{t("webCam.title")}</h1>
-      </div>
-
-      <div
-        style={{
-          flex: "1",
-          padding: "20px",
-        }}
-      >
-        <div
-          style={{
-            marginBottom: "20px",
-            textAlign: "center",
-          }}
-        >
-          <h1
-            style={{
-              fontSize: "2rem",
-              fontWeight: "bold",
-              color: "white",
-            }}
-          >
-            {/* See The Aurora - Webcams */}
-          </h1>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-            gap: "20px",
-            marginTop: "20px",
-            marginBottom: "20px", // Added margin bottom for footer spacing
-          }}
-        >
-          {tableList.map((item, index) => (
-            <div
-              key={index}
-              onClick={() => handleClick(item.youtubeLink)}
-              style={{
-                backgroundColor: "#1e1e2f",
-                padding: "20px",
-                borderRadius: "10px",
-                cursor: "pointer",
-                color: "white",
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-                transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                textAlign: "center",
+    <Box sx={{ marginTop: '100px', padding: '20px',  minHeight: '100vh' }}>
+      
+        <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 800,
+                margineTop: '180px',
+                marginBottom: '50px',
+                background:
+                  theme.palette.mode === "dark"
+                    ? "linear-gradient(45deg, #84fab0 0%, #8fd3f4 100%)"
+                    : "linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                mb: 2,
               }}
-              // onMouseEnter={(e: React.MouseEvent<HTMLDivElement>) => {
-              //   e.currentTarget.sx.transform = 'scale(1.05)';
-              //   e.currentTarget.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.3)';
-              // }}
-              // onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => {
-              //   e.currentTarget.style.transform = 'scale(1)';
-              //   e.currentTarget.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2)';
-              // }}
             >
-              <h2 style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-                {item.name}
-              </h2>
-              <p style={{ fontSize: "1rem", marginBottom: "10px" }}>
-                {item.country}
-              </p>
-              <p style={{ fontSize: "0.9rem", color: "#b0b0b0" }}>
-                {item.location}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
+                {t('webCam.title') || 'Webcams'}
+            </Typography>
+ 
+      <Grid container spacing={4}>
+        {tableList.map((item, index) => (
+          <Grid item xs={12} sm={6} md={4} key={index}>
+            <Card
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                padding: '20px',
+                cursor: 'pointer',
+                backgroundColor: '#1e1e2f',
+                borderRadius: '12px',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.5)',
+                '&:hover': {
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 6px 16px rgba(0, 0, 0, 0.8)',
+                },
+                transition: 'transform 0.3s, box-shadow 0.3s',
+              }}
+              onClick={() => handleClick(item.youtubeLink)}
+            >
+              <CardContent>
+                <Typography
+                  variant="h5"
+                  gutterBottom
+                  sx={{ fontWeight: 'bold', color: '#76c7c0', textAlign: 'center' }}
+                >
+                  {item.name}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  gutterBottom
+                  sx={{ color: '#fff', textAlign: 'center', marginBottom: '10px' }}
+                >
+                  <strong>Country:</strong> {item.country}
+                </Typography>
+                <Typography variant="body2" gutterBottom sx={{ color: '#b0b0b0', textAlign: 'center' }}>
+                  <strong>Location:</strong> {item.location}
+                </Typography>
+                <Box
+                  sx={{
+                    textAlign: 'center',
+                    marginTop: '20px',
+                    color: '#9d9d9d',
+                    fontStyle: 'italic',
+                  }}
+                >
+                  Click to view the live stream
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+    </Box>
   );
 };
+
 export default WebCamPage;
