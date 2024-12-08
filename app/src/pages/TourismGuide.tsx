@@ -25,6 +25,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import Graph from '../components/KpGraph';
 import axios from "axios";
+import { useTranslation } from 'react-i18next';
 
 // Destination Data
 const destinations = [
@@ -67,6 +68,7 @@ const auroraData = [
 ];
 
 const AuroraTourismGuide = () => {
+  const {t} = useTranslation();
   const [bookingOpen, setBookingOpen] = useState(false);
   const [bookingDetails, setBookingDetails] = useState({
     name: '',
@@ -108,10 +110,10 @@ const AuroraTourismGuide = () => {
       {/* Header Section */}
       <Box textAlign="center" mb={4}>
         <Typography variant="h3" color="primary" gutterBottom>
-          Aurora Chaser's Ultimate Guide
+          {t("tourBooking.title")}
         </Typography>
         <Typography variant="subtitle1" color="textSecondary">
-          Your comprehensive resource for experiencing the magical Northern Lights
+        {t("tourBooking.description1")}
         </Typography>
       </Box>
 
@@ -158,7 +160,7 @@ const AuroraTourismGuide = () => {
                     setBookingOpen(true);
                   }}
                 >
-                  Book Trip
+                  {t("tourBooking.bookTrip")}
                 </Button>
               </CardContent>
             </Card>
@@ -169,7 +171,7 @@ const AuroraTourismGuide = () => {
       {/* Aurora Probability Chart */}
       <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
         <Typography variant="h5" gutterBottom>
-          General Aurora Viewing Probability by Month
+        {t("tourBooking.generalAuroraDesc")}
         </Typography>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={auroraData}>
@@ -183,7 +185,7 @@ const AuroraTourismGuide = () => {
 
       {/* Booking Dialog */}
       <Dialog open={bookingOpen} onClose={() => setBookingOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Book Your Aurora Adventure</DialogTitle>
+        <DialogTitle>{t("tourBooking.bookYourAdv")}</DialogTitle>
         <DialogContent>
           <form onSubmit={handleSubmitBooking}>
             <Grid container spacing={2}>
@@ -239,11 +241,11 @@ const AuroraTourismGuide = () => {
             </Grid>
             <DialogActions>
               <Button onClick={() => setBookingOpen(false)} color="secondary">
-                Cancel
+                {t("tourBooking.cancle")}
               </Button>
               <Button type="submit" color="primary" variant="contained">
-                Submit Booking
-              </Button>
+              {t("tourBooking.SubmitBooking")}             
+               </Button>
             </DialogActions>
           </form>
         </DialogContent>

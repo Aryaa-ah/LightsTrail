@@ -157,6 +157,16 @@ i18n
             changeLanguage: 'Change Language',
             user: 'User'
           },
+          tourBooking :{
+            title:"Aurora Chaser's Ultimate Guide",
+            description1:"Your comprehensive resource for experiencing the magical Northern Lights",
+            bookTrip:"Book trip",
+            planetaryKIndexGraph:"Planetary K-Index Graph",
+            generalAuroraDesc:"General Aurora Viewing Probability by Month",
+            bookYourAdv:"Book Your Aurora Adventure",
+            SubmitBooking:"Submit Booking",
+            cancle:"Cancel"
+          },
           dashboard: {
             kpIndex: 'KP Index',
             magneticField: 'Magnetic Field (Bz)',
@@ -260,7 +270,17 @@ i18n
       },
       hi: {
         translation: {
-          
+          tourBooking :{
+            title:"ऑरोरा चेज़र की अंतिम गाइड",
+            description1:"जादुई उत्तरी लाइट्स का अनुभव करने के लिए आपका व्यापक संसाधन",
+            bookTrip: "यात्रा बुक करें",
+            planetaryKIndexGraph: "ग्रह K-सूचकांक ग्राफ़",
+            generalAuroraDesc: "महीने के अनुसार सामान्य ऑरोरा देखने की संभावना",
+            bookYourAdv:"बुक योर ऑरोरा एडवेंचर",
+           
+            SubmitBooking:"बुकिंग सबमिट करें",
+            cancle:"रद्द करें"
+          },
           glossary: {
             title: "शब्दावली",
             items: [
@@ -326,7 +346,9 @@ i18n
             }
             ]
           },
-          
+          tourismGuide :{
+            title:"Aurora Chaser's Ultimate Guide"
+          },
             alerts: {
               "title": "औरोरा अलर्ट प्राथमिकताएं",
               "locationLabel": "अलर्ट स्थान",
@@ -459,6 +481,7 @@ i18n
               close: "बंद करें",
             },
           },
+          
           menu: {
             gallery: 'गैलरी',
             glossary: 'शब्दकोश',
@@ -509,6 +532,17 @@ i18n
       },
       kn: {
         translation: {
+          tourBooking :{
+            title:"ಅರೋರಾ ಚೇಸರ್ ಅವರ ಅಲ್ಟಿಮೇಟ್ ಗೈಡ್",
+            description1:"ಮಾಂತ್ರಿಕ ಉತ್ತರದ ದೀಪಗಳನ್ನು ಅನುಭವಿಸಲು ನಿಮ್ಮ ಸಮಗ್ರ ಸಂಪನ್ಮೂಲ",
+            bookTrip: "ಪ್ರವಾಸವನ್ನು ಬುಕ್ ಮಾಡಿ",
+            planetaryKIndexGraph: "ಗ್ರಹ K-ಸೂಚಕ ಗ್ರಾಫ್",
+            generalAuroraDesc: "ತಿಂಗಳ ಪ್ರಕಾರ ಸಾಮಾನ್ಯ ಔರೋರಾ ವೀಕ್ಷಣೆ ಸಾಧ್ಯತೆ",
+            bookYourAdv:"ಬುಕ್ ಯುವರ್ ಅರೋರಾ ಅಡ್ವೆಂಚರ್",
+            SubmitBooking:"ಬುಕಿಂಗ್ ಸಲ್ಲಿಸಿ",
+            cancle:"ರದ್ದು"
+
+          },
           glossary: {
             title: "ಶಬ್ದಕೋಶ",
             items: [{
