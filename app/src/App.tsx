@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import "./App.css";
 import React from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, useLocation } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { ThemeProvider } from "@mui/material/styles";
@@ -10,12 +9,8 @@ import Footer from './components/Footer';
 import { Box } from "@mui/material";
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
 
-import { theme } from './theme/theme';
-// Components 
-// Import the new theme and routes
 import { appTheme } from "./themes/theme";
 import { AppRoutes } from "./route/AppRoutes";
-import { useTranslation } from "react-i18next";
 
 // Define Location interface
 interface Location {
@@ -24,32 +19,45 @@ interface Location {
   longitude: number;
 }
 
+// Create a wrapper component to handle the conditional footer rendering
+const AppContent: React.FC<{ location: Location; setLocation: (location: Location) => void }> = ({ 
+  location, 
+  setLocation 
+}) => {
+  const { pathname } = useLocation();
+  
+  // Define routes where footer should not appear
+  const routesWithoutFooter = ['/auth/login', '/auth/signup'];
+  const shouldShowFooter = !routesWithoutFooter.includes(pathname);
+
+  return (
+    <>
+      <AppRoutes location={location} setLocation={setLocation} />
+      <PWAInstallPrompt />
+      {shouldShowFooter && <Footer />}
+    </>
+  );
+};
+
 function App() {
-  // Location state management
   const [location, setLocation] = React.useState<Location>({
     city_country: "Select Location",
     latitude: 0,
     longitude: 0,
   });
-return(
-  <div className="min-h-screen bg-background-default">
-  <ThemeProvider theme={appTheme}>
-    <CssBaseline />
-    <Provider store={store}>
-      <Router>
-        <AppRoutes 
-          location={location} 
-          setLocation={setLocation} 
-        />
-      </Router>
-      <PWAInstallPrompt />
-      <Footer />
-    </Provider>
-  </ThemeProvider>
-</div>
 
-);
+  return (
+    <div className="min-h-screen bg-background-default">
+      <ThemeProvider theme={appTheme}>
+        <CssBaseline />
+        <Provider store={store}>
+          <Router>
+            <AppContent location={location} setLocation={setLocation} />
+          </Router>
+        </Provider>
+      </ThemeProvider>
+    </div>
+  );
 }
-
 
 export default App;
