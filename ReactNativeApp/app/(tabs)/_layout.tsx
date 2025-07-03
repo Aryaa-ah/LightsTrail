@@ -28,14 +28,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="gallery"
-        options={{
-          title: 'Gallery',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="images" size={size} color={color} />
-          ),
-        }}
-      />
+  name="webcam"
+  options={{
+    title: 'Webcams',
+    tabBarIcon: ({ color, size }) => (
+      <Ionicons name="videocam" size={size} color={color} />
+    ),
+  }}
+/>
       <Tabs.Screen
         name="glossary"
         options={{
