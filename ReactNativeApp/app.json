@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "ReactNativeApp",
-    "slug": "ReactNativeApp",
+    "name": "Lights Trail",
+    "slug": "Lights Trail",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
