@@ -78,22 +78,22 @@ export const updateAlertPreference = async (req, res) => {
 };
 // for test purpose only 
 export const sendTestAlert = async (req, res) => {
-    try {
+   // try {
         const userId = req.user.id;
-        const alertPref = await AlertPreferences.findOne({ userId });
+   //     const alertPref = await AlertPreferences.findOne({ userId });
 
-        if (!alertPref) {
-            return setError({ message: 'Alert preferences not found' }, res, 404);
-        }
+    //     if (!alertPref) {
+    //         return setError({ message: 'Alert preferences not found' }, res, 404);
+    //     }
 
-        await emailService.sendTestEmail(alertPref.email);
+    //    // await emailService.sendTestEmail(alertPref.email);
         
-        setSuccess({ 
-            message: 'Test email sent successfully' 
-        }, res);
-    } catch (error) {
-        setError({ message: error.message }, res, 500);
-    }
+    //     setSuccess({ 
+    //         message: 'Test email sent successfully' 
+    //     }, res);
+    // } catch (error) {
+    //     setError({ message: error.message }, res, 500);
+    //}
 };
 
 export const checkAndSendAlerts = async () => {

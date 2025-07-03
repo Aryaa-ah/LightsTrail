@@ -9,7 +9,8 @@ const initScheduler = () => {
     schedule.scheduleJob('*/30 * * * *', async () => {
       console.log('Running aurora alert check...');
       try {
-        await checkAndSendAlerts();
+        console.log('Checking for aurora alerts at:', new Date().toISOString());
+    //    await checkAndSendAlerts();
       } catch (error) {
         console.error('Error in alert check:', error);
       }
@@ -20,7 +21,8 @@ const initScheduler = () => {
   setTimeout(async () => {
     console.log('Running initial aurora alert check...');
     try {
-      await checkAndSendAlerts();
+    //  await checkAndSendAlerts();
+    console.log('Initial alert check completed at:', new Date().toISOString());
     } catch (error) {
       console.error('Error in initial alert check:', error);
     }
