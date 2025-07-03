@@ -54,6 +54,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+  name="tourism-guide"
+  options={{
+    title: "Tourism Guide",
+    tabBarIcon: ({ color, size }) => (
+      <Ionicons name="globe" size={size} color={color} />
+    ),
+  }}
+/>
     </Tabs>
   );
 }
