@@ -56,6 +56,13 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
+    app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    timestamp: new Date() 
+  });
+});
   } catch (error) {
     console.error("Server startup error:", error);
     process.exit(1);
