@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // src/features/gallery/store/gallerySlice.ts
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import galleryService from "../../../Back-End/service/services/galleryServices";
 import type {
   Photo,
   FetchPhotosParams,
@@ -158,8 +157,8 @@ export const getPhotoById = createAsyncThunk(
 export const toggleLike = createAsyncThunk(
   "gallery/toggleLike",
   async (photoId: string) => {
-    const response = await galleryService.toggleLike(photoId);
-    return response;
+   // const response = await galleryService.toggleLike(photoId);
+   // return response;
   }
 );
 const gallerySlice = createSlice({
