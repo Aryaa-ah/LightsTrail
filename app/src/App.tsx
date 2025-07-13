@@ -8,10 +8,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Footer from './components/Footer';
 import { Box } from "@mui/material";
 import { PWAInstallPrompt } from './components/PWAInstallPrompt';
-
+import ChatBot from './pages/Chat';
 import { appTheme } from "./themes/theme";
 import { AppRoutes } from "./route/AppRoutes";
-
 // Define Location interface
 interface Location {
   city_country: string;
@@ -35,6 +34,7 @@ const AppContent: React.FC<{ location: Location; setLocation: (location: Locatio
       <AppRoutes location={location} setLocation={setLocation} />
       <PWAInstallPrompt />
       {shouldShowFooter && <Footer />}
+      <ChatBot position="bottom-right" /> 
     </>
   );
 };

@@ -18,6 +18,8 @@ import Data from "../pages/DataPage";
 import AuroraPredictionPage from "../pages/auroraPredPage";
 import WebCamPage from "../pages/WebCamPage";
 import AuroraPredictionService from "../pages/TourismGuide";
+import Chat from '../pages/Chat';
+
 
 // Types
 interface Location {
@@ -192,6 +194,8 @@ export const AppRoutes = ({
           </ProtectedRoute>
         }
       />
+      
+<Route path="/assistant" element={<Chat />} />
 
       {/* Root and Fallback Routes */}
       <Route path="/" element={<Navigate to="/auth/login" replace />} />
