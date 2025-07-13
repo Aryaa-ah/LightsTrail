@@ -1,4 +1,4 @@
-import LongitudeLatitudeModel from "./../models/LongitudeLatitude.js";
+import LongitudeLatitudeModel from "./../models/longitudeLatitude.js";
 
 export const fetchSuggestions = async (partialCity) => {
     try {
