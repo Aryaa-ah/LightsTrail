@@ -56,7 +56,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
   const { user } = useAuth();
  const isMobile = useMediaQuery((theme) => theme.breakpoints.down("sm"));
   const pages = [
-    { key: "gallery", path: "gallery" },
+    
     { key: "glossary", path: "glossary" },
     { key: "liveData", path: "live-data" },
     { key: "webCam", path: "webcam" },
