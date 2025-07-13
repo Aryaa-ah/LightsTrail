@@ -381,7 +381,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ position = 'bottom-right' }) => {
           boxShadow: '0 4px 20px rgba(132, 250, 176, 0.3)',
         }}
       >
-        {isOpen ? <Close /> : <Psychology />}
+        {isOpen ? <Close /> : <b style={{ fontSize: '1.8em' }}>AI</b>}
       </Fab>
     </Box>
   );
