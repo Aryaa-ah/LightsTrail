@@ -15,10 +15,26 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ starCount = 1000 }) => 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Resize canvas function
+    // Resize canvas function with better production handling
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // Use document.documentElement for better cross-browser support
+      const width = Math.max(
+        document.documentElement.clientWidth || 0,
+        window.innerWidth || 0
+      );
+      const height = Math.max(
+        document.documentElement.clientHeight || 0,
+        window.innerHeight || 0,
+        document.body.scrollHeight || 0,
+        document.documentElement.scrollHeight || 0
+      );
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      // Force canvas style update
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
     };
 
     // Star class with explicit type initialization
@@ -53,7 +69,11 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ starCount = 1000 }) => 
     }
 
     // Create stars with initial canvas dimensions
-    const stars = Array.from({ length: starCount }, () => new Star(canvas.width, canvas.height));
+    let stars: Star[] = [];
+    
+    const initializeStars = () => {
+      stars = Array.from({ length: starCount }, () => new Star(canvas.width, canvas.height));
+    };
 
     // Animation loop
     const animate = () => {
@@ -70,14 +90,30 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ starCount = 1000 }) => 
       requestAnimationFrame(animate);
     };
 
-    // Initial setup
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    animate();
+    // Enhanced resize handler
+    const handleResize = () => {
+      resizeCanvas();
+      initializeStars(); // Reinitialize stars on resize
+    };
+
+    // Initial setup with delay for production
+    const initialize = () => {
+      resizeCanvas();
+      initializeStars();
+      animate();
+    };
+
+    // Use setTimeout to ensure DOM is fully loaded in production
+    const timeoutId = setTimeout(initialize, 100);
+    
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
 
     // Cleanup
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      clearTimeout(timeoutId);
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
     };
   }, [starCount]);
 
@@ -90,9 +126,11 @@ const StarBackground: React.FC<StarBackgroundProps> = ({ starCount = 1000 }) => 
         left: 0,
         width: '100vw',
         height: '100vh',
+        minHeight: '100vh',
         zIndex: -1,
         pointerEvents: 'none',
-       }}
+        display: 'block', // Ensure canvas is displayed as block
+      }}
     />
   );
 };
