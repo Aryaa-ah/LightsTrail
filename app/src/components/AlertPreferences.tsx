@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import { NotificationsActive } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { buildApiUrl } from '../config';
+
 
 interface Location {
   city_country: string;
@@ -54,7 +56,7 @@ const AlertPreferencesComponent = () => {
       try {
         setLoading(true);
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3002/api/alerts/preferences', {
+const response = await fetch(buildApiUrl('/api/alerts/preferences'), {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -89,7 +91,7 @@ const AlertPreferencesComponent = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3002/longitudeLatitude/${query}`);
+const response = await fetch(buildApiUrl(`/longitudeLatitude/${query}`));
       if (!response.ok) throw new Error(t('alerts.locationSearchError'));
       
       const data = await response.json();

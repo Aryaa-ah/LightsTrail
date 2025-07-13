@@ -13,6 +13,7 @@ import {
 } from "@mui/material";
 import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
 import React from "react";
+import { buildApiUrl } from '../config';
 
 interface SignupFormData {
   email: string;
@@ -46,7 +47,7 @@ export default function SignupPage() {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3002/auth/signup", {
+      const response = await fetch(buildApiUrl("/auth/signup"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

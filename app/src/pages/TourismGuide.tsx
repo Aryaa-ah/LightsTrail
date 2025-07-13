@@ -27,6 +27,8 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'rec
 import Graph from '../components/KpGraph';
 import axios from "axios";
 import { useTranslation } from 'react-i18next';
+import { buildApiUrl } from '../config';
+
 
 // Destination Data
 const destinations = [
@@ -90,7 +92,7 @@ const AuroraTourismGuide = () => {
     e.preventDefault();
   
     try {
-      const response = await axios.post("http://localhost:3002/api/email/send", bookingDetails);
+const response = await axios.post(buildApiUrl("/api/email/send"), bookingDetails);
   
       if (response.data.success) {
         alert("Booking confirmed! An email has been sent to you.");

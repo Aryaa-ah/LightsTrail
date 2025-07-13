@@ -17,6 +17,8 @@ import {
 import { Google, Visibility, VisibilityOff } from "@mui/icons-material";
 import SwipeableViews from "react-swipeable-views";
 import { autoPlay } from "react-swipeable-views-utils";
+import { buildApiUrl } from '../config';
+
  
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
  
@@ -33,8 +35,9 @@ interface CarouselSlide {
 }
  
 // Constants
-const GOOGLE_AUTH_URL = "http://localhost:3002/auth/google";
-const LOGIN_API_URL = "http://localhost:3002/auth/login";
+
+const GOOGLE_AUTH_URL = buildApiUrl("/auth/google");
+const LOGIN_API_URL = buildApiUrl("/auth/login");
  
 const carouselContent: CarouselSlide[] = [
   {

@@ -9,6 +9,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import MapIcon from '@mui/icons-material/Map';
+import { buildApiUrl } from '../config';
 
 // Mapbox imports
 import Map, { Marker } from 'react-map-gl';
@@ -67,7 +68,7 @@ const LocationDialogPopUp: React.FC<LocationDialogPopUpProps> = ({
     setLoading(true);
 
     try {
-      const response = await fetch(`http://localhost:3002/longitudeLatitude/${value}`);
+const response = await fetch(buildApiUrl(`/longitudeLatitude/${value}`));
       
       if (!response.ok) {
         throw new Error('Failed to fetch location suggestions');

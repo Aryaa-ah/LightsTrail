@@ -52,7 +52,7 @@ export const fetchPhotos = createAsyncThunk(
     if (params.userOnly) queryParams.append("userOnly", "true");
 
     const response = await fetch(
-      `http://localhost:3002/api/gallery/photos?${queryParams.toString()}`
+`${BACKEND_URL}/api/gallery/photos?${queryParams.toString()}`
     );
 
     if (!response.ok) {
@@ -67,7 +67,8 @@ export const fetchPhotos = createAsyncThunk(
 export const uploadPhoto = createAsyncThunk(
   "gallery/uploadPhoto",
   async (formData: FormData) => {
-    const response = await fetch("http://localhost:3002/api/gallery/photos", {
+    const response = await fetch(`${BACKEND_URL}/api/gallery/photos`
+, {
       method: "POST",
       body: formData,
     });

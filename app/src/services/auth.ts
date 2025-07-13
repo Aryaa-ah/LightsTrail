@@ -1,3 +1,5 @@
+import { buildApiUrl } from '../config';
+
 export interface User {
     id: string;
     email: string;
@@ -34,7 +36,7 @@ class AuthService {
 
     async login(credentials: { email: string; password: string }): Promise<{ user: User; token: string }> {
         try {
-            const response = await fetch('http://localhost:3002/auth/login', {
+            const response = await fetch(buildApiUrl('/auth/login'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -66,7 +68,7 @@ class AuthService {
         lastName: string;
     }): Promise<{ user: User; token: string }> {
         try {
-            const response = await fetch('http://localhost:3002/auth/signup', {
+            const response = await fetch(buildApiUrl('/auth/signup'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -120,7 +122,7 @@ class AuthService {
     logout(): void {
         this.clearSession();
         // Optional: Call backend to invalidate token
-        fetch('http://localhost:3002/auth/logout', {
+        fetch(buildApiUrl('/auth/logout'), {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${this.getToken()}`
@@ -134,7 +136,7 @@ class AuthService {
     // Refresh token functionality if needed
     async refreshToken(): Promise<string | null> {
         try {
-            const response = await fetch('http://localhost:3002/auth/refresh', {
+            const response = await fetch(buildApiUrl('/auth/refresh'), {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${this.getToken()}`
@@ -157,7 +159,7 @@ class AuthService {
      // Update the deleteAccount method in your auth service
 async deleteAccount(): Promise<void> {
     try {
-        const response = await fetch('http://localhost:3002/auth/users/me', {
+        const response = await fetch(buildApiUrl('/auth/users/me'), {
             method: 'DELETE',
             headers: {
                 'Authorization': `Bearer ${this.getToken()}`

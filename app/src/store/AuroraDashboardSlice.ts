@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { AuroraData, AuroraState } from '../types/auroraDashboard';
+import { buildApiUrl } from '../config';
+
 
 // Initial state
 const initialState: AuroraState = {
@@ -37,7 +39,8 @@ export const fetchAuroraData = createAsyncThunk(
   async ({ latitude, longitude }: { latitude: number, longitude: number }, { rejectWithValue }) => {
     try {
       const response = await fetch(
-        `http://localhost:3002/auroraforecast?longitude=${longitude}&latitude=${latitude}`
+        buildApiUrl(`/auroraforecast?longitude=${longitude}&latitude=${latitude}`)
+
       );
       
       if (!response.ok) {
