@@ -20,7 +20,6 @@ import WebCamPage from "../pages/WebCamPage";
 import AuroraPredictionService from "../pages/TourismGuide";
 import Chat from '../pages/Chat';
 
-
 // Types
 interface Location {
   city_country: string;
@@ -28,28 +27,31 @@ interface Location {
   longitude: number;
 }
 
-// Enhanced Protected Route Component
+// Enhanced Protected Route Component - TEMPORARILY DISABLED
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const location = useLocation();
-  const isAuthenticated = authService.isAuthenticated();
-
-  if (!isAuthenticated) {
-    // Redirect to login and save the intended path
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
-  }
-
+  // TEMPORARILY DISABLE AUTH - Always allow access
   return <>{children}</>;
+  
+  // Original auth logic (keep for future use)
+  // const location = useLocation();
+  // const isAuthenticated = authService.isAuthenticated();
+  // if (!isAuthenticated) {
+  //   return <Navigate to="/auth/login" state={{ from: location }} replace />;
+  // }
+  // return <>{children}</>;
 };
 
-// Public Route Component (for login/signup)
+// Public Route Component (for login/signup) - TEMPORARILY DISABLED
 export const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = authService.isAuthenticated();
-
-  if (isAuthenticated) {
-    return <Navigate to="/home" replace />;
-  }
-
+  // TEMPORARILY DISABLE AUTH - Don't redirect to home
   return <>{children}</>;
+
+  // Original auth logic (keep for future use)
+  // const isAuthenticated = authService.isAuthenticated();
+  // if (isAuthenticated) {
+  //   return <Navigate to="/home" replace />;
+  // }
+  // return <>{children}</>;
 };
 
 // Main Routes Component
@@ -62,7 +64,10 @@ export const AppRoutes = ({
 }) => {
   return (
     <Routes>
-      {/* Public Routes */}
+      {/* Root redirect - TEMPORARILY redirect to home */}
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      
+      {/* Auth routes - Keep accessible but don't enforce redirects */}
       <Route
         path="/auth/login"
         element={
@@ -80,27 +85,23 @@ export const AppRoutes = ({
         }
       />
 
-      
       <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
       <Route path="/auth/success" element={<GoogleAuthCallback />} />
 
-      {/* Protected Routes */}
+      {/* All routes now use ProtectedRoute but it allows all access */}
       <Route
         path="/home"
         element={
           <ProtectedRoute>
             <>
               <ResponsiveAppBar location={location} setLocation={setLocation} />
-              <Home
-                latitude={location.latitude}
-                longitude={location.longitude}
-              />
+              <Home latitude={location.latitude} longitude={location.longitude} />
             </>
           </ProtectedRoute>
         }
       />
 
-<Route
+      <Route
         path="/Tourism-Guide"
         element={
           <ProtectedRoute>
@@ -123,6 +124,7 @@ export const AppRoutes = ({
           </ProtectedRoute>
         }
       />
+      
       <Route
         path="/my-gallery"
         element={
@@ -134,6 +136,7 @@ export const AppRoutes = ({
           </ProtectedRoute>
         }
       />
+      
       <Route
         path="/profile"
         element={
@@ -145,6 +148,7 @@ export const AppRoutes = ({
           </ProtectedRoute>
         }
       />
+      
       <Route
         path="/glossary"
         element={
@@ -156,6 +160,7 @@ export const AppRoutes = ({
           </ProtectedRoute>
         }
       />
+      
       <Route
         path="/best-Locations"
         element={
@@ -180,25 +185,31 @@ export const AppRoutes = ({
         }
       />
        
-        <Route
+      <Route
         path="/webcam"
         element={
           <ProtectedRoute>
             <>
-              <ResponsiveAppBar
-                location={location}
-                setLocation={setLocation}
-              />
-              <WebCamPage/>
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
+              <WebCamPage />
             </>
           </ProtectedRoute>
         }
       />
-      
-<Route path="/assistant" element={<Chat />} />
 
-      {/* Root and Fallback Routes */}
-      <Route path="/" element={<Navigate to="/auth/login" replace />} />
+      <Route
+        path="/chat"
+        element={
+          <ProtectedRoute>
+            <>
+              <ResponsiveAppBar location={location} setLocation={setLocation} />
+              <Chat />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 404 fallback */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
