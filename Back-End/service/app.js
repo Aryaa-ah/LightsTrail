@@ -1,4 +1,3 @@
-// Back-End/service/app.js
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -93,17 +92,34 @@ Disallow: /my-gallery
 Disallow: /profile`);
 });
 
-// Database connection
-mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => {
-  console.log("Connected to MongoDB");
-})
-.catch((err) => {
-  console.error("MongoDB connection error:", err);
-});
+// Database connection - FIXED
+const connectDB = async () => {
+  try {
+    const mongoUrl = process.env.MONGO_URL || process.env.MONGODB_URI;
+    
+    if (!mongoUrl) {
+      console.error('❌ MongoDB connection string not found!');
+      console.error('Available env vars:', Object.keys(process.env).filter(key => key.includes('MONGO')));
+      throw new Error('MONGO_URL or MONGODB_URI environment variable is required');
+    }
+    
+    console.log('🔄 Connecting to MongoDB...');
+    
+    // Remove deprecated options that cause warnings
+    await mongoose.connect(mongoUrl);
+    
+    console.log('✅ Connected to MongoDB');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err.message);
+    // Don't exit in production, let the app run without DB for now
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+  }
+};
+
+// Connect to database
+connectDB();
 
 // Routes
 initializeRouter(app);
@@ -111,12 +127,14 @@ app.use('/api/glossary', glossaryRoutes);
 app.use('/api/alerts', alertRouter);
 app.use('/api/tourism', tourismRouter);
 
-// Health check endpoint
+// Health check endpoint - ENHANCED
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
     message: 'Server is running',
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    mongoStatus: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
@@ -140,10 +158,23 @@ app.use((req, res) => {
   });
 });
 
+// Server startup - IMPROVED
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🌐 Health check: http://localhost:${PORT}/health`);
+});
+
+// Handle server errors
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use`);
+    console.log('🔄 Please kill the existing process or use a different port');
+  } else {
+    console.error('❌ Server error:', err);
+  }
 });
 
 export default app;
