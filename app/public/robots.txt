@@ -1,0 +1,11 @@
+<!-- filepath: c:\LightsTrail\app\public\robots.txt -->
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://lightstrail.live/sitemap.xml
+
+# Disallow private/auth pages from search engines
+Disallow: /auth/
+Disallow: /my-gallery
+Disallow: /profile
