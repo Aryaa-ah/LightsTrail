@@ -245,7 +245,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
         </Button>
       )}
 
-            {user && (
+            {/* {user && (
               <Box sx={{ flexGrow: 0 }}>
                 <Tooltip title="Open settings">
                   <IconButton
@@ -272,7 +272,7 @@ export default function Navbar({ location, setLocation }: NavbarProps) {
                   </MenuItem>
                 </Menu>
               </Box>
-            )}
+            )} */}
           </Toolbar>
         </Container>
       </AppBar>
