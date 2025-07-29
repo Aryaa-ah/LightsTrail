@@ -95,7 +95,7 @@ Disallow: /profile`);
 // Database connection - FIXED
 const connectDB = async () => {
   try {
-    const mongoUrl = process.env.MONGO_URL || process.env.MONGODB_URI;
+    const mongoUrl = process.env.MONGO_URL || process.env.MONGODB_URI || process.env.MONGO_CONNECTION;
     
     if (!mongoUrl) {
       console.error('❌ MongoDB connection string not found!');
