@@ -26,6 +26,16 @@ interface Location {
   longitude: number;
 }
 
+// Component to handle static file redirects
+const StaticFileRedirect = ({ filename }: { filename: string }) => {
+  React.useEffect(() => {
+    // Force browser to load the actual file from public folder
+    window.location.href = `/${filename}`;
+  }, [filename]);
+  
+  return null; // Don't render anything
+};
+
 // Enhanced Protected Route Component - TEMPORARILY DISABLED
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   // TEMPORARILY DISABLE AUTH - Always allow access
@@ -65,6 +75,10 @@ export const AppRoutes = ({
     <Routes>
       {/* Root redirect - TEMPORARILY redirect to home */}
       <Route path="/" element={<Navigate to="/home" replace />} />
+      
+      {/* STATIC FILE ROUTES - Handle these BEFORE other routes */}
+      <Route path="/sitemap.xml" element={<StaticFileRedirect filename="sitemap.xml" />} />
+      <Route path="/robots.txt" element={<StaticFileRedirect filename="robots.txt" />} />
       
       {/* Auth routes - Keep accessible but don't enforce redirects */}
       <Route
@@ -208,7 +222,7 @@ export const AppRoutes = ({
         }
       />
 
-      {/* 404 fallback */}
+      {/* 404 fallback - MUST BE LAST */}
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
