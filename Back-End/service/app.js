@@ -1,3 +1,4 @@
+// Back-End/service/app.js
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -33,49 +34,153 @@ app.use(express.urlencoded({ extended: true }));
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:3000',
-      'http://127.0.0.1:5173',
-      'http://127.0.0.1:3000',
-      'https://lightstrail.live',
-      'https://www.lightstrail.live'
-    ];
+      // Production domains
+      "https://lightstrail.live",
+      "https://www.lightstrail.live",
+      "https://api.lightstrail.live",
+      
+      // Render deployment URLs (update frontend URL when deployed)
+      "https://lightstrail.onrender.com",
+      "https://lightstrail-frontend.onrender.com",
+      
+      // Development
+      "http://localhost:5173",
+      "http://localhost:3000",
+      "http://localhost:3002",
+      
+      // Environment variable for flexibility
+      process.env.CLIENT_URL
+    ].filter(Boolean); // Remove any undefined values
     
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow requests with no origin (like mobile apps, Postman, or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {
-      console.warn(`CORS blocked origin: ${origin}`);
-      callback(null, false);
+      console.log(`CORS blocked origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  optionsSuccessStatus: 200
+  maxAge: 86400 // 24 hours
 };
 
 app.use(cors(corsOptions));
+app.use(express.json());
 
-// Middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.static(path.join(__dirname, 'uploads')));
+// Trust proxy - important for Render
+app.set('trust proxy', 1);
 
-// Passport middleware
-app.use(passport.initialize());
+// ============ HEALTH CHECK ROUTES ============
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    status: 'OK',
+    message: 'LightsTrail API is running',
+    version: '1.0.0',
+    domain: 'lightstrail.live',
+    environment: process.env.NODE_ENV || 'development',
+    endpoints: {
+      health: '/health',
+      api: '/api',
+      glossary: '/api/glossary',
+      email: '/api/email',
+      uploads: '/uploads'
+    }
+  });
+});
 
+// Health check route
+app.get('/health', (req, res) => {
+  const healthCheck = {
+    status: 'healthy',
+    service: 'LightsTrail Backend',
+    domain: 'lightstrail.live',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    mongodb: {
+      status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+      host: mongoose.connection.host,
+      name: mongoose.connection.name
+    },
+    environment: {
+      nodeVersion: process.version,
+      platform: process.platform,
+      memoryUsage: process.memoryUsage()
+    }
+  };
+  
+  // Return 200 if healthy, 503 if unhealthy
+  const httpStatus = mongoose.connection.readyState === 1 ? 200 : 503;
+  res.status(httpStatus).json(healthCheck);
+});
+
+// API info route
+app.get('/api', (req, res) => {
+  res.json({
+    message: 'LightsTrail API v1.0',
+    description: 'Northern Lights tracking and tourism guide API',
+    documentation: 'https://lightstrail.live/docs',
+    baseEndpoints: [
+      { method: 'GET', path: '/', description: 'API status' },
+      { method: 'GET', path: '/health', description: 'Health check' },
+      { method: 'GET', path: '/api', description: 'API information' }
+    ],
+    apiEndpoints: [
+      '/api/glossary',
+      '/api/email',
+      '/api/users',
+      '/api/auth',
+      '/api/galleries',
+      '/api/aurora-forecasts',
+      '/api/alerts'
+    ]
+  });
+});
+
+// ============ END HEALTH CHECK ROUTES ============
+
+// ============ SEO ROUTES ============
 // Serve sitemap.xml
 app.get('/sitemap.xml', (req, res) => {
-  const sitemapPath = path.join(__dirname, '..', '..', 'app', 'public', 'sitemap.xml');
-  
-  if (fs.existsSync(sitemapPath)) {
-    res.setHeader('Content-Type', 'application/xml');
-    res.sendFile(sitemapPath);
-  } else {
-    res.status(404).json({
-      success: false,
-      error: 'Sitemap not found'
-    });
-  }
+  res.setHeader('Content-Type', 'application/xml');
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://lightstrail.live/</loc>
+    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://lightstrail.live/about</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://lightstrail.live/gallery</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://lightstrail.live/aurora-forecast</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://lightstrail.live/glossary</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://lightstrail.live/tourism-guide</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>`);
 });
 
 // Serve robots.txt
@@ -89,92 +194,74 @@ Sitemap: https://lightstrail.live/sitemap.xml
 # Disallow private/auth pages from search engines
 Disallow: /auth/
 Disallow: /my-gallery
-Disallow: /profile`);
+Disallow: /profile
+Disallow: /api/
+
+# Allow search engines to access public API documentation
+Allow: /api/docs`);
 });
 
-// Database connection - FIXED
-const connectDB = async () => {
-  try {
-    const mongoUrl = process.env.MONGO_URL || process.env.MONGODB_URI || process.env.MONGO_CONNECTION;
-    
-    if (!mongoUrl) {
-      console.error('❌ MongoDB connection string not found!');
-      console.error('Available env vars:', Object.keys(process.env).filter(key => key.includes('MONGO')));
-      throw new Error('MONGO_URL or MONGODB_URI environment variable is required');
-    }
-    
-    console.log('🔄 Connecting to MongoDB...');
-    
-    // Remove deprecated options that cause warnings
-    await mongoose.connect(mongoUrl);
-    
-    console.log('✅ Connected to MongoDB');
-  } catch (err) {
-    console.error('❌ MongoDB connection error:', err.message);
-    // Don't exit in production, let the app run without DB for now
-    if (process.env.NODE_ENV !== 'production') {
-      process.exit(1);
-    }
+// ============ END SEO ROUTES ============
+
+// Serve static files from uploads directory
+app.use("/uploads", express.static(uploadsDir));
+
+// File access middleware
+app.use("/uploads", (req, res, next) => {
+  const filePath = path.join(uploadsDir, path.basename(req.url));
+  
+  if (fs.existsSync(filePath)) {
+    next();
+  } else {
+    res.status(404).json({ 
+      success: false,
+      error: "File not found" 
+    });
   }
-};
+});
 
-// Connect to database
-connectDB();
+// API Routes
+app.use("/api/glossary", glossaryRoutes);
+app.use("/api/email", tourismRouter);
+app.use("/api/alerts", alertRouter);
 
-// Routes
+// Request logging middleware (only in development)
+if (process.env.NODE_ENV !== 'production') {
+  app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+  });
+}
+
+// Passport initialization
+app.use(passport.initialize());
+
+// Initialize other routes
 initializeRouter(app);
-app.use('/api/glossary', glossaryRoutes);
-app.use('/api/alerts', alertRouter);
-app.use('/api/tourism', tourismRouter);
 
-// Health check endpoint - ENHANCED
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Server is running',
-    timestamp: new Date().toISOString(),
-    mongoStatus: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
-    environment: process.env.NODE_ENV || 'development'
-  });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Global error handler:', err);
-  res.status(500).json({
-    success: false,
-    error: 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { details: err.message })
-  });
-});
-
-// 404 handler - must be last
+// 404 handler - must be after all other routes
 app.use((req, res) => {
-  console.log("404 - Route not found:", req.path);
   res.status(404).json({
     success: false,
     error: 'Route not found',
-    path: req.path
+    message: `Cannot ${req.method} ${req.path}`,
+    availableEndpoints: ['/health', '/api', '/api/glossary', '/api/email', '/api/alerts']
   });
 });
 
-// Server startup - IMPROVED
-const PORT = process.env.PORT || 5000;
-
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🌐 Health check: http://localhost:${PORT}/health`);
+// Error handling middleware - must be last
+app.use((err, req, res, next) => {
+  console.error("App Error:", err.stack);
+  
+  // Don't leak error details in production
+  const isDevelopment = process.env.NODE_ENV !== 'production';
+  
+  res.status(err.status || 500).json({
+    success: false,
+    error: isDevelopment ? err.message : "Internal Server Error",
+    ...(isDevelopment && { stack: err.stack })
+  });
 });
 
-// Handle server errors
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`❌ Port ${PORT} is already in use`);
-    console.log('🔄 Please kill the existing process or use a different port');
-  } else {
-    console.error('❌ Server error:', err);
-  }
-});
-
+// IMPORTANT: Only export the app - NO server startup here!
 export default app;
