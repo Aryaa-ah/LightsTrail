@@ -1,3 +1,5 @@
+## Live website: https://lightstrail.live
+
 Welcome to the LightsTrail website repository.
 
 ## Project Title: LightsTrail
