@@ -35,9 +35,9 @@ const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
       // Production domains
-      "https://lightstrail.live",
-      "https://www.lightstrail.live",
-      "https://api.lightstrail.live",
+      "https://lights-trail.com",
+      "https://www.lights-trail.com",
+      "https://api.lights-trail.com",
       
       // Render deployment URLs (update frontend URL when deployed)
       "https://lightstrail.onrender.com",
