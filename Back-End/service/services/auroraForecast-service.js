@@ -2,6 +2,30 @@ import AuroraForecast from "./../models/auroraForecast.js";
 import { checkAndSendAlerts } from '../controllers/alertController.js';
 
 import axios from 'axios';
+
+// Fallbacks: auroras.live's ace.kp / ace.bz started returning null after an
+// SWPC data-source change. Pull the values directly from NOAA SWPC instead.
+const fetchNoaaKp = async () => {
+  const { data } = await axios.get(
+    'https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json',
+    { timeout: 10000 }
+  );
+  // Array of objects, last element is the most recent reading.
+  const latest = Array.isArray(data) ? data[data.length - 1] : null;
+  return latest && latest.Kp != null ? Number(latest.Kp) : null;
+};
+
+const fetchNoaaBz = async () => {
+  const { data } = await axios.get(
+    'https://services.swpc.noaa.gov/products/solar-wind/mag-1-day.json',
+    { timeout: 10000 }
+  );
+  // Array of arrays; row 0 is a header. Columns: time_tag, bx, by, bz_gsm, ...
+  const rows = Array.isArray(data) ? data.slice(1) : [];
+  const latest = rows[rows.length - 1];
+  return latest ? parseFloat(latest[3]) : null;
+};
+
 const calculateAuroraPrediction = (data) => {
   // Extract values from the data object
   const kp = parseFloat(data.kpIndex);
@@ -77,12 +101,24 @@ export const call = async (forecastData) => {
             }
           };
           const  weatherData  = await axios.request(options);
-          console.log(weatherData);
           const uv = weatherData.data.daily.uv_index_max? weatherData.data.daily.uv_index_max : [0];
+
+        // auroras.live now returns null for kp/bz; fall back to NOAA SWPC.
+        let kpIndex = response.data.ace.kp;
+        let bz = response.data.ace.bz;
+        if (kpIndex == null) {
+            try { kpIndex = await fetchNoaaKp(); }
+            catch (e) { console.error('NOAA Kp fallback failed:', e.message); }
+        }
+        if (bz == null) {
+            try { bz = await fetchNoaaBz(); }
+            catch (e) { console.error('NOAA Bz fallback failed:', e.message); }
+        }
+
         // Create AuroraForecast object
         const forecast = new AuroraForecast({
-            kpIndex: response.data.ace.kp,
-            bz: response.data.ace.bz,
+            kpIndex: kpIndex,
+            bz: bz,
             speed: response.data.ace.speed,
             longitude: parseFloat(response.data.probability.long),
             latitude: parseFloat(response.data.probability.lat),
@@ -96,13 +132,12 @@ export const call = async (forecastData) => {
 
         });
         forecast.probability=calculateAuroraPrediction(forecast)+"%";
-        console.log("weatherData.data.current.isDay"+weatherData.data.current.isDay);
         const forecastObject = forecast.toObject();
         delete forecastObject._id;
     
         return forecastObject; 
     } catch (error) {
-        console.log(error)
-        throw error; 
+        console.error('Aurora forecast error:', error.message);
+        throw error;
     }
 };
